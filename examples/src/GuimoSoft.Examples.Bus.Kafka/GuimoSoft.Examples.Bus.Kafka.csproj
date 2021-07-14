@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <SonarQubeExclude>true</SonarQubeExclude>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="2.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\GuimoSoft.Bus.Kafka\GuimoSoft.Bus.Kafka.csproj" />
+    <ProjectReference Include="..\..\..\src\GuimoSoft.Cryptography.RSA\GuimoSoft.Cryptography.RSA.csproj" />
+    <ProjectReference Include="..\..\..\src\GuimoSoft.Logger.AspNetCore\GuimoSoft.Logger.AspNetCore.csproj" />
+  </ItemGroup>
+
+</Project>

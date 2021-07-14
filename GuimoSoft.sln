@@ -7,19 +7,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FCED52CE-C6D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6E3FF91B-BC4C-4FD0-ABD6-35859FDC75D1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.MessageBroker.Kafka", "src\GuimoSoft.MessageBroker.Kafka\GuimoSoft.MessageBroker.Kafka.csproj", "{76426755-0268-494D-BAD5-0A138F6E0FD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Bus.Kafka", "src\GuimoSoft.Bus.Kafka\GuimoSoft.Bus.Kafka.csproj", "{76426755-0268-494D-BAD5-0A138F6E0FD4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Logger", "src\GuimoSoft.Logger\GuimoSoft.Logger.csproj", "{D6EE4BB3-253D-4BF1-A40D-A817906E85ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft", "src\GuimoSoft\GuimoSoft.csproj", "{A93F2903-0725-49B9-83B7-FB0A6C5106F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Core", "src\GuimoSoft.Core\GuimoSoft.Core.csproj", "{A93F2903-0725-49B9-83B7-FB0A6C5106F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.MessageBroker.Kafka.Tests", "tests\GuimoSoft.MessageBroker.Kafka.Tests\GuimoSoft.MessageBroker.Kafka.Tests.csproj", "{89B3C059-4BEC-4E7E-880F-A663121E7ACB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Bus.Tests", "tests\GuimoSoft.Bus.Tests\GuimoSoft.Bus.Tests.csproj", "{89B3C059-4BEC-4E7E-880F-A663121E7ACB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Logger.Tests", "tests\GuimoSoft.Logger.Tests\GuimoSoft.Logger.Tests.csproj", "{1264626C-014D-4EE8-893E-4569F79BD451}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Tests", "tests\GuimoSoft.Tests\GuimoSoft.Tests.csproj", "{636EE8BF-BA1A-4F4B-BE74-EA1E0CD7FADA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Core.Tests", "tests\GuimoSoft.Core.Tests\GuimoSoft.Core.Tests.csproj", "{636EE8BF-BA1A-4F4B-BE74-EA1E0CD7FADA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.MessageBroker.Abstractions", "src\GuimoSoft.MessageBroker.Abstractions\GuimoSoft.MessageBroker.Abstractions.csproj", "{0067C006-D6AA-4980-87F1-C0CEE2283ADE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Bus.Abstractions", "src\GuimoSoft.Bus.Abstractions\GuimoSoft.Bus.Abstractions.csproj", "{0067C006-D6AA-4980-87F1-C0CEE2283ADE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Cryptography.RSA", "src\GuimoSoft.Cryptography.RSA\GuimoSoft.Cryptography.RSA.csproj", "{A724F1F1-201F-40D7-A115-2307A329CCF2}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Cryptography.AspN
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Cryptography.Tests", "tests\GuimoSoft.Cryptography.Tests\GuimoSoft.Cryptography.Tests.csproj", "{B40F74BD-86F4-4551-B6DB-1C19A3227180}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.AspNetCore", "src\GuimoSoft.AspNetCore\GuimoSoft.AspNetCore.csproj", "{328F1443-582D-4A23-A9CC-71753BB8E90C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Core.AspNetCore", "src\GuimoSoft.Core.AspNetCore\GuimoSoft.Core.AspNetCore.csproj", "{328F1443-582D-4A23-A9CC-71753BB8E90C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Cache", "src\GuimoSoft.Cache\GuimoSoft.Cache.csproj", "{4186C7C3-28FD-43A6-91A7-8FE347CCBB6B}"
 EndProject
@@ -43,7 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cryptography", "Cryptograph
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logger", "Logger", "{5E860BED-B7BE-44B0-9D60-F7275B0556A3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageBroker", "MessageBroker", "{DCB5470E-2583-4490-8D3C-C70C8D588C27}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bus", "Bus", "{DCB5470E-2583-4490-8D3C-C70C8D588C27}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notifications", "{A6FF0934-5B69-4717-A7FA-E0A093D8581E}"
 EndProject
@@ -54,6 +54,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Notifications.AspNetCore", "src\GuimoSoft.Notifications.AspNetCore\GuimoSoft.Notifications.AspNetCore.csproj", "{820613BE-13CE-406D-B173-B836C6EFC7C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Notifications.Tests", "tests\GuimoSoft.Notifications.Tests\GuimoSoft.Notifications.Tests.csproj", "{96DF977F-9E4C-4657-A305-67738D3209B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Logger.AspNetCore", "src\GuimoSoft.Logger.AspNetCore\GuimoSoft.Logger.AspNetCore.csproj", "{9791D3D8-C7D1-4F8A-9719-5CA2B07075C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuimoSoft.Bus.Core", "src\GuimoSoft.Bus.Core\GuimoSoft.Bus.Core.csproj", "{566CEB1E-2E1E-483D-9435-0473ECD14C91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuimoSoft.Serialization", "src\GuimoSoft.Serialization\GuimoSoft.Serialization.csproj", "{A8516CF4-2769-44CB-9AD9-84595F2356D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +139,18 @@ Global
 		{96DF977F-9E4C-4657-A305-67738D3209B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96DF977F-9E4C-4657-A305-67738D3209B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96DF977F-9E4C-4657-A305-67738D3209B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9791D3D8-C7D1-4F8A-9719-5CA2B07075C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9791D3D8-C7D1-4F8A-9719-5CA2B07075C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9791D3D8-C7D1-4F8A-9719-5CA2B07075C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9791D3D8-C7D1-4F8A-9719-5CA2B07075C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{566CEB1E-2E1E-483D-9435-0473ECD14C91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{566CEB1E-2E1E-483D-9435-0473ECD14C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{566CEB1E-2E1E-483D-9435-0473ECD14C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{566CEB1E-2E1E-483D-9435-0473ECD14C91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8516CF4-2769-44CB-9AD9-84595F2356D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8516CF4-2769-44CB-9AD9-84595F2356D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8516CF4-2769-44CB-9AD9-84595F2356D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8516CF4-2769-44CB-9AD9-84595F2356D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,6 +180,9 @@ Global
 		{8A034EC9-DDAF-42DF-A9DA-C18705F3BC61} = {A6FF0934-5B69-4717-A7FA-E0A093D8581E}
 		{820613BE-13CE-406D-B173-B836C6EFC7C4} = {A6FF0934-5B69-4717-A7FA-E0A093D8581E}
 		{96DF977F-9E4C-4657-A305-67738D3209B8} = {6E3FF91B-BC4C-4FD0-ABD6-35859FDC75D1}
+		{9791D3D8-C7D1-4F8A-9719-5CA2B07075C5} = {5E860BED-B7BE-44B0-9D60-F7275B0556A3}
+		{566CEB1E-2E1E-483D-9435-0473ECD14C91} = {DCB5470E-2583-4490-8D3C-C70C8D588C27}
+		{A8516CF4-2769-44CB-9AD9-84595F2356D2} = {EFB4AFEB-B88D-418C-903E-4D43CF691906}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B69FCB7C-9A24-4707-8C59-CC50B188A5FA}

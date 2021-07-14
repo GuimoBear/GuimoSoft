@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using GuimoSoft.Cryptography.RSA.Exceptions;
+using GuimoSoft.Cryptography.RSA.Packets;
 using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
 using GuimoSoft.Cryptography.RSA.Services.Interfaces;
 using GuimoSoft.Cryptography.RSA.Utils;
@@ -26,14 +27,20 @@ namespace GuimoSoft.Cryptography.RSA.Services
             this.repository = repository;
         }
 
-        public static ValueTask<(Guid id, byte[] privateAndPublicRSAParameters, byte[] publicRSAParameters)> Create(string password = default)
+        public static async ValueTask<(Guid id, byte[] privateAndPublicRSAParameters, byte[] publicRSAParameters)> Create(string password = default)
         {
             using var rsa = new RSACryptoServiceProvider(2048);
             var id = Guid.NewGuid();
-            var privateAndPublicParameters = new Packets.RsaParametersPackage(id, rsa.ExportParameters(includePrivateParameters: true));
-            var publicParameters = new Packets.RsaParametersPackage(id, rsa.ExportParameters(includePrivateParameters: false));
+            var privateAndPublicParameters = new RsaParametersPackage(id, rsa.ExportParameters(includePrivateParameters: true));
+            var publicParameters = new RsaParametersPackage(id, rsa.ExportParameters(includePrivateParameters: false));
+            if (!string.IsNullOrEmpty(password))
+            {
+                var privateAndPublicProtectedParameters = await (new PasswordEncryptedPackage(privateAndPublicParameters.Bytes).EncryptAsync(password));
+                var publicProtectedParameters = await (new PasswordEncryptedPackage(publicParameters.Bytes).EncryptAsync(password));
+                return (id, privateAndPublicProtectedParameters, publicProtectedParameters);
+            }
 
-            return new ValueTask<(Guid id, byte[] privateAndPublicRSAParameters, byte[] publicRSAParameters)>((id, privateAndPublicParameters.Bytes, publicParameters.Bytes));
+            return (id, privateAndPublicParameters.Bytes, publicParameters.Bytes);
         }
 
         public async ValueTask<byte[]> Encrypt(Guid identifier, byte[] content)
@@ -65,8 +72,9 @@ namespace GuimoSoft.Cryptography.RSA.Services
 
         private bool TentarObterChaveRsaPorId(Guid identifier, Func<RSAParameters, bool> parametersValidator, out RSACryptoServiceProvider rsa)
         {
-            if (!_cryptersCache.TryGetValue(identifier, out rsa) &&
-                repository.TentarObterPorId(identifier, out var parameters) &&
+            if (_cryptersCache.TryGetValue(identifier, out rsa))
+                return true;
+            if (repository.TentarObterPorId(identifier, out var parameters) &&
                 parametersValidator(parameters))
             {
                 rsa = new RSACryptoServiceProvider(2048);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GuimoSoft.Notifications.Tests.Fakes;
 using Xunit;
+using GuimoSoft.Core;
 
 namespace GuimoSoft.Notifications.Tests
 {

@@ -8,7 +8,7 @@ using GuimoSoft.Notifications.Interfaces;
 namespace GuimoSoft.Notifications.AspNetCore
 {
     public class NotificationActionFilter<TErrorCode> : IAsyncActionFilter
-        where TErrorCode : Enum
+        where TErrorCode : struct, Enum
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {

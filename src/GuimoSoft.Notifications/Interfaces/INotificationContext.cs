@@ -1,10 +1,11 @@
-﻿using System;
+﻿using GuimoSoft.Core;
+using System;
 using System.Collections.Generic;
 
 namespace GuimoSoft.Notifications.Interfaces
 {
     public interface INotificationContext<TErrorCode>
-        where TErrorCode : Enum
+        where TErrorCode : struct, Enum
     {
         bool HasNotifications { get; }
 

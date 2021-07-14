@@ -9,7 +9,7 @@ namespace GuimoSoft.Notifications.AspNetCore
     public static class DependencyInjectionExtensions
     {
         public static IServiceCollection AddNotificationContext<TErrorCode>(this IServiceCollection services, params Assembly[] assembliesToFindValidators)
-            where TErrorCode : Enum
+            where TErrorCode : struct, Enum
         {
             if (assembliesToFindValidators is not null)
                 AbstractValidatorCache<TErrorCode>.FindValidators(assembliesToFindValidators);
@@ -17,7 +17,7 @@ namespace GuimoSoft.Notifications.AspNetCore
         }
 
         public static MvcOptions AddNotificationFilter<TErrorCode>(this MvcOptions options)
-            where TErrorCode : Enum
+            where TErrorCode : struct, Enum
         {
             options.Filters.Add<NotificationActionFilter<TErrorCode>>();
 

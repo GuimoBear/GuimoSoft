@@ -8,7 +8,7 @@ using System.Reflection;
 namespace GuimoSoft.Notifications.AspNetCore
 {
     public static class AbstractValidatorCache<TErrorCode>
-        where TErrorCode : Enum
+        where TErrorCode : struct, Enum
     {
         internal static readonly ConcurrentDictionary<Type, IEnumerable<ValidationExecutorBase<TErrorCode>>> _validatorsCache
             = new ConcurrentDictionary<Type, IEnumerable<ValidationExecutorBase<TErrorCode>>>();

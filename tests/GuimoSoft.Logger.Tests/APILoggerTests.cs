@@ -1,5 +1,7 @@
 ﻿using DeepEqual.Syntax;
 using FluentAssertions;
+using GuimoSoft.Logger.Tests.Fake;
+using GuimoSoft.Logger.Utils;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
@@ -7,11 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Logger.Tests.Fake;
-using GuimoSoft.Logger.Utils;
-using GuimoSoft.Providers.Interfaces;
 using Xunit;
 
 namespace GuimoSoft.Logger.Tests
@@ -30,10 +28,12 @@ namespace GuimoSoft.Logger.Tests
         private (Mock<ILogger<APILoggerTests>>, ApiLogger<APILoggerTests>) Createinstance()
         {
             var loggerMock = new Mock<ILogger<APILoggerTests>>();
-            var scopeOriginProvider = new Mock<IScopeOriginProvider>();
-            scopeOriginProvider.Setup(x => x.ScopeOrigin).Returns(ScopeOrigin.Kafka);
+            var contextAccessor = new ApiLoggerContextAccessor();
+            contextAccessor.Context = new Dictionary<string, object>();
+            contextAccessor.Context.Add(Constants.KEY_CORRELATION_ID, correlationId.ToString());
+            contextAccessor.Context.Add(Constants.KEY_TENANT, tenant.ToString());
 
-            return (loggerMock, new ApiLogger<APILoggerTests>(loggerMock.Object, correlationId, tenant, scopeOriginProvider.Object));
+            return (loggerMock, new ApiLogger<APILoggerTests>(loggerMock.Object, contextAccessor));
         }
 
         [Fact]
@@ -45,7 +45,6 @@ namespace GuimoSoft.Logger.Tests
             var dicionarioDeLog = apiLogger.CriarDicionarioDeLog();
             Assert.Contains(dicionarioDeLog, kvp => kvp.Key.Equals(Constants.KEY_CORRELATION_ID) && kvp.Value.Equals(correlationId.ToString()));
             Assert.Contains(dicionarioDeLog, kvp => kvp.Key.Equals(Constants.KEY_TENANT) && kvp.Value.Equals(tenant.ToString()));
-            Assert.Contains(dicionarioDeLog, kvp => kvp.Key.Equals(Constants.KEY_ESCOPO_ORIGEM) && kvp.Value.Equals(ScopeOrigin.Kafka.ToString()));
         }
 
         [Fact]
@@ -1149,6 +1148,94 @@ namespace GuimoSoft.Logger.Tests
         }
 
         [Fact]
+        public void Se_ErroComMensagemPreenchidaEExceptionNula_Entao_EscreveLog()
+        {
+            const string errorMessage = "Ocorreu um erro";
+            Exception exception = null;
+            (var loggerMock, var apiLogger) = Createinstance();
+
+            var expectedExpando = apiLogger.CriarDicionarioDeLog();
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_ERROR_STRING);
+
+            var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
+
+            apiLogger.Erro(errorMessage, exception);
+
+            loggerMock.Verify(
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Equals(expected)),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
+                    ),
+                Times.Once
+                );
+
+            apiLogger
+                .ComPropriedade(string.Empty, string.Empty)
+                .Erro(errorMessage, exception)
+                .Should().BeTrue();
+
+            loggerMock.Verify(
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Equals(expected)),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
+                    ),
+                Times.Exactly(2)
+                );
+        }
+
+        [Fact]
+        public void Se_ErroComExceptionPreenchidaEMensagemNula_Entao_EscreveLog()
+        {
+            const string errorMessage = null;
+            var exception = new Exception(errorMessage);
+            (var loggerMock, var apiLogger) = Createinstance();
+
+            var expectedExpando = apiLogger.CriarDicionarioDeLog();
+            expectedExpando.TryAdd(Constants.KEY_ERROR_MESSAGE, exception.Message);
+            expectedExpando.TryAdd(Constants.KEY_ERROR_TYPE, exception.GetType().Name);
+            expectedExpando.TryAdd(Constants.KEY_STACK_TRACE, exception.StackTrace);
+            expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_ERROR_STRING);
+
+            var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
+
+            apiLogger.Erro(errorMessage, exception);
+
+            loggerMock.Verify(
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Equals(expected)),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
+                    ),
+                Times.Once
+                );
+
+            apiLogger
+                .ComPropriedade(string.Empty, string.Empty)
+                .Erro(errorMessage, exception)
+                .Should().BeTrue();
+
+            loggerMock.Verify(
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Equals(expected)),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
+                    ),
+                Times.Exactly(2)
+                );
+        }
+
+        [Fact]
         public void Dado_UmObjetoComPropriedadesParaSeremIgnoradas_Se_Logar_Entao_AsPropriedadesMarcadasSeraoExcluidasDoJson()
         {
             (var loggerMock, var apiLogger) = Createinstance();
@@ -1182,24 +1269,32 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public async Task Dado_UmStopwatch_SeLogar_Entao_OStopwatchEhIniciadoEFinalizado()
         {
-            var stopwatch = new Stopwatch();
+            var stopwatch1 = new Stopwatch();
+            var stopwatch2 = new Stopwatch();
 
             (_, var apiLogger) = Createinstance();
 
-            stopwatch
+            stopwatch1
                 .IsRunning.Should().BeFalse();
 
             var logger = apiLogger
-                .ComPropriedade("elapsed-time", stopwatch);
+                .ComPropriedade("elapsed-time", stopwatch1)
+                .ComPropriedade("elapsed-time-2", stopwatch2);
 
-            stopwatch
+            stopwatch1
+                .IsRunning.Should().BeTrue();
+            stopwatch2
                 .IsRunning.Should().BeTrue();
 
             await Task.Delay(2);
             logger
                 .Rastreio("logado");
 
-            stopwatch
+            Assert.Throws<ObjectDisposedException>(() => logger.Rastreio("teste"));
+
+            stopwatch1
+                .IsRunning.Should().BeFalse();
+            stopwatch2
                 .IsRunning.Should().BeFalse();
         }
 

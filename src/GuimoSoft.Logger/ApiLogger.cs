@@ -6,26 +6,19 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using GuimoSoft.Logger.Utils;
-using GuimoSoft.Providers.Interfaces;
 
 namespace GuimoSoft.Logger
 {
     public class ApiLogger<TCategoryName> : ApiLoggerBase, IApiLogger<TCategoryName>
     {
         private readonly ILogger<TCategoryName> logger;
-        private readonly CorrelationId correlationId;
-        private readonly Tenant tenant;
-        private readonly IScopeOriginProvider scopeOriginProvider;
+        private readonly IApiLoggerContextAccessor loggerContextAccessor;
 
         public ApiLogger(ILogger<TCategoryName> logger,
-                         CorrelationId correlationId,
-                         Tenant tenant,
-                         IScopeOriginProvider scopeOriginProvider)
+                         IApiLoggerContextAccessor loggerContextAccessor)
         {
             this.logger = logger;
-            this.correlationId = correlationId;
-            this.tenant = tenant;
-            this.scopeOriginProvider = scopeOriginProvider;
+            this.loggerContextAccessor = loggerContextAccessor;
         }
 
         public ILoggerBuilder ComPropriedade<T>(string key, [NotNull] T value)
@@ -45,9 +38,11 @@ namespace GuimoSoft.Logger
         public ExpandoObject CriarDicionarioDeLog()
         {
             var log = new ExpandoObject();
-            log.TryAdd(Constants.KEY_CORRELATION_ID, correlationId.ToString());
-            log.TryAdd(Constants.KEY_TENANT, tenant.ToString());
-            log.TryAdd(Constants.KEY_ESCOPO_ORIGEM, scopeOriginProvider.ScopeOrigin.ToString());
+            if (loggerContextAccessor?.Context is not null)
+            {
+                foreach (var (key, value) in loggerContextAccessor.Context)
+                    log.TryAdd(key, value);
+            }
             return log;
         }
 

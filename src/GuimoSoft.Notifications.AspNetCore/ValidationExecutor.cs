@@ -5,13 +5,13 @@ using GuimoSoft.Notifications.Interfaces;
 namespace GuimoSoft.Notifications.AspNetCore
 {
     public abstract class ValidationExecutorBase<TErrorCode>
-        where TErrorCode : Enum
+        where TErrorCode : struct, Enum
     {
         public abstract void Validate(object instance, INotificationContext<TErrorCode> notificationContext);
     }
 
     public class ValidationExecutor<TErrorCode, TModel> : ValidationExecutorBase<TErrorCode>
-        where TErrorCode : Enum
+        where TErrorCode : struct, Enum
         where TModel : NotifiableObject
     {
         private readonly AbstractValidator<TModel> _validator;

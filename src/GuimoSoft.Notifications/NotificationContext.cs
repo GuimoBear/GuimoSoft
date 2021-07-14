@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GuimoSoft.Core;
 using GuimoSoft.Notifications.Interfaces;
 
 namespace GuimoSoft.Notifications
 {
     public class NotificationContext<TErrorCode> : INotificationContext<TErrorCode>
-        where TErrorCode : Enum
+        where TErrorCode : struct, Enum
     {
         private readonly List<Notification> _notifications
             = new List<Notification>();

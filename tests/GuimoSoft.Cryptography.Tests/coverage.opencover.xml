@@ -1,0 +1,1309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CoverageSession>
+  <Summary numSequencePoints="426" visitedSequencePoints="413" numBranchPoints="120" visitedBranchPoints="108" sequenceCoverage="96.94" branchCoverage="90" maxCyclomaticComplexity="132" minCyclomaticComplexity="20" visitedClasses="21" numClasses="22" visitedMethods="55" numMethods="57" />
+  <Modules>
+    <Module hash="FE4A689A-3F48-4DD1-96BF-581D47CB33E7">
+      <ModulePath>GuimoSoft.Cryptography.RSA.dll</ModulePath>
+      <ModuleTime>2021-07-12T07:45:16</ModuleTime>
+      <ModuleName>GuimoSoft.Cryptography.RSA</ModuleName>
+      <Files>
+        <File uid="1" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Utils/BytesExtensions.cs" />
+        <File uid="2" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Utils/Crc16.cs" />
+        <File uid="3" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Utils/RsaParametersExtensions.cs" />
+        <File uid="4" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Utils/StreamExtensions.cs" />
+        <File uid="5" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Services/CrypterService.cs" />
+        <File uid="6" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Packets/PasswordEncryptedPackage.cs" />
+        <File uid="7" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Packets/RsaParametersPackage.cs" />
+        <File uid="8" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Exceptions/CorruptedPackageException.cs" />
+        <File uid="9" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Exceptions/InsufficientContentInStreamException.cs" />
+        <File uid="10" fullPath="/github/workspace/src/GuimoSoft.Cryptography.RSA/Exceptions/RsaIdentifierNotInformedException.cs" />
+      </Files>
+      <Classes>
+        <Class>
+          <Summary numSequencePoints="11" visitedSequencePoints="11" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>GuimoSoft.Cryptography.RSA.Utils.BytesExtensions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.UInt16 GuimoSoft.Cryptography.RSA.Utils.BytesExtensions::CRC16(System.Byte[],System.UInt16)</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="371" uspid="6" ordinal="0" sl="6" sc="1" el="6" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="371" uspid="7" ordinal="1" sl="7" sc="1" el="7" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="371" uspid="8" ordinal="2" sl="8" sc="1" el="8" ec="2" bec="0" bev="0" fileid="1" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="3" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="6" ec="1" el="8" bec="0" bev="0" fileid="1" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="8" visitedSequencePoints="8" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Byte[] GuimoSoft.Cryptography.RSA.Utils.BytesExtensions::XOR(System.Byte[],System.Byte[])</Name>
+              <FileRef uid="1" />
+              <SequencePoints>
+                <SequencePoint vc="12" uspid="11" ordinal="0" sl="11" sc="1" el="11" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="12" uspid="12" ordinal="1" sl="12" sc="1" el="12" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="528" uspid="13" ordinal="2" sl="13" sc="1" el="13" ec="2" bec="2" bev="2" fileid="1" />
+                <SequencePoint vc="252" uspid="14" ordinal="3" sl="14" sc="1" el="14" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="252" uspid="15" ordinal="4" sl="15" sc="1" el="15" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="252" uspid="16" ordinal="5" sl="16" sc="1" el="16" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="12" uspid="17" ordinal="6" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="1" />
+                <SequencePoint vc="12" uspid="18" ordinal="7" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="1" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="252" uspid="13" ordinal="1" path="1" offset="43" offsetend="14" sl="13" fileid="1" />
+                <BranchPoint vc="12" uspid="13" ordinal="0" path="0" offset="43" offsetend="45" sl="13" fileid="1" />
+              </BranchPoints>
+              <MethodPoint vc="8" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="11" ec="1" el="18" bec="0" bev="0" fileid="1" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="44" visitedSequencePoints="43" numBranchPoints="4" visitedBranchPoints="3" sequenceCoverage="97.72" branchCoverage="75" maxCyclomaticComplexity="4" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>GuimoSoft.Cryptography.RSA.Utils.Crc16</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="90" branchCoverage="75" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="10" visitedSequencePoints="9" numBranchPoints="4" visitedBranchPoints="3" sequenceCoverage="90" branchCoverage="75" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.UInt16 GuimoSoft.Cryptography.RSA.Utils.Crc16::Compute(System.Byte[],System.UInt16)</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="429" uspid="43" ordinal="0" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="429" uspid="44" ordinal="1" sl="44" sc="1" el="44" ec="2" bec="2" bev="1" fileid="2" />
+                <SequencePoint vc="0" uspid="45" ordinal="2" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="106436" uspid="46" ordinal="3" sl="46" sc="1" el="46" ec="2" bec="2" bev="2" fileid="2" />
+                <SequencePoint vc="52789" uspid="47" ordinal="4" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="52789" uspid="48" ordinal="5" sl="48" sc="1" el="48" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="52789" uspid="49" ordinal="6" sl="49" sc="1" el="49" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="52789" uspid="50" ordinal="7" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="429" uspid="52" ordinal="8" sl="52" sc="1" el="52" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="429" uspid="53" ordinal="9" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="44" ordinal="0" path="0" offset="8" offsetend="10" sl="44" fileid="2" />
+                <BranchPoint vc="429" uspid="44" ordinal="1" path="1" offset="8" offsetend="14" sl="44" fileid="2" />
+                <BranchPoint vc="52789" uspid="46" ordinal="3" path="1" offset="59" offsetend="18" sl="46" fileid="2" />
+                <BranchPoint vc="429" uspid="46" ordinal="2" path="0" offset="59" offsetend="61" sl="46" fileid="2" />
+              </BranchPoints>
+              <MethodPoint vc="9" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="43" ec="1" el="53" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="34" visitedSequencePoints="34" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Utils.Crc16::.cctor()</Name>
+              <FileRef uid="2" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="7" ordinal="0" sl="7" sc="1" el="7" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="8" ordinal="1" sl="8" sc="1" el="8" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="9" ordinal="2" sl="9" sc="1" el="9" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="10" ordinal="3" sl="10" sc="1" el="10" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="11" ordinal="4" sl="11" sc="1" el="11" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="12" ordinal="5" sl="12" sc="1" el="12" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="13" ordinal="6" sl="13" sc="1" el="13" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="14" ordinal="7" sl="14" sc="1" el="14" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="15" ordinal="8" sl="15" sc="1" el="15" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="16" ordinal="9" sl="16" sc="1" el="16" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="17" ordinal="10" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="18" ordinal="11" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="19" ordinal="12" sl="19" sc="1" el="19" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="20" ordinal="13" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="21" ordinal="14" sl="21" sc="1" el="21" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="22" ordinal="15" sl="22" sc="1" el="22" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="23" ordinal="16" sl="23" sc="1" el="23" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="24" ordinal="17" sl="24" sc="1" el="24" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="25" ordinal="18" sl="25" sc="1" el="25" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="26" ordinal="19" sl="26" sc="1" el="26" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="27" ordinal="20" sl="27" sc="1" el="27" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="28" ordinal="21" sl="28" sc="1" el="28" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="29" ordinal="22" sl="29" sc="1" el="29" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="30" ordinal="23" sl="30" sc="1" el="30" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="31" ordinal="24" sl="31" sc="1" el="31" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="32" ordinal="25" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="33" ordinal="26" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="34" ordinal="27" sl="34" sc="1" el="34" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="35" ordinal="28" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="36" ordinal="29" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="37" ordinal="30" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="38" ordinal="31" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="39" ordinal="32" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="2" />
+                <SequencePoint vc="1" uspid="40" ordinal="33" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="2" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="34" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="7" ec="1" el="40" bec="0" bev="0" fileid="2" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="14" visitedSequencePoints="14" numBranchPoints="28" visitedBranchPoints="28" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="22" minCyclomaticComplexity="6" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>GuimoSoft.Cryptography.RSA.Utils.RsaParametersExtensions</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="6" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="5" visitedSequencePoints="5" numBranchPoints="6" visitedBranchPoints="6" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="6" minCyclomaticComplexity="6" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Utils.RsaParametersExtensions::CanEncrypt(System.Security.Cryptography.RSAParameters)</Name>
+              <FileRef uid="3" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="8" ordinal="0" sl="8" sc="1" el="8" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="2" uspid="9" ordinal="1" sl="9" sc="1" el="9" ec="2" bec="6" bev="6" fileid="3" />
+                <SequencePoint vc="2" uspid="10" ordinal="2" sl="10" sc="1" el="10" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="2" uspid="11" ordinal="3" sl="11" sc="1" el="11" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="2" uspid="12" ordinal="4" sl="12" sc="1" el="12" ec="2" bec="0" bev="0" fileid="3" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="2" uspid="9" ordinal="0" path="0" offset="7" offsetend="9" sl="9" fileid="3" />
+                <BranchPoint vc="1" uspid="9" ordinal="2" path="0" offset="16" offsetend="18" sl="9" fileid="3" />
+                <BranchPoint vc="1" uspid="9" ordinal="4" path="0" offset="24" offsetend="26" sl="9" fileid="3" />
+                <BranchPoint vc="1" uspid="9" ordinal="1" path="1" offset="7" offsetend="38" sl="9" fileid="3" />
+                <BranchPoint vc="1" uspid="9" ordinal="3" path="1" offset="16" offsetend="38" sl="9" fileid="3" />
+                <BranchPoint vc="1" uspid="9" ordinal="5" path="1" offset="24" offsetend="38" sl="9" fileid="3" />
+              </BranchPoints>
+              <MethodPoint vc="5" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="8" ec="1" el="12" bec="0" bev="0" fileid="3" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="22" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="9" visitedSequencePoints="9" numBranchPoints="22" visitedBranchPoints="22" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="22" minCyclomaticComplexity="22" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Utils.RsaParametersExtensions::CanDecrypt(System.Security.Cryptography.RSAParameters)</Name>
+              <FileRef uid="3" />
+              <SequencePoints>
+                <SequencePoint vc="4" uspid="15" ordinal="0" sl="15" sc="1" el="15" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="16" ordinal="1" sl="16" sc="1" el="16" ec="2" bec="22" bev="22" fileid="3" />
+                <SequencePoint vc="4" uspid="17" ordinal="2" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="18" ordinal="3" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="19" ordinal="4" sl="19" sc="1" el="19" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="20" ordinal="5" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="21" ordinal="6" sl="21" sc="1" el="21" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="22" ordinal="7" sl="22" sc="1" el="22" ec="2" bec="0" bev="0" fileid="3" />
+                <SequencePoint vc="4" uspid="23" ordinal="8" sl="23" sc="1" el="23" ec="2" bec="0" bev="0" fileid="3" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="4" uspid="16" ordinal="0" path="0" offset="7" offsetend="9" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="2" path="0" offset="16" offsetend="18" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="4" path="0" offset="24" offsetend="26" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="6" path="0" offset="33" offsetend="35" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="8" path="0" offset="41" offsetend="43" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="10" path="0" offset="50" offsetend="52" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="12" path="0" offset="58" offsetend="60" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="14" path="0" offset="67" offsetend="69" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="16" path="0" offset="75" offsetend="77" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="18" path="0" offset="84" offsetend="86" sl="16" fileid="3" />
+                <BranchPoint vc="3" uspid="16" ordinal="20" path="0" offset="92" offsetend="94" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="1" path="1" offset="7" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="3" path="1" offset="16" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="5" path="1" offset="24" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="7" path="1" offset="33" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="9" path="1" offset="41" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="11" path="1" offset="50" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="13" path="1" offset="58" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="15" path="1" offset="67" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="17" path="1" offset="75" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="19" path="1" offset="84" offsetend="106" sl="16" fileid="3" />
+                <BranchPoint vc="1" uspid="16" ordinal="21" path="1" offset="92" offsetend="106" sl="16" fileid="3" />
+              </BranchPoints>
+              <MethodPoint vc="9" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="15" ec="1" el="23" bec="0" bev="0" fileid="3" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="10" visitedSequencePoints="10" numBranchPoints="4" visitedBranchPoints="4" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Utils.StreamExtensions/&lt;ReadAsStringAsync&gt;d__0</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="10" visitedSequencePoints="10" numBranchPoints="4" visitedBranchPoints="4" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Utils.StreamExtensions/&lt;ReadAsStringAsync&gt;d__0::MoveNext()</Name>
+              <FileRef uid="4" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="11" ordinal="0" sl="11" sc="1" el="11" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="1" uspid="12" ordinal="1" sl="12" sc="1" el="12" ec="2" bec="2" bev="2" fileid="4" />
+                <SequencePoint vc="1" uspid="13" ordinal="2" sl="13" sc="1" el="13" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="1" uspid="14" ordinal="3" sl="14" sc="1" el="14" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="1" uspid="15" ordinal="4" sl="15" sc="1" el="15" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="2" uspid="16" ordinal="5" sl="16" sc="1" el="16" ec="2" bec="2" bev="2" fileid="4" />
+                <SequencePoint vc="1" uspid="17" ordinal="6" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="1" uspid="18" ordinal="7" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="1" uspid="20" ordinal="8" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="4" />
+                <SequencePoint vc="1" uspid="21" ordinal="9" sl="21" sc="1" el="21" ec="2" bec="0" bev="0" fileid="4" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="12" ordinal="0" path="0" offset="22" offsetend="24" sl="12" fileid="4" />
+                <BranchPoint vc="1" uspid="12" ordinal="1" path="1" offset="22" offsetend="35" sl="12" fileid="4" />
+                <BranchPoint vc="1" uspid="16" ordinal="3" path="1" offset="398" offsetend="96" sl="16" fileid="4" />
+                <BranchPoint vc="1" uspid="16" ordinal="2" path="0" offset="398" offsetend="403" sl="16" fileid="4" />
+              </BranchPoints>
+              <MethodPoint vc="10" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="11" ec="1" el="21" bec="0" bev="0" fileid="4" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="24" visitedSequencePoints="24" numBranchPoints="6" visitedBranchPoints="6" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="6" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="4" numMethods="4" />
+          <FullName>GuimoSoft.Cryptography.RSA.Services.CrypterService</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="7" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Threading.Tasks.ValueTask`1&lt;System.ValueTuple`3&lt;System.Guid,System.Byte[],System.Byte[]&gt;&gt; GuimoSoft.Cryptography.RSA.Services.CrypterService::Create(System.String)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="30" ordinal="0" sl="30" sc="1" el="30" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="31" ordinal="1" sl="31" sc="1" el="31" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="32" ordinal="2" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="33" ordinal="3" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="34" ordinal="4" sl="34" sc="1" el="34" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="36" ordinal="5" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="37" ordinal="6" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="7" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="30" ec="1" el="37" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="6" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="11" visitedSequencePoints="11" numBranchPoints="6" visitedBranchPoints="6" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="6" minCyclomaticComplexity="6" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Services.CrypterService::TentarObterChaveRsaPorId(System.Guid,System.Func`2&lt;System.Security.Cryptography.RSAParameters,System.Boolean&gt;,System.Security.Cryptography.RSACryptoServiceProvider&amp;)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="8" uspid="67" ordinal="0" sl="67" sc="1" el="67" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="8" uspid="68" ordinal="1" sl="68" sc="1" el="68" ec="2" bec="6" bev="6" fileid="5" />
+                <SequencePoint vc="8" uspid="69" ordinal="2" sl="69" sc="1" el="69" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="8" uspid="70" ordinal="3" sl="70" sc="1" el="70" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="71" ordinal="4" sl="71" sc="1" el="71" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="72" ordinal="5" sl="72" sc="1" el="72" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="73" ordinal="6" sl="73" sc="1" el="73" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="74" ordinal="7" sl="74" sc="1" el="74" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="75" ordinal="8" sl="75" sc="1" el="75" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="77" ordinal="9" sl="77" sc="1" el="77" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="8" uspid="78" ordinal="10" sl="78" sc="1" el="78" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="8" uspid="68" ordinal="0" path="0" offset="13" offsetend="15" sl="68" fileid="5" />
+                <BranchPoint vc="6" uspid="68" ordinal="2" path="0" offset="29" offsetend="31" sl="68" fileid="5" />
+                <BranchPoint vc="2" uspid="68" ordinal="1" path="1" offset="13" offsetend="40" sl="68" fileid="5" />
+                <BranchPoint vc="2" uspid="68" ordinal="3" path="1" offset="29" offsetend="40" sl="68" fileid="5" />
+                <BranchPoint vc="4" uspid="68" ordinal="4" path="0" offset="43" offsetend="45" sl="68" fileid="5" />
+                <BranchPoint vc="4" uspid="68" ordinal="5" path="1" offset="43" offsetend="85" sl="68" fileid="5" />
+              </BranchPoints>
+              <MethodPoint vc="11" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="67" ec="1" el="78" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Services.CrypterService::.ctor(GuimoSoft.Cryptography.RSA.Repositories.Interfaces.IRsaParametersRepository)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="8" uspid="24" ordinal="0" sl="24" sc="1" el="24" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="8" uspid="25" ordinal="1" sl="25" sc="1" el="25" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="8" uspid="26" ordinal="2" sl="26" sc="1" el="26" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="8" uspid="27" ordinal="3" sl="27" sc="1" el="27" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="4" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="24" ec="1" el="27" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="2" visitedSequencePoints="2" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Services.CrypterService::.cctor()</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="19" ordinal="0" sl="19" sc="1" el="19" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="20" ordinal="1" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="2" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="19" ec="1" el="20" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="2" visitedSequencePoints="2" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;&gt;c</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;&gt;c::&lt;Encrypt&gt;b__6_0(System.Security.Cryptography.RSAParameters)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="5" uspid="41" ordinal="0" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="41" ec="1" el="41" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;&gt;c::&lt;Decrypt&gt;b__7_0(System.Security.Cryptography.RSAParameters)</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="9" uspid="61" ordinal="0" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="61" ec="1" el="61" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="16" visitedSequencePoints="16" numBranchPoints="4" visitedBranchPoints="4" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;Encrypt&gt;d__6</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="16" visitedSequencePoints="16" numBranchPoints="4" visitedBranchPoints="4" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;Encrypt&gt;d__6::MoveNext()</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="40" ordinal="0" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="42" ordinal="1" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="43" ordinal="2" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="44" ordinal="3" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="45" ordinal="4" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="46" ordinal="5" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="47" ordinal="6" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="5" uspid="48" ordinal="7" sl="48" sc="1" el="48" ec="2" bec="2" bev="2" fileid="5" />
+                <SequencePoint vc="4" uspid="49" ordinal="8" sl="49" sc="1" el="49" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="50" ordinal="9" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="51" ordinal="10" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="52" ordinal="11" sl="52" sc="1" el="52" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="53" ordinal="12" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="54" ordinal="13" sl="54" sc="1" el="54" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="56" ordinal="14" sl="56" sc="1" el="56" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="1" uspid="57" ordinal="15" sl="57" sc="1" el="57" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="41" ordinal="0" path="0" offset="72" offsetend="77" sl="41" fileid="5" />
+                <BranchPoint vc="4" uspid="48" ordinal="3" path="1" offset="539" offsetend="184" sl="48" fileid="5" />
+                <BranchPoint vc="1" uspid="48" ordinal="2" path="0" offset="539" offsetend="544" sl="48" fileid="5" />
+                <BranchPoint vc="2" uspid="41" ordinal="1" path="1" offset="72" offsetend="622" sl="41" fileid="5" />
+              </BranchPoints>
+              <MethodPoint vc="16" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="40" ec="1" el="57" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;Decrypt&gt;d__7</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;Decrypt&gt;d__7::MoveNext()</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="5" uspid="60" ordinal="0" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="3" uspid="62" ordinal="1" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="63" ordinal="2" sl="63" sc="1" el="63" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="64" ordinal="3" sl="64" sc="1" el="64" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="3" uspid="61" ordinal="0" path="0" offset="74" offsetend="76" sl="61" fileid="5" />
+                <BranchPoint vc="2" uspid="61" ordinal="1" path="1" offset="74" offsetend="195" sl="61" fileid="5" />
+              </BranchPoints>
+              <MethodPoint vc="4" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="60" ec="1" el="64" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="12" visitedSequencePoints="12" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;DecryptStream&gt;d__9</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="12" visitedSequencePoints="12" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Services.CrypterService/&lt;DecryptStream&gt;d__9::MoveNext()</Name>
+              <FileRef uid="5" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="81" ordinal="0" sl="81" sc="1" el="81" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="3" uspid="82" ordinal="1" sl="82" sc="1" el="82" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="3" uspid="83" ordinal="2" sl="83" sc="1" el="83" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="3" uspid="84" ordinal="3" sl="84" sc="1" el="84" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="7" uspid="85" ordinal="4" sl="85" sc="1" el="85" ec="2" bec="2" bev="2" fileid="5" />
+                <SequencePoint vc="5" uspid="86" ordinal="5" sl="86" sc="1" el="86" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="5" uspid="87" ordinal="6" sl="87" sc="1" el="87" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="5" uspid="88" ordinal="7" sl="88" sc="1" el="88" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="4" uspid="89" ordinal="8" sl="89" sc="1" el="89" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="90" ordinal="9" sl="90" sc="1" el="90" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="91" ordinal="10" sl="91" sc="1" el="91" ec="2" bec="0" bev="0" fileid="5" />
+                <SequencePoint vc="2" uspid="92" ordinal="11" sl="92" sc="1" el="92" ec="2" bec="0" bev="0" fileid="5" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="5" uspid="85" ordinal="1" path="1" offset="410" offsetend="77" sl="85" fileid="5" />
+                <BranchPoint vc="2" uspid="85" ordinal="0" path="0" offset="410" offsetend="415" sl="85" fileid="5" />
+              </BranchPoints>
+              <MethodPoint vc="12" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="81" ec="1" el="92" bec="0" bev="0" fileid="5" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="51" visitedSequencePoints="49" numBranchPoints="10" visitedBranchPoints="7" sequenceCoverage="96.07" branchCoverage="70" maxCyclomaticComplexity="4" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="6" numMethods="6" />
+          <FullName>GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="12" visitedSequencePoints="12" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Byte[] GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage::Encrypt(System.String,System.Text.Encoding)</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="4" uspid="28" ordinal="0" sl="28" sc="1" el="28" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="29" ordinal="1" sl="29" sc="1" el="29" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="30" ordinal="2" sl="30" sc="1" el="30" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="31" ordinal="3" sl="31" sc="1" el="31" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="33" ordinal="4" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="34" ordinal="5" sl="34" sc="1" el="34" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="35" ordinal="6" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="36" ordinal="7" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="37" ordinal="8" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="38" ordinal="9" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="40" ordinal="10" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="42" ordinal="11" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="12" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="28" ec="1" el="42" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="10" visitedSequencePoints="10" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Byte[] GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage::Decrypt(System.String,System.Text.Encoding)</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="62" ordinal="0" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="63" ordinal="1" sl="63" sc="1" el="63" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="64" ordinal="2" sl="64" sc="1" el="64" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="65" ordinal="3" sl="65" sc="1" el="65" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="67" ordinal="4" sl="67" sc="1" el="67" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="68" ordinal="5" sl="68" sc="1" el="68" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="69" ordinal="6" sl="69" sc="1" el="69" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="70" ordinal="7" sl="70" sc="1" el="70" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="72" ordinal="8" sl="72" sc="1" el="72" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="1" uspid="74" ordinal="9" sl="74" sc="1" el="74" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="10" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="62" ec="1" el="74" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="14" visitedSequencePoints="14" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Byte[] GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage::ReadFromStream(System.IO.Stream,System.Byte[])</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="91" ordinal="0" sl="91" sc="1" el="91" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="92" ordinal="1" sl="92" sc="1" el="92" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="93" ordinal="2" sl="93" sc="1" el="93" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="95" ordinal="3" sl="95" sc="1" el="95" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="96" ordinal="4" sl="96" sc="1" el="96" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="98" ordinal="5" sl="98" sc="1" el="98" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="100" ordinal="6" sl="100" sc="1" el="100" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="102" ordinal="7" sl="102" sc="1" el="102" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="103" ordinal="8" sl="103" sc="1" el="103" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="104" ordinal="9" sl="104" sc="1" el="104" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="106" ordinal="10" sl="106" sc="1" el="106" ec="2" bec="2" bev="2" fileid="6" />
+                <SequencePoint vc="1" uspid="107" ordinal="11" sl="107" sc="1" el="107" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="1" uspid="109" ordinal="12" sl="109" sc="1" el="109" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="1" uspid="110" ordinal="13" sl="110" sc="1" el="110" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="106" ordinal="0" path="0" offset="97" offsetend="99" sl="106" fileid="6" />
+                <BranchPoint vc="1" uspid="106" ordinal="1" path="1" offset="97" offsetend="110" sl="106" fileid="6" />
+              </BranchPoints>
+              <MethodPoint vc="14" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="91" ec="1" el="110" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="75" branchCoverage="50" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="3" numBranchPoints="4" visitedBranchPoints="2" sequenceCoverage="75" branchCoverage="50" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage::ValidatePassword(System.String)</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="12" uspid="134" ordinal="0" sl="134" sc="1" el="134" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="135" ordinal="1" sl="135" sc="1" el="135" ec="2" bec="4" bev="2" fileid="6" />
+                <SequencePoint vc="0" uspid="136" ordinal="2" sl="136" sc="1" el="136" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="137" ordinal="3" sl="137" sc="1" el="137" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="12" uspid="135" ordinal="0" path="0" offset="7" offsetend="9" sl="135" fileid="6" />
+                <BranchPoint vc="0" uspid="135" ordinal="1" path="1" offset="7" offsetend="25" sl="135" fileid="6" />
+                <BranchPoint vc="0" uspid="135" ordinal="2" path="0" offset="28" offsetend="30" sl="135" fileid="6" />
+                <BranchPoint vc="12" uspid="135" ordinal="3" path="1" offset="28" offsetend="62" sl="135" fileid="6" />
+              </BranchPoints>
+              <MethodPoint vc="3" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="134" ec="1" el="137" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="80" branchCoverage="50" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="5" visitedSequencePoints="4" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="80" branchCoverage="50" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Text.Encoding GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage::GetEncodingOrDefault(System.Text.Encoding)</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="12" uspid="140" ordinal="0" sl="140" sc="1" el="140" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="141" ordinal="1" sl="141" sc="1" el="141" ec="2" bec="2" bev="1" fileid="6" />
+                <SequencePoint vc="0" uspid="142" ordinal="2" sl="142" sc="1" el="142" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="143" ordinal="3" sl="143" sc="1" el="143" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="144" ordinal="4" sl="144" sc="1" el="144" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="141" ordinal="0" path="0" offset="7" offsetend="9" sl="141" fileid="6" />
+                <BranchPoint vc="12" uspid="141" ordinal="1" path="1" offset="7" offsetend="13" sl="141" fileid="6" />
+              </BranchPoints>
+              <MethodPoint vc="4" uspid="0" p8:type="SequencePoint" ordinal="4" offset="4" sc="0" sl="140" ec="1" el="144" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="6" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage::.ctor(System.Byte[])</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="13" uspid="20" ordinal="0" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="13" uspid="21" ordinal="1" sl="21" sc="1" el="21" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="13" uspid="22" ordinal="2" sl="22" sc="1" el="22" ec="2" bec="2" bev="2" fileid="6" />
+                <SequencePoint vc="1" uspid="23" ordinal="3" sl="23" sc="1" el="23" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="24" ordinal="4" sl="24" sc="1" el="24" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="12" uspid="25" ordinal="5" sl="25" sc="1" el="25" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="22" ordinal="0" path="0" offset="14" offsetend="16" sl="22" fileid="6" />
+                <BranchPoint vc="12" uspid="22" ordinal="1" path="1" offset="14" offsetend="32" sl="22" fileid="6" />
+              </BranchPoints>
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="5" offset="5" sc="0" sl="20" ec="1" el="25" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="12" visitedSequencePoints="12" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage/&lt;EncryptAsync&gt;d__8</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="12" visitedSequencePoints="12" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage/&lt;EncryptAsync&gt;d__8::MoveNext()</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="4" uspid="44" ordinal="0" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="45" ordinal="1" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="46" ordinal="2" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="47" ordinal="3" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="49" ordinal="4" sl="49" sc="1" el="49" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="50" ordinal="5" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="51" ordinal="6" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="53" ordinal="7" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="54" ordinal="8" sl="54" sc="1" el="54" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="55" ordinal="9" sl="55" sc="1" el="55" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="57" ordinal="10" sl="57" sc="1" el="57" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="4" uspid="59" ordinal="11" sl="59" sc="1" el="59" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="12" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="44" ec="1" el="59" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="10" visitedSequencePoints="10" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage/&lt;DecryptAsync&gt;d__10</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="10" visitedSequencePoints="10" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage/&lt;DecryptAsync&gt;d__10::MoveNext()</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="76" ordinal="0" sl="76" sc="1" el="76" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="77" ordinal="1" sl="77" sc="1" el="77" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="78" ordinal="2" sl="78" sc="1" el="78" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="79" ordinal="3" sl="79" sc="1" el="79" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="81" ordinal="4" sl="81" sc="1" el="81" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="82" ordinal="5" sl="82" sc="1" el="82" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="83" ordinal="6" sl="83" sc="1" el="83" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="84" ordinal="7" sl="84" sc="1" el="84" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="86" ordinal="8" sl="86" sc="1" el="86" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="1" uspid="88" ordinal="9" sl="88" sc="1" el="88" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="10" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="76" ec="1" el="88" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="14" visitedSequencePoints="14" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage/&lt;ReadFromStreamAsync&gt;d__12</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="14" visitedSequencePoints="14" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.PasswordEncryptedPackage/&lt;ReadFromStreamAsync&gt;d__12::MoveNext()</Name>
+              <FileRef uid="6" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="112" ordinal="0" sl="112" sc="1" el="112" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="113" ordinal="1" sl="113" sc="1" el="113" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="114" ordinal="2" sl="114" sc="1" el="114" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="116" ordinal="3" sl="116" sc="1" el="116" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="117" ordinal="4" sl="117" sc="1" el="117" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="119" ordinal="5" sl="119" sc="1" el="119" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="121" ordinal="6" sl="121" sc="1" el="121" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="123" ordinal="7" sl="123" sc="1" el="123" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="124" ordinal="8" sl="124" sc="1" el="124" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="125" ordinal="9" sl="125" sc="1" el="125" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="2" uspid="127" ordinal="10" sl="127" sc="1" el="127" ec="2" bec="2" bev="2" fileid="6" />
+                <SequencePoint vc="1" uspid="128" ordinal="11" sl="128" sc="1" el="128" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="1" uspid="130" ordinal="12" sl="130" sc="1" el="130" ec="2" bec="0" bev="0" fileid="6" />
+                <SequencePoint vc="1" uspid="131" ordinal="13" sl="131" sc="1" el="131" ec="2" bec="0" bev="0" fileid="6" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="127" ordinal="0" path="0" offset="564" offsetend="566" sl="127" fileid="6" />
+                <BranchPoint vc="1" uspid="127" ordinal="1" path="1" offset="564" offsetend="577" sl="127" fileid="6" />
+              </BranchPoints>
+              <MethodPoint vc="14" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="112" ec="1" el="131" bec="0" bev="0" fileid="6" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="132" visitedSequencePoints="128" numBranchPoints="42" visitedBranchPoints="38" sequenceCoverage="96.96" branchCoverage="90.47" maxCyclomaticComplexity="22" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="16" numMethods="16" />
+          <FullName>GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Guid GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::get_Identifier()</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="31" uspid="17" ordinal="0" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="17" ec="1" el="17" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Security.Cryptography.RSAParameters GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::get_Content()</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="291" uspid="18" ordinal="0" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="18" ec="1" el="18" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="True" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Byte[] GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::get_Bytes()</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="72" uspid="19" ordinal="0" sl="19" sc="1" el="19" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="19" ec="1" el="19" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="24" visitedSequencePoints="24" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Byte[] GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::GetBytes()</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="43" ordinal="0" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="44" ordinal="1" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="45" ordinal="2" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="46" ordinal="3" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="47" ordinal="4" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="49" ordinal="5" sl="49" sc="1" el="49" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="50" ordinal="6" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="51" ordinal="7" sl="51" sc="1" el="51" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="52" ordinal="8" sl="52" sc="1" el="52" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="53" ordinal="9" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="55" ordinal="10" sl="55" sc="1" el="55" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="56" ordinal="11" sl="56" sc="1" el="56" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="57" ordinal="12" sl="57" sc="1" el="57" ec="2" bec="2" bev="2" fileid="7" />
+                <SequencePoint vc="23" uspid="58" ordinal="13" sl="58" sc="1" el="58" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="59" ordinal="14" sl="59" sc="1" el="59" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="60" ordinal="15" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="61" ordinal="16" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="62" ordinal="17" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="63" ordinal="18" sl="63" sc="1" el="63" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="64" ordinal="19" sl="64" sc="1" el="64" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="23" uspid="65" ordinal="20" sl="65" sc="1" el="65" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="66" ordinal="21" sl="66" sc="1" el="66" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="67" ordinal="22" sl="67" sc="1" el="67" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="69" ordinal="23" sl="69" sc="1" el="69" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="23" uspid="57" ordinal="0" path="0" offset="155" offsetend="160" sl="57" fileid="7" />
+                <BranchPoint vc="29" uspid="57" ordinal="1" path="1" offset="155" offsetend="288" sl="57" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="24" uspid="0" p8:type="SequencePoint" ordinal="3" offset="3" sc="0" sl="43" ec="1" el="69" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="7" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Security.Cryptography.RSAParameters GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::FromBytes(System.Guid&amp;)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="72" ordinal="0" sl="72" sc="1" el="72" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="73" ordinal="1" sl="73" sc="1" el="73" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="74" ordinal="2" sl="74" sc="1" el="74" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="75" ordinal="3" sl="75" sc="1" el="75" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="76" ordinal="4" sl="76" sc="1" el="76" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="77" ordinal="5" sl="77" sc="1" el="77" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="19" uspid="79" ordinal="6" sl="79" sc="1" el="79" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="7" uspid="0" p8:type="SequencePoint" ordinal="4" offset="4" sc="0" sl="72" ec="1" el="79" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="87.5" branchCoverage="50" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="8" visitedSequencePoints="7" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="87.5" branchCoverage="50" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Guid GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::ReadIdentifierFromStream(System.IO.Stream,System.UInt16&amp;)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="82" ordinal="0" sl="82" sc="1" el="82" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="83" ordinal="1" sl="83" sc="1" el="83" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="84" ordinal="2" sl="84" sc="1" el="84" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="85" ordinal="3" sl="85" sc="1" el="85" ec="2" bec="2" bev="1" fileid="7" />
+                <SequencePoint vc="0" uspid="86" ordinal="4" sl="86" sc="1" el="86" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="87" ordinal="5" sl="87" sc="1" el="87" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="88" ordinal="6" sl="88" sc="1" el="88" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="89" ordinal="7" sl="89" sc="1" el="89" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="85" ordinal="0" path="0" offset="30" offsetend="32" sl="85" fileid="7" />
+                <BranchPoint vc="29" uspid="85" ordinal="1" path="1" offset="30" offsetend="43" sl="85" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="7" uspid="0" p8:type="SequencePoint" ordinal="5" offset="5" sc="0" sl="82" ec="1" el="89" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="4" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="20" visitedSequencePoints="20" numBranchPoints="4" visitedBranchPoints="4" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="4" minCyclomaticComplexity="4" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Security.Cryptography.RSAParameters GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::ReadParametersFromStream(System.IO.Stream,System.UInt16)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="92" ordinal="0" sl="92" sc="1" el="92" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="93" ordinal="1" sl="93" sc="1" el="93" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="94" ordinal="2" sl="94" sc="1" el="94" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="95" ordinal="3" sl="95" sc="1" el="95" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="96" ordinal="4" sl="96" sc="1" el="96" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="22" uspid="97" ordinal="5" sl="97" sc="1" el="97" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="22" uspid="98" ordinal="6" sl="98" sc="1" el="98" ec="2" bec="2" bev="2" fileid="7" />
+                <SequencePoint vc="20" uspid="99" ordinal="7" sl="99" sc="1" el="99" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="20" uspid="100" ordinal="8" sl="100" sc="1" el="100" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="20" uspid="101" ordinal="9" sl="101" sc="1" el="101" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="20" uspid="102" ordinal="10" sl="102" sc="1" el="102" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="20" uspid="103" ordinal="11" sl="103" sc="1" el="103" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="20" uspid="104" ordinal="12" sl="104" sc="1" el="104" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="20" uspid="105" ordinal="13" sl="105" sc="1" el="105" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="19" uspid="106" ordinal="14" sl="106" sc="1" el="106" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="107" ordinal="15" sl="107" sc="1" el="107" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="108" ordinal="16" sl="108" sc="1" el="108" ec="2" bec="2" bev="2" fileid="7" />
+                <SequencePoint vc="2" uspid="109" ordinal="17" sl="109" sc="1" el="109" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="19" uspid="110" ordinal="18" sl="110" sc="1" el="110" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="19" uspid="111" ordinal="19" sl="111" sc="1" el="111" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="20" uspid="98" ordinal="0" path="0" offset="58" offsetend="60" sl="98" fileid="7" />
+                <BranchPoint vc="21" uspid="98" ordinal="1" path="1" offset="58" offsetend="152" sl="98" fileid="7" />
+                <BranchPoint vc="2" uspid="108" ordinal="2" path="0" offset="170" offsetend="172" sl="108" fileid="7" />
+                <BranchPoint vc="19" uspid="108" ordinal="3" path="1" offset="170" offsetend="183" sl="108" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="20" uspid="0" p8:type="SequencePoint" ordinal="6" offset="6" sc="0" sl="92" ec="1" el="111" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="17" visitedSequencePoints="17" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Security.Cryptography.RSAParameters GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::CreateRSAParametersInstance(System.UInt16,System.Boolean)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="114" ordinal="0" sl="114" sc="1" el="114" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="115" ordinal="1" sl="115" sc="1" el="115" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="116" ordinal="2" sl="116" sc="1" el="116" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="117" ordinal="3" sl="117" sc="1" el="117" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="118" ordinal="4" sl="118" sc="1" el="118" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="119" ordinal="5" sl="119" sc="1" el="119" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="121" ordinal="6" sl="121" sc="1" el="121" ec="2" bec="2" bev="2" fileid="7" />
+                <SequencePoint vc="26" uspid="122" ordinal="7" sl="122" sc="1" el="122" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="123" ordinal="8" sl="123" sc="1" el="123" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="124" ordinal="9" sl="124" sc="1" el="124" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="125" ordinal="10" sl="125" sc="1" el="125" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="126" ordinal="11" sl="126" sc="1" el="126" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="127" ordinal="12" sl="127" sc="1" el="127" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="128" ordinal="13" sl="128" sc="1" el="128" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="26" uspid="129" ordinal="14" sl="129" sc="1" el="129" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="131" ordinal="15" sl="131" sc="1" el="131" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="132" ordinal="16" sl="132" sc="1" el="132" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="26" uspid="121" ordinal="0" path="0" offset="42" offsetend="44" sl="121" fileid="7" />
+                <BranchPoint vc="29" uspid="121" ordinal="1" path="1" offset="42" offsetend="126" sl="121" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="17" uspid="0" p8:type="SequencePoint" ordinal="7" offset="7" sc="0" sl="114" ec="1" el="132" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.UInt16 GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::ComputeCRCAndWriteIntoStream(System.Byte[],System.IO.Stream,System.UInt16)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="196" uspid="135" ordinal="0" sl="135" sc="1" el="135" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="196" uspid="136" ordinal="1" sl="136" sc="1" el="136" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="196" uspid="137" ordinal="2" sl="137" sc="1" el="137" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="196" uspid="138" ordinal="3" sl="138" sc="1" el="138" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="4" uspid="0" p8:type="SequencePoint" ordinal="8" offset="8" sc="0" sl="135" ec="1" el="138" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="6" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.UInt16 GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::ComputeCRCAndReadStream(System.IO.Stream,System.Byte[],System.UInt16)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="171" uspid="141" ordinal="0" sl="141" sc="1" el="141" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="171" uspid="142" ordinal="1" sl="142" sc="1" el="142" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="171" uspid="143" ordinal="2" sl="143" sc="1" el="143" ec="2" bec="2" bev="2" fileid="7" />
+                <SequencePoint vc="8" uspid="144" ordinal="3" sl="144" sc="1" el="144" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="163" uspid="145" ordinal="4" sl="145" sc="1" el="145" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="163" uspid="146" ordinal="5" sl="146" sc="1" el="146" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="8" uspid="143" ordinal="0" path="0" offset="24" offsetend="26" sl="143" fileid="7" />
+                <BranchPoint vc="163" uspid="143" ordinal="1" path="1" offset="24" offsetend="37" sl="143" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="9" offset="9" sc="0" sl="141" ec="1" el="146" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="85.71" branchCoverage="50" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="6" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="85.71" branchCoverage="50" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.UInt16 GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::GetPartLength(System.IO.Stream)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="149" ordinal="0" sl="149" sc="1" el="149" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="150" ordinal="1" sl="150" sc="1" el="150" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="151" ordinal="2" sl="151" sc="1" el="151" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="152" ordinal="3" sl="152" sc="1" el="152" ec="2" bec="2" bev="1" fileid="7" />
+                <SequencePoint vc="0" uspid="153" ordinal="4" sl="153" sc="1" el="153" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="154" ordinal="5" sl="154" sc="1" el="154" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="155" ordinal="6" sl="155" sc="1" el="155" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="152" ordinal="0" path="0" offset="27" offsetend="29" sl="152" fileid="7" />
+                <BranchPoint vc="29" uspid="152" ordinal="1" path="1" offset="27" offsetend="40" sl="152" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="10" offset="10" sc="0" sl="149" ec="1" el="155" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="83.33" branchCoverage="50" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="5" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="83.33" branchCoverage="50" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::GetIfIncludePrivateParameters(System.IO.Stream)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="158" ordinal="0" sl="158" sc="1" el="158" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="159" ordinal="1" sl="159" sc="1" el="159" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="160" ordinal="2" sl="160" sc="1" el="160" ec="2" bec="2" bev="1" fileid="7" />
+                <SequencePoint vc="0" uspid="161" ordinal="3" sl="161" sc="1" el="161" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="162" ordinal="4" sl="162" sc="1" el="162" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="163" ordinal="5" sl="163" sc="1" el="163" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="160" ordinal="0" path="0" offset="14" offsetend="16" sl="160" fileid="7" />
+                <BranchPoint vc="29" uspid="160" ordinal="1" path="1" offset="14" offsetend="27" sl="160" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="5" uspid="0" p8:type="SequencePoint" ordinal="11" offset="11" sc="0" sl="158" ec="1" el="163" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="85.71" branchCoverage="50" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="6" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="85.71" branchCoverage="50" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.UInt16 GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::GetCRC(System.IO.Stream)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="21" uspid="166" ordinal="0" sl="166" sc="1" el="166" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="167" ordinal="1" sl="167" sc="1" el="167" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="168" ordinal="2" sl="168" sc="1" el="168" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="169" ordinal="3" sl="169" sc="1" el="169" ec="2" bec="2" bev="1" fileid="7" />
+                <SequencePoint vc="0" uspid="170" ordinal="4" sl="170" sc="1" el="170" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="171" ordinal="5" sl="171" sc="1" el="171" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="21" uspid="172" ordinal="6" sl="172" sc="1" el="172" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="169" ordinal="0" path="0" offset="27" offsetend="29" sl="169" fileid="7" />
+                <BranchPoint vc="21" uspid="169" ordinal="1" path="1" offset="27" offsetend="40" sl="169" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="12" offset="12" sc="0" sl="166" ec="1" el="172" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="22" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="9" visitedSequencePoints="9" numBranchPoints="22" visitedBranchPoints="22" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="22" minCyclomaticComplexity="22" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::IncludePrivateParameters(System.Security.Cryptography.RSAParameters,System.Int32)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="175" ordinal="0" sl="175" sc="1" el="175" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="176" ordinal="1" sl="176" sc="1" el="176" ec="2" bec="22" bev="22" fileid="7" />
+                <SequencePoint vc="29" uspid="177" ordinal="2" sl="177" sc="1" el="177" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="178" ordinal="3" sl="178" sc="1" el="178" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="179" ordinal="4" sl="179" sc="1" el="179" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="180" ordinal="5" sl="180" sc="1" el="180" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="181" ordinal="6" sl="181" sc="1" el="181" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="182" ordinal="7" sl="182" sc="1" el="182" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="183" ordinal="8" sl="183" sc="1" el="183" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="23" uspid="176" ordinal="0" path="0" offset="7" offsetend="9" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="2" path="0" offset="20" offsetend="22" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="4" path="0" offset="28" offsetend="30" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="6" path="0" offset="39" offsetend="41" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="8" path="0" offset="47" offsetend="49" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="10" path="0" offset="58" offsetend="60" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="12" path="0" offset="66" offsetend="68" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="14" path="0" offset="77" offsetend="79" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="16" path="0" offset="85" offsetend="87" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="18" path="0" offset="96" offsetend="98" sl="176" fileid="7" />
+                <BranchPoint vc="23" uspid="176" ordinal="20" path="0" offset="104" offsetend="106" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="1" path="1" offset="7" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="3" path="1" offset="20" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="5" path="1" offset="28" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="7" path="1" offset="39" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="9" path="1" offset="47" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="11" path="1" offset="58" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="13" path="1" offset="66" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="15" path="1" offset="77" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="17" path="1" offset="85" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="19" path="1" offset="96" offsetend="119" sl="176" fileid="7" />
+                <BranchPoint vc="6" uspid="176" ordinal="21" path="1" offset="104" offsetend="119" sl="176" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="9" uspid="0" p8:type="SequencePoint" ordinal="13" offset="13" sc="0" sl="175" ec="1" el="183" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="6" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::.ctor(System.Guid,System.Security.Cryptography.RSAParameters)</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="29" uspid="21" ordinal="0" sl="21" sc="1" el="21" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="22" ordinal="1" sl="22" sc="1" el="22" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="23" ordinal="2" sl="23" sc="1" el="23" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="24" ordinal="3" sl="24" sc="1" el="24" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="25" ordinal="4" sl="25" sc="1" el="25" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="26" ordinal="5" sl="26" sc="1" el="26" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="14" offset="14" sc="0" sl="21" ec="1" el="26" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="8" visitedSequencePoints="8" numBranchPoints="2" visitedBranchPoints="2" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage::.ctor(System.Byte[])</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="30" uspid="28" ordinal="0" sl="28" sc="1" el="28" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="30" uspid="29" ordinal="1" sl="29" sc="1" el="29" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="30" uspid="30" ordinal="2" sl="30" sc="1" el="30" ec="2" bec="2" bev="2" fileid="7" />
+                <SequencePoint vc="1" uspid="31" ordinal="3" sl="31" sc="1" el="31" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="32" ordinal="4" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="29" uspid="33" ordinal="5" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="19" uspid="34" ordinal="6" sl="34" sc="1" el="34" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="19" uspid="35" ordinal="7" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="1" uspid="30" ordinal="0" path="0" offset="14" offsetend="16" sl="30" fileid="7" />
+                <BranchPoint vc="29" uspid="30" ordinal="1" path="1" offset="14" offsetend="32" sl="30" fileid="7" />
+              </BranchPoints>
+              <MethodPoint vc="8" uspid="0" p8:type="SequencePoint" ordinal="15" offset="15" sc="0" sl="28" ec="1" el="35" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="1" visitedMethods="0" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage/&lt;WriteIntoStreamAsync&gt;d__15</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Packets.RsaParametersPackage/&lt;WriteIntoStreamAsync&gt;d__15::MoveNext()</Name>
+              <FileRef uid="7" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="38" ordinal="0" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="39" ordinal="1" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="7" />
+                <SequencePoint vc="0" uspid="40" ordinal="2" sl="40" sc="1" el="40" ec="2" bec="0" bev="0" fileid="7" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="38" ec="1" el="40" bec="0" bev="0" fileid="7" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="6" visitedSequencePoints="6" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="3" numMethods="3" />
+          <FullName>GuimoSoft.Cryptography.RSA.Exceptions.CorruptedPackageException</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.CorruptedPackageException::.ctor(System.String)</Name>
+              <FileRef uid="8" />
+              <SequencePoints>
+                <SequencePoint vc="5" uspid="12" ordinal="0" sl="12" sc="1" el="12" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="5" uspid="13" ordinal="1" sl="13" sc="1" el="13" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="5" uspid="14" ordinal="2" sl="14" sc="1" el="14" ec="2" bec="0" bev="0" fileid="8" />
+                <SequencePoint vc="5" uspid="15" ordinal="3" sl="15" sc="1" el="15" ec="2" bec="0" bev="0" fileid="8" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="4" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="12" ec="1" el="15" bec="0" bev="0" fileid="8" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.CorruptedPackageException::.ctor()</Name>
+              <FileRef uid="8" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="17" ordinal="0" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="8" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="17" ec="1" el="17" bec="0" bev="0" fileid="8" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.CorruptedPackageException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)</Name>
+              <FileRef uid="8" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="18" ordinal="0" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="8" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="18" ec="1" el="18" bec="0" bev="0" fileid="8" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="3" numMethods="3" />
+          <FullName>GuimoSoft.Cryptography.RSA.Exceptions.InsufficientContentInStreamException</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.InsufficientContentInStreamException::.ctor(System.String)</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="27" uspid="10" ordinal="0" sl="10" sc="1" el="10" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="10" ec="1" el="10" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.InsufficientContentInStreamException::.ctor()</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="12" ordinal="0" sl="12" sc="1" el="12" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="12" ec="1" el="12" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.InsufficientContentInStreamException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)</Name>
+              <FileRef uid="9" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="13" ordinal="0" sl="13" sc="1" el="13" ec="2" bec="0" bev="0" fileid="9" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="13" ec="1" el="13" bec="0" bev="0" fileid="9" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="2" visitedSequencePoints="2" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>GuimoSoft.Cryptography.RSA.Exceptions.RsaIdentifierNotInformedException</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.RsaIdentifierNotInformedException::.ctor()</Name>
+              <FileRef uid="10" />
+              <SequencePoints>
+                <SequencePoint vc="15" uspid="10" ordinal="0" sl="10" sc="1" el="10" ec="2" bec="0" bev="0" fileid="10" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="10" ec="1" el="10" bec="0" bev="0" fileid="10" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.RSA.Exceptions.RsaIdentifierNotInformedException::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)</Name>
+              <FileRef uid="10" />
+              <SequencePoints>
+                <SequencePoint vc="3" uspid="12" ordinal="0" sl="12" sc="1" el="12" ec="2" bec="0" bev="0" fileid="10" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="1" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="12" ec="1" el="12" bec="0" bev="0" fileid="10" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+      </Classes>
+    </Module>
+    <Module hash="A90A3F23-7532-45DE-BD26-2197DCD1FA10">
+      <ModulePath>GuimoSoft.Cryptography.AspNetCore.dll</ModulePath>
+      <ModuleTime>2021-07-12T07:45:16</ModuleTime>
+      <ModuleName>GuimoSoft.Cryptography.AspNetCore</ModuleName>
+      <Files>
+        <File uid="11" fullPath="/github/workspace/src/GuimoSoft.Cryptography.AspNetCore/Formatters/EncryptedJsonInputFormatter.cs" />
+        <File uid="12" fullPath="/github/workspace/src/GuimoSoft.Cryptography.AspNetCore/Content/EncryptedJsonContent.cs" />
+      </Files>
+      <Classes>
+        <Class>
+          <Summary numSequencePoints="15" visitedSequencePoints="12" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="80" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="3" />
+          <FullName>GuimoSoft.Cryptography.AspNetCore.Formatters.EncryptedJsonInputFormatter</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="0" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="3" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.AspNetCore.Formatters.EncryptedJsonInputFormatter::HandleDeserializationIgnoreError(System.Object,Newtonsoft.Json.Serialization.ErrorEventArgs)</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="60" ordinal="0" sl="60" sc="1" el="60" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="0" uspid="61" ordinal="1" sl="61" sc="1" el="61" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="0" uspid="62" ordinal="2" sl="62" sc="1" el="62" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="0" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="60" ec="1" el="62" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="6" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.AspNetCore.Formatters.EncryptedJsonInputFormatter::.ctor(GuimoSoft.Cryptography.RSA.Services.Interfaces.ICrypterService)</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="4" uspid="24" ordinal="0" sl="24" sc="1" el="24" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="25" ordinal="1" sl="25" sc="1" el="25" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="26" ordinal="2" sl="26" sc="1" el="26" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="27" ordinal="3" sl="27" sc="1" el="27" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="28" ordinal="4" sl="28" sc="1" el="28" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="29" ordinal="5" sl="29" sc="1" el="29" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="24" ec="1" el="29" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="6" visitedSequencePoints="6" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.AspNetCore.Formatters.EncryptedJsonInputFormatter::.cctor()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="15" ordinal="0" sl="15" sc="1" el="15" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="16" ordinal="1" sl="16" sc="1" el="16" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="17" ordinal="2" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="18" ordinal="3" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="19" ordinal="4" sl="19" sc="1" el="19" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="20" ordinal="5" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="6" uspid="0" p8:type="SequencePoint" ordinal="2" offset="2" sc="0" sl="15" ec="1" el="20" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="22" visitedSequencePoints="22" numBranchPoints="14" visitedBranchPoints="10" sequenceCoverage="100" branchCoverage="71.42" maxCyclomaticComplexity="14" minCyclomaticComplexity="14" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.AspNetCore.Formatters.EncryptedJsonInputFormatter/&lt;ReadRequestBodyAsync&gt;d__3</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="14" nPathComplexity="0" sequenceCoverage="100" branchCoverage="71.42" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="22" visitedSequencePoints="22" numBranchPoints="14" visitedBranchPoints="10" sequenceCoverage="100" branchCoverage="71.42" maxCyclomaticComplexity="14" minCyclomaticComplexity="14" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.AspNetCore.Formatters.EncryptedJsonInputFormatter/&lt;ReadRequestBodyAsync&gt;d__3::MoveNext()</Name>
+              <FileRef uid="11" />
+              <SequencePoints>
+                <SequencePoint vc="4" uspid="32" ordinal="0" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="33" ordinal="1" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="35" ordinal="2" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="36" ordinal="3" sl="36" sc="1" el="36" ec="2" bec="4" bev="4" fileid="11" />
+                <SequencePoint vc="4" uspid="37" ordinal="4" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="38" ordinal="5" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="39" ordinal="6" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="40" ordinal="7" sl="40" sc="1" el="40" ec="2" bec="2" bev="2" fileid="11" />
+                <SequencePoint vc="1" uspid="41" ordinal="8" sl="41" sc="1" el="41" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="42" ordinal="9" sl="42" sc="1" el="42" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="43" ordinal="10" sl="43" sc="1" el="43" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="44" ordinal="11" sl="44" sc="1" el="44" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="1" uspid="45" ordinal="12" sl="45" sc="1" el="45" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="46" ordinal="13" sl="46" sc="1" el="46" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="47" ordinal="14" sl="47" sc="1" el="47" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="48" ordinal="15" sl="48" sc="1" el="48" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="2" uspid="50" ordinal="16" sl="50" sc="1" el="50" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="53" ordinal="17" sl="53" sc="1" el="53" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="54" ordinal="18" sl="54" sc="1" el="54" ec="2" bec="2" bev="2" fileid="11" />
+                <SequencePoint vc="1" uspid="55" ordinal="19" sl="55" sc="1" el="55" ec="2" bec="0" bev="0" fileid="11" />
+                <SequencePoint vc="4" uspid="56" ordinal="20" sl="56" sc="1" el="56" ec="2" bec="6" bev="2" fileid="11" />
+                <SequencePoint vc="4" uspid="57" ordinal="21" sl="57" sc="1" el="57" ec="2" bec="0" bev="0" fileid="11" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="3" uspid="36" ordinal="0" path="0" offset="108" offsetend="110" sl="36" fileid="11" />
+                <BranchPoint vc="1" uspid="36" ordinal="1" path="1" offset="108" offsetend="134" sl="36" fileid="11" />
+                <BranchPoint vc="2" uspid="36" ordinal="2" path="0" offset="137" offsetend="142" sl="36" fileid="11" />
+                <BranchPoint vc="1" uspid="40" ordinal="4" path="0" offset="203" offsetend="208" sl="40" fileid="11" />
+                <BranchPoint vc="2" uspid="40" ordinal="5" path="1" offset="203" offsetend="380" sl="40" fileid="11" />
+                <BranchPoint vc="2" uspid="36" ordinal="3" path="1" offset="137" offsetend="611" sl="36" fileid="11" />
+                <BranchPoint vc="1" uspid="54" ordinal="6" path="0" offset="659" offsetend="661" sl="54" fileid="11" />
+                <BranchPoint vc="4" uspid="54" ordinal="7" path="1" offset="659" offsetend="770" sl="54" fileid="11" />
+                <BranchPoint vc="0" uspid="56" ordinal="8" path="0" offset="781" offsetend="783" sl="56" fileid="11" />
+                <BranchPoint vc="0" uspid="56" ordinal="10" path="0" offset="794" offsetend="796" sl="56" fileid="11" />
+                <BranchPoint vc="0" uspid="56" ordinal="11" path="1" offset="794" offsetend="799" sl="56" fileid="11" />
+                <BranchPoint vc="4" uspid="56" ordinal="9" path="1" offset="781" offsetend="812" sl="56" fileid="11" />
+                <BranchPoint vc="4" uspid="56" ordinal="13" path="1" offset="823" offsetend="827" sl="56" fileid="11" />
+                <BranchPoint vc="0" uspid="56" ordinal="12" path="0" offset="823" offsetend="836" sl="56" fileid="11" />
+              </BranchPoints>
+              <MethodPoint vc="22" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="32" ec="1" el="57" bec="0" bev="0" fileid="11" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="15" visitedSequencePoints="15" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="2" numMethods="2" />
+          <FullName>GuimoSoft.Cryptography.AspNetCore.Content.EncryptedJsonContent</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="8" visitedSequencePoints="8" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Boolean GuimoSoft.Cryptography.AspNetCore.Content.EncryptedJsonContent::TryComputeLength(System.Int64&amp;)</Name>
+              <FileRef uid="12" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="32" ordinal="0" sl="32" sc="1" el="32" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="33" ordinal="1" sl="33" sc="1" el="33" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="34" ordinal="2" sl="34" sc="1" el="34" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="35" ordinal="3" sl="35" sc="1" el="35" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="36" ordinal="4" sl="36" sc="1" el="36" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="37" ordinal="5" sl="37" sc="1" el="37" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="38" ordinal="6" sl="38" sc="1" el="38" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="39" ordinal="7" sl="39" sc="1" el="39" ec="2" bec="0" bev="0" fileid="12" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="8" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="32" ec="1" el="39" bec="0" bev="0" fileid="12" xmlns:p8="xsi" />
+            </Method>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="True" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="7" visitedSequencePoints="7" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.AspNetCore.Content.EncryptedJsonContent::.ctor(System.Byte[],System.Guid,GuimoSoft.Cryptography.RSA.Services.Interfaces.ICrypterService)</Name>
+              <FileRef uid="12" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="17" ordinal="0" sl="17" sc="1" el="17" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="18" ordinal="1" sl="18" sc="1" el="18" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="19" ordinal="2" sl="19" sc="1" el="19" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="20" ordinal="3" sl="20" sc="1" el="20" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="21" ordinal="4" sl="21" sc="1" el="21" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="2" uspid="23" ordinal="5" sl="23" sc="1" el="23" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="24" ordinal="6" sl="24" sc="1" el="24" ec="2" bec="0" bev="0" fileid="12" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="7" uspid="0" p8:type="SequencePoint" ordinal="1" offset="1" sc="0" sl="17" ec="1" el="24" bec="0" bev="0" fileid="12" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="1" numClasses="1" visitedMethods="1" numMethods="1" />
+          <FullName>GuimoSoft.Cryptography.AspNetCore.Content.EncryptedJsonContent/&lt;SerializeToStreamAsync&gt;d__3</FullName>
+          <Methods>
+            <Method cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100" branchCoverage="100" isConstructor="False" isGetter="False" isSetter="False" isStatic="True">
+              <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="100" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken />
+              <Name>System.Void GuimoSoft.Cryptography.AspNetCore.Content.EncryptedJsonContent/&lt;SerializeToStreamAsync&gt;d__3::MoveNext()</Name>
+              <FileRef uid="12" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="26" ordinal="0" sl="26" sc="1" el="26" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="27" ordinal="1" sl="27" sc="1" el="27" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="28" ordinal="2" sl="28" sc="1" el="28" ec="2" bec="0" bev="0" fileid="12" />
+                <SequencePoint vc="1" uspid="29" ordinal="3" sl="29" sc="1" el="29" ec="2" bec="0" bev="0" fileid="12" />
+              </SequencePoints>
+              <BranchPoints />
+              <MethodPoint vc="4" uspid="0" p8:type="SequencePoint" ordinal="0" offset="0" sc="0" sl="26" ec="1" el="29" bec="0" bev="0" fileid="12" xmlns:p8="xsi" />
+            </Method>
+          </Methods>
+        </Class>
+      </Classes>
+    </Module>
+  </Modules>
+</CoverageSession>

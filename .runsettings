@@ -9,7 +9,7 @@
             <!-- Match assembly file paths: -->
             <ModulePaths>
               <Include>
-                <ModulePath>.*GuimoSoft.*</ModulePath>
+                <ModulePath>.*Via[Pp]ag.*</ModulePath>
               </Include>
               <Exclude>
                 <ModulePath>.*[Tt]ests.dll</ModulePath>

@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using GuimoSoft.Serialization.Interfaces;
+
+namespace GuimoSoft.Serialization
+{
+    internal sealed class MessageSerializerManager : IMessageSerializerManager
+    {
+        internal static readonly MessageSerializerManager Instance
+            = new MessageSerializerManager();
+
+        private IDefaultSerializer _defaultSerializer = JsonMessageSerializer.Instance;
+        private readonly IDictionary<Type, IDefaultSerializer> _typedSerializers
+            = new ConcurrentDictionary<Type, IDefaultSerializer>();
+
+        internal void SetDefaultSerializer(IDefaultSerializer defaultSerializer)
+        {
+            _defaultSerializer = defaultSerializer ?? throw new ArgumentNullException(nameof(defaultSerializer));
+        }
+
+        internal void AddTypedSerializer<TMessage>(TypedSerializer<TMessage> serializer)
+        {
+            if (serializer is null)
+                throw new ArgumentNullException(nameof(serializer));
+            _typedSerializers[typeof(TMessage)] = serializer;
+        }
+
+        public IDefaultSerializer GetSerializer(Type messageType)
+        {
+            if (_typedSerializers.TryGetValue(messageType, out var serializer))
+                return serializer;
+            return _defaultSerializer;
+        }
+    }
+}

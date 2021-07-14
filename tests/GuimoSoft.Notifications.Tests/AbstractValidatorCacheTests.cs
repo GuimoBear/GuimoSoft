@@ -7,6 +7,7 @@ using GuimoSoft.Notifications.Interfaces;
 using GuimoSoft.Notifications.Tests.Fakes;
 using GuimoSoft.Notifications.Tests.Fixtures;
 using Xunit;
+using GuimoSoft.Core;
 
 namespace GuimoSoft.Notifications.Tests
 {
