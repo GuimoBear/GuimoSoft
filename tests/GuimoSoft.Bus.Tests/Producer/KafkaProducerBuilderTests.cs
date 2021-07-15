@@ -12,8 +12,9 @@ namespace GuimoSoft.Bus.Tests.Producer
         public void ConstructorShouldCreateSampleProducerBuilder()
         {
             var kafkaOptions = Options.Create(new KafkaOptions());
+            var kafkaEventsOptions = Options.Create(new KafkaEventsOptions());
 
-            var sut = new KafkaProducerBuilder(kafkaOptions);
+            var sut = new KafkaProducerBuilder(kafkaOptions, kafkaEventsOptions);
 
             Assert.IsType<KafkaProducerBuilder>(sut);
         }
@@ -23,7 +24,7 @@ namespace GuimoSoft.Bus.Tests.Producer
         {
             IOptions<KafkaOptions> kafkaOptions = null;
 
-            Assert.Throws<ArgumentNullException>(() => new KafkaProducerBuilder(kafkaOptions));
+            Assert.Throws<ArgumentNullException>(() => new KafkaProducerBuilder(kafkaOptions, null));
         }
 
         [Fact]
@@ -31,7 +32,7 @@ namespace GuimoSoft.Bus.Tests.Producer
         {
             var kafkaOptions = Options.Create(new KafkaOptions());
 
-            var sut = new KafkaProducerBuilder(kafkaOptions);
+            var sut = new KafkaProducerBuilder(kafkaOptions, null);
 
             var producer = sut.Build();
 

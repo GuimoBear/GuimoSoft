@@ -1,22 +1,45 @@
 using Confluent.Kafka;
+using GuimoSoft.Bus.Kafka.Producer;
+using GuimoSoft.Bus.Tests.Fakes;
+using GuimoSoft.Serialization;
+using GuimoSoft.Serialization.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Bus.Kafka.Producer;
-using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Serialization;
-using GuimoSoft.Serialization.Interfaces;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Producer
 {
     public class KafkaMessageProducerTests
     {
+        [Fact]
+        public async Task ProduceShouldThrowInvalidOperationExceptionIfMessageClassNoContainsMessageTopicAttribute()
+        {
+            var stubMessageProducerBuilder = new Mock<IKafkaProducerBuilder>();
+            var mockProducer = new Mock<IProducer<string, byte[]>>();
+            stubMessageProducerBuilder
+                .Setup(x => x.Build())
+                .Returns(mockProducer.Object);
+            var fakeMessage = new FakeMessageWithoutMessageTopic("some-key-id", "some-property-value");
+
+            var moqSerializerManager = new Mock<IMessageSerializerManager>();
+            moqSerializerManager
+                .Setup(x => x.GetSerializer(typeof(FakeMessageWithoutMessageTopic)))
+                .Returns(JsonMessageSerializer.Instance);
+
+            var sut = new KafkaMessageProducer(stubMessageProducerBuilder.Object, moqSerializerManager.Object);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => sut.ProduceAsync(fakeMessage.Key, fakeMessage, CancellationToken.None));
+
+            moqSerializerManager
+                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Never);
+
+            mockProducer
+                .Verify(x => x.ProduceAsync(It.IsAny<string>(), It.IsAny<Message<string, byte[]>>(), CancellationToken.None), Times.Never);
+        }
+
         [Fact]
         public async Task ProduceShouldProduceMessageWithCorrectTopic()
         {

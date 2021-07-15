@@ -12,8 +12,9 @@ namespace GuimoSoft.Bus.Tests.Consumer
         public void ConstructorShouldCreateSampleConsumerBuilder()
         {
             var kafkaOptions = Options.Create(new KafkaOptions());
+            var kafkaEventsOptions = Options.Create(new KafkaEventsOptions());
 
-            var sut = new KafkaConsumerBuilder(kafkaOptions);
+            var sut = new KafkaConsumerBuilder(kafkaOptions, kafkaEventsOptions);
 
             Assert.IsType<KafkaConsumerBuilder>(sut);
         }
@@ -23,7 +24,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
         {
             IOptions<KafkaOptions> kafkaOptions = null;
 
-            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(kafkaOptions));
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(kafkaOptions, null));
         }
 
         [Fact]
@@ -33,10 +34,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
             {
                 KafkaBootstrapServers = "kafka-bootstrap",
                 ConsumerGroupId = "test-group-id",
-                AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest
+                AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest, 
+                Acks = Confluent.Kafka.Acks.All
             });
 
-            var sut = new KafkaConsumerBuilder(kafkaOptions);
+            var sut = new KafkaConsumerBuilder(kafkaOptions, null);
 
             var consumer = sut.Build();
 

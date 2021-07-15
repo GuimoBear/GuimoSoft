@@ -6,6 +6,7 @@ namespace GuimoSoft.Bus.Kafka.Common
     {
         public string KafkaBootstrapServers { get; set; }
         public string ConsumerGroupId { get; set; }
-        public AutoOffsetReset AutoOffsetReset { get; set; } = AutoOffsetReset.Earliest;
+        public AutoOffsetReset AutoOffsetReset { get; set; } = AutoOffsetReset.Earliest; 
+        public Acks Acks { get; set; } = Acks.None;
     }
 }

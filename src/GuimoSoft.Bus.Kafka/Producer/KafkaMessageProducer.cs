@@ -28,12 +28,13 @@ namespace GuimoSoft.Bus.Kafka.Producer
 
         public async Task ProduceAsync<TMessage>(string key, TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage
         {
-            var serializer = _messageSerializerManager.GetSerializer(typeof(TMessage));
-            var serializedMessage = serializer.Serialize(message);
             var topic = Attribute.GetCustomAttributes(message.GetType())
                 .OfType<MessageTopicAttribute>()
                 .Single()
                 .Topic;
+
+            var serializer = _messageSerializerManager.GetSerializer(typeof(TMessage));
+            var serializedMessage = serializer.Serialize(message);
 
             var messageType = message.GetType().AssemblyQualifiedName;
             var producedMessage = new Message<string, byte[]>

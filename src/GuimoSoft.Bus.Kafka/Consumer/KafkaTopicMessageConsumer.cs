@@ -5,6 +5,7 @@ using System.Threading;
 using GuimoSoft.Bus.Core.Interfaces;
 using GuimoSoft.Bus.Kafka.Common;
 using GuimoSoft.Serialization.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
@@ -15,14 +16,16 @@ namespace GuimoSoft.Bus.Kafka.Consumer
         private readonly IKafkaTopicCache _cache;
         private readonly IMessageMiddlewareExecutorProvider _middlewareManager;
         private readonly IMessageSerializerManager _messageSerializerManager;
+        private readonly KafkaEventsOptions _kafkaEventsOptions;
 
-        public KafkaTopicMessageConsumer(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IKafkaTopicCache cache, IMessageMiddlewareExecutorProvider middlewareManager, IMessageSerializerManager messageSerializerManager)
+        public KafkaTopicMessageConsumer(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IKafkaTopicCache cache, IMessageMiddlewareExecutorProvider middlewareManager, IMessageSerializerManager messageSerializerManager, IOptions<KafkaEventsOptions> kafkaEventsOptions)
         {
             _kafkaConsumerBuilder = kafkaConsumerBuilder;
             _serviceProvider = serviceProvider;
             _cache = cache;
             _middlewareManager = middlewareManager;
             _messageSerializerManager = messageSerializerManager;
+            _kafkaEventsOptions = kafkaEventsOptions?.Value;
         }
 
         public void ConsumeUntilCancellationIsRequested(string topic, CancellationToken cancellationToken)
@@ -44,9 +47,8 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                 }
                 catch (Exception ex)
                 {
-                    if (ex is not OperationCanceledException)
-                        Logger.LogWarning($"Falha ao consumir a mensagem do tópico '{topic}' no Kafka: {ex.Message}");
-                    else
+                    _kafkaEventsOptions?.OnException(ex);
+                    if (ex is OperationCanceledException)
                         break;
                 }
             }
@@ -69,8 +71,7 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                     }
                     catch (Exception ex)
                     {
-                        if (ex is not OperationCanceledException)
-                            Logger.LogError($"Houve um erro ao processar a mensagem do tipo '{messageType.Name}' do tópico '{topic}'", ex);
+                        _kafkaEventsOptions?.OnException(ex);
                     }
                 }
             }

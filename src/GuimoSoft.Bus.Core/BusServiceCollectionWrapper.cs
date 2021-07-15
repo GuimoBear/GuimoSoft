@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Collections;
-using System.Collections.Generic;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Interfaces;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Serialization;
 using GuimoSoft.Serialization.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace GuimoSoft.Bus.Core
 {

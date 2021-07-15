@@ -19,6 +19,7 @@ using GuimoSoft.Bus.Tests.Fakes;
 using GuimoSoft.Serialization;
 using GuimoSoft.Serialization.Interfaces;
 using Xunit;
+using Microsoft.Extensions.Options;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {
@@ -61,7 +62,15 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Setup(x => x.GetSerializer(typeof(FakeMessage)))
                 .Returns(JsonMessageSerializer.Instance);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var exceptionCount = 0;
+            var kafkaEventsOptions = new KafkaEventsOptions();
+            kafkaEventsOptions.ExceptionHandler += (_, _) => exceptionCount++;
+
+            var moqKafkaEventsOptions = new Mock<IOptions<KafkaEventsOptions>>();
+            moqKafkaEventsOptions
+                .SetupGet(x => x.Value).Returns(kafkaEventsOptions);
+
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqKafkaEventsOptions.Object);
 
             var cts = new CancellationTokenSource();
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(expectedTopic, cts.Token));
@@ -70,6 +79,12 @@ namespace GuimoSoft.Bus.Tests.Consumer
             task.Wait();
 
             mockConsumer.Verify(x => x.Subscribe(expectedTopic));
+
+            moqKafkaEventsOptions
+                .VerifyGet(x => x.Value, Times.Once);
+
+            exceptionCount
+                .Should().Be(1);
         }
 
         [Fact]
@@ -93,7 +108,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Setup(x => x.GetSerializer(typeof(FakeMessage)))
                 .Returns(JsonMessageSerializer.Instance);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, null);
 
             var cts = new CancellationTokenSource();
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cts.Token));
@@ -124,7 +139,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Setup(x => x.GetSerializer(typeof(FakeMessage)))
                 .Returns(JsonMessageSerializer.Instance);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, null);
 
             var cts = new CancellationTokenSource();
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cts.Token));
@@ -163,7 +178,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Returns(JsonMessageSerializer.Instance);
 
             // TODO: find better way to test than relying on async timing
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, null);
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
             task.Wait();
 
@@ -211,7 +226,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Returns(JsonMessageSerializer.Instance);
 
             // TODO: find better way to test than relying on async timing
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, null);
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
             task.Wait();
@@ -261,8 +276,16 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Setup(x => x.GetSerializer(typeof(FakeMessage)))
                 .Returns(JsonMessageSerializer.Instance);
 
+            var exceptionCount = 0;
+            var kafkaEventsOptions = new KafkaEventsOptions();
+            kafkaEventsOptions.ExceptionHandler += (_, _) => exceptionCount++;
+
+            var moqKafkaEventsOptions = new Mock<IOptions<KafkaEventsOptions>>();
+            moqKafkaEventsOptions
+                .SetupGet(x => x.Value).Returns(kafkaEventsOptions);
+
             // TODO: find better way to test than relying on async timing
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqKafkaEventsOptions.Object);
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
             task.Wait();
@@ -276,6 +299,12 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
             moqSerializerManager
                 .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Once);
+
+            moqKafkaEventsOptions
+                .VerifyGet(x => x.Value, Times.Once);
+
+            exceptionCount
+                .Should().Be(1);
         }
 
         [Fact]
@@ -307,7 +336,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Returns(JsonMessageSerializer.Instance);
 
             // TODO: find better way to test than relying on async timing
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, null);
             var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
             task.Wait();
@@ -348,7 +377,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 .Returns(JsonMessageSerializer.Instance);
 
             // TODO: find better way to test than relying on async timing
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object);
+            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, null);
             _ = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
             await Task.Delay(500);
             cancellationTokenSource.Cancel();
