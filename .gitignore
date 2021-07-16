@@ -17,7 +17,8 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-coverage.json
+coverage*.json
+coverage*.xml
 
 # Mono auto generated files
 mono_crash.*
