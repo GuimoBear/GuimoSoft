@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GuimoSoft.Core.AspNetCore;
+using GuimoSoft.Logger;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Threading.Tasks;
-using GuimoSoft.Core.AspNetCore;
-using GuimoSoft.Logger;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests

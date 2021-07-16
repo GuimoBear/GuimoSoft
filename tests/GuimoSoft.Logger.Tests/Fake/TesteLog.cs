@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using GuimoSoft.Logger.Attributes;
+﻿using GuimoSoft.Logger.Attributes;
+using Microsoft.Extensions.Logging;
 
 namespace GuimoSoft.Logger.Tests.Fake
 {

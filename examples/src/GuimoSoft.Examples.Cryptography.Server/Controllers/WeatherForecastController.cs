@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Examples.Cryptography.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Examples.Cryptography.Core;
 
 namespace GuimoSoft.Examples.Cryptography.Server.Controllers
 {

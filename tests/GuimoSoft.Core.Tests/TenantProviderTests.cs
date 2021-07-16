@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Moq;
 using GuimoSoft.Core.AspNetCore;
 using GuimoSoft.Core.AspNetCore.Constants;
 using GuimoSoft.Core.AspNetCore.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Moq;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests

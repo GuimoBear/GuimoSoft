@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using GuimoSoft.Core.Providers.Interfaces;
+using GuimoSoft.Logger.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using GuimoSoft.Logger.AspNetCore;
-using GuimoSoft.Core.Providers.Interfaces;
 
 namespace GuimoSoft.Core.AspNetCore
 {

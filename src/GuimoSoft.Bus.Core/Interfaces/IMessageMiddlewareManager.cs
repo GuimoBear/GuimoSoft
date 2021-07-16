@@ -1,6 +1,6 @@
-﻿using System;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
+using System;
 
 namespace GuimoSoft.Bus.Core.Interfaces
 {

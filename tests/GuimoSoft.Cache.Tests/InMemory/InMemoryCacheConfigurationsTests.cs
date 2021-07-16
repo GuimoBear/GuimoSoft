@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cache.Tests.Fakes;
 using Moq;
 using System;
-using GuimoSoft.Cache.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cache.Tests.InMemory

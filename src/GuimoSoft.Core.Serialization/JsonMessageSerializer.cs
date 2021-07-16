@@ -1,9 +1,9 @@
-﻿using System;
+﻿using GuimoSoft.Core.Serialization.Interfaces;
+using System;
 using System.Text;
 using System.Text.Json;
-using GuimoSoft.Serialization.Interfaces;
 
-namespace GuimoSoft.Serialization
+namespace GuimoSoft.Core.Serialization
 {
     internal sealed class JsonMessageSerializer : IDefaultSerializer
     {

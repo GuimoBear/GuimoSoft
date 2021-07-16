@@ -1,7 +1,7 @@
-﻿using System;
+﻿using GuimoSoft.Cache.Utils;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using GuimoSoft.Cache.Utils;
 
 namespace GuimoSoft.Cache.InMemory
 {
@@ -25,6 +25,7 @@ namespace GuimoSoft.Cache.InMemory
                 _cancellationTokenSource = new CancellationTokenSource();
                 _clearInstances = ClearInstances();
             }
+            _lock = new ReaderWriterLockSlim();
         }
 
         private bool TryGetItemInCache(TKey key, out CacheState cacheState, out TValue value)

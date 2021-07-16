@@ -1,11 +1,10 @@
 ﻿using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using System.Linq;
 using GuimoSoft.Cryptography.AspNetCore;
 using GuimoSoft.Cryptography.AspNetCore.Formatters;
 using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System.Linq;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

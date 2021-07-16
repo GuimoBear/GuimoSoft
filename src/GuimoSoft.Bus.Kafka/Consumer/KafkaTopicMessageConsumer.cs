@@ -1,11 +1,14 @@
 using Confluent.Kafka;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading;
 using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
 using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Serialization.Interfaces;
-using Microsoft.Extensions.Options;
+using GuimoSoft.Core.Serialization.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
@@ -16,16 +19,16 @@ namespace GuimoSoft.Bus.Kafka.Consumer
         private readonly IKafkaTopicCache _cache;
         private readonly IMessageMiddlewareExecutorProvider _middlewareManager;
         private readonly IMessageSerializerManager _messageSerializerManager;
-        private readonly KafkaEventsOptions _kafkaEventsOptions;
+        private readonly IBusLogger _busLogger;
 
-        public KafkaTopicMessageConsumer(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IKafkaTopicCache cache, IMessageMiddlewareExecutorProvider middlewareManager, IMessageSerializerManager messageSerializerManager, IOptions<KafkaEventsOptions> kafkaEventsOptions)
+        public KafkaTopicMessageConsumer(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IKafkaTopicCache cache, IMessageMiddlewareExecutorProvider middlewareManager, IMessageSerializerManager messageSerializerManager, IBusLogger busLogger)
         {
             _kafkaConsumerBuilder = kafkaConsumerBuilder;
             _serviceProvider = serviceProvider;
             _cache = cache;
             _middlewareManager = middlewareManager;
             _messageSerializerManager = messageSerializerManager;
-            _kafkaEventsOptions = kafkaEventsOptions?.Value;
+            _busLogger = busLogger ?? throw new ArgumentNullException(nameof(busLogger));
         }
 
         public void ConsumeUntilCancellationIsRequested(string topic, CancellationToken cancellationToken)
@@ -47,7 +50,14 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                 }
                 catch (Exception ex)
                 {
-                    _kafkaEventsOptions?.OnException(ex);
+                    var exceptionMessage = new ExceptionMessage(
+                        $"Houve um erro ao consumir a mensagem do t�pico {topic}",
+                        ex is OperationCanceledException ? LogLevel.Warning : LogLevel.Error)
+                    {
+                        Exception = ex
+                    };
+                    exceptionMessage.Data.Add(nameof(topic), topic);
+                    _busLogger.ExceptionAsync(exceptionMessage).ConfigureAwait(false);
                     if (ex is OperationCanceledException)
                         break;
                 }
@@ -59,6 +69,8 @@ namespace GuimoSoft.Bus.Kafka.Consumer
             var messageTypes = _cache[topic];
             if (messageTypes.Count > 0)
             {
+                var timerMessageProcess = new Stopwatch();
+                timerMessageProcess.Start();
                 foreach (var messageType in messageTypes)
                 {
                     try
@@ -71,7 +83,24 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                     }
                     catch (Exception ex)
                     {
-                        _kafkaEventsOptions?.OnException(ex);
+                        var exceptionMessage = new ExceptionMessage(
+                            $"Houve um erro ao consumir a mensagem do tipo {messageType.FullName} t�pico {topic}",
+                            ex is OperationCanceledException ? LogLevel.Warning : LogLevel.Error)
+                        {
+                            Exception = ex
+                        };
+                        exceptionMessage.Data.Add(nameof(messageType), messageType.FullName);
+                        exceptionMessage.Data.Add(nameof(topic), topic);
+                        _busLogger.ExceptionAsync(exceptionMessage).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        timerMessageProcess.Stop();
+                        var log = Core.Logs.LogMessage.Trace($"Finalizado o processamento da mensagem do tipo {messageType.FullName}");
+                        log.Data.Add(nameof(topic), topic);
+                        log.Data.Add(nameof(messageType), messageType.FullName);
+                        log.Data.Add("milisegundos", timerMessageProcess.ElapsedMilliseconds);
+                        _busLogger.LogAsync(log).ConfigureAwait(false);
                     }
                 }
             }

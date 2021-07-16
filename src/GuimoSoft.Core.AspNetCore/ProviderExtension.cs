@@ -20,7 +20,7 @@ namespace GuimoSoft.Core
         private readonly IEnumerable<AdditionalTenantProvider> additionalTenantProviders;
         private readonly IEnumerable<AdditionalCorrelationIdProvider> additionalCorrelationIdProviders;
 
-        internal ProviderExtension() 
+        internal ProviderExtension()
         {
             additionalTenantProviders = new List<AdditionalTenantProvider>(additionalTenantProvidersSingleton);
             additionalCorrelationIdProviders = new List<AdditionalCorrelationIdProvider>(additionalCorrelationIdProvidersSingleton);

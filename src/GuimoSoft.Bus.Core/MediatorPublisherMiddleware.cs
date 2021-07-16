@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Core
 {

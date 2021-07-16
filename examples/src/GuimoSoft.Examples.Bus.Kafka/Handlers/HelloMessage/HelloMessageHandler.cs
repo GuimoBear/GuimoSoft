@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Logger;
+using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using GuimoSoft.Logger;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
 {

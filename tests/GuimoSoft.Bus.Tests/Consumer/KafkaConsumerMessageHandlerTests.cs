@@ -1,8 +1,7 @@
-﻿using Moq;
-using System;
+﻿using GuimoSoft.Bus.Kafka.Consumer;
+using Moq;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Kafka.Consumer;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer

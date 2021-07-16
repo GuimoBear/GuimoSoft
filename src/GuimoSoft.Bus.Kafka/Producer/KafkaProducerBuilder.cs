@@ -1,20 +1,21 @@
-using System;
 using Confluent.Kafka;
-using Microsoft.Extensions.Options;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
 using GuimoSoft.Bus.Kafka.Common;
+using Microsoft.Extensions.Options;
+using System;
 
 namespace GuimoSoft.Bus.Kafka.Producer
 {
     public class KafkaProducerBuilder : IKafkaProducerBuilder
     {
         private readonly KafkaOptions _kafkaOptions;
-        private readonly KafkaEventsOptions _kafkaConsumerEventsOptions;
+        private readonly IBusLogger _busLogger;
 
-        public KafkaProducerBuilder(IOptions<KafkaOptions> kafkaOptions, IOptions<KafkaEventsOptions> kafkaConsumerEventsOptions)
+        public KafkaProducerBuilder(IOptions<KafkaOptions> kafkaOptions, IBusLogger busLogger)
         {
             _kafkaOptions = kafkaOptions?.Value
                             ?? throw new ArgumentNullException(nameof(kafkaOptions));
-            _kafkaConsumerEventsOptions = kafkaConsumerEventsOptions?.Value;
+            _busLogger = busLogger ?? throw new ArgumentNullException(nameof(busLogger));
         }
 
         public IProducer<string, byte[]> Build()
@@ -27,8 +28,8 @@ namespace GuimoSoft.Bus.Kafka.Producer
 
             var producerBuilder = new ProducerBuilder<string, byte[]>(config);
 
-            if (_kafkaConsumerEventsOptions is not null)
-                _kafkaConsumerEventsOptions.SetEvents(producerBuilder);
+            producerBuilder.SetLogHandler((_, kafkaLogMessage) => _busLogger.LogAsync(KafkaLogConverter.Cast(kafkaLogMessage)).ConfigureAwait(false));
+            producerBuilder.SetErrorHandler((_, kafkaError) => _busLogger.ExceptionAsync(KafkaLogConverter.Cast(kafkaError)).ConfigureAwait(false));
 
             return producerBuilder.Build();
         }

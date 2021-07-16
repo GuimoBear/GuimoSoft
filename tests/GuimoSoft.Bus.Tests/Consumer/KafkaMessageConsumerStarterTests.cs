@@ -1,13 +1,13 @@
+using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Bus.Kafka.Common;
+using GuimoSoft.Bus.Kafka.Consumer;
+using GuimoSoft.Bus.Tests.Fakes;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer

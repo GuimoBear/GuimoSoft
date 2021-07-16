@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Logger;
+using System;
+using System.Threading.Tasks;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
 {

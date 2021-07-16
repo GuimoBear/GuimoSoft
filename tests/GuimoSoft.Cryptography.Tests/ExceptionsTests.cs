@@ -1,12 +1,8 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using GuimoSoft.Cryptography.RSA.Exceptions;
+using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

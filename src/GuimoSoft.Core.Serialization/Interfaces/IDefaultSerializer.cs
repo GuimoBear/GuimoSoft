@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GuimoSoft.Serialization.Interfaces
+namespace GuimoSoft.Core.Serialization.Interfaces
 {
     public interface IDefaultSerializer
     {

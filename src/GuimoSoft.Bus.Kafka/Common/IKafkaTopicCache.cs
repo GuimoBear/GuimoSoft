@@ -1,6 +1,6 @@
-﻿using System;
+﻿using GuimoSoft.Bus.Abstractions;
+using System;
 using System.Collections.Generic;
-using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Kafka.Common
 {

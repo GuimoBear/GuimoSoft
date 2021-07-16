@@ -1,9 +1,9 @@
-﻿using System;
+﻿using GuimoSoft.Cryptography.RSA.Exceptions;
+using GuimoSoft.Cryptography.RSA.Utils;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using GuimoSoft.Cryptography.RSA.Exceptions;
-using GuimoSoft.Cryptography.RSA.Utils;
 
 namespace GuimoSoft.Cryptography.RSA.Packets
 {

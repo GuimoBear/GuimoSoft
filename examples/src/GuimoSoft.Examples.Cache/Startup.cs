@@ -1,3 +1,7 @@
+using GuimoSoft.Cache;
+using GuimoSoft.Examples.Cache.Utils;
+using GuimoSoft.Examples.Cache.ValueObjects;
+using GuimoSoft.Logger.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,10 +11,6 @@ using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Timeout;
 using System;
-using GuimoSoft.Cache;
-using GuimoSoft.Examples.Cache.Utils;
-using GuimoSoft.Examples.Cache.ValueObjects;
-using GuimoSoft.Logger.AspNetCore;
 
 namespace GuimoSoft.Examples.Cache
 {
@@ -38,7 +38,7 @@ namespace GuimoSoft.Examples.Cache
             {
                 configs
                     .WithTTL(TimeSpan.FromSeconds(20))
-                    .WithCleaner(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(5))
+                    .WithCleaner(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(2))
                     .WithKeyEqualityComparer(WeatherForecastRequestEqualityComparer.Instance)
                     .ShareValuesBetweenKeys(WeatherForecastEqualityComparer.Instance)
                     .UsingValueFactoryProxy(ValueFactory.Instance.Resilient(policy));

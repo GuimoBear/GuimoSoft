@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GuimoSoft.Notifications.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using GuimoSoft.Notifications.Interfaces;
 
 namespace GuimoSoft.Notifications.AspNetCore
 {

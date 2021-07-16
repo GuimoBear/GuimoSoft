@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using GuimoSoft.Bus.Core;
 using GuimoSoft.Bus.Core.Interfaces;
 using GuimoSoft.Bus.Tests.Fakes;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer

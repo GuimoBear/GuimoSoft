@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GuimoSoft.Logger.Utils;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
-using GuimoSoft.Logger.Utils;
 
 namespace GuimoSoft.Logger
 {
@@ -173,12 +173,10 @@ namespace GuimoSoft.Logger
             => logLevel switch
             {
                 LogLevel.Trace => Constants.SEVERIDADE_TRACE_STRING,
-                LogLevel.Debug => Constants.SEVERIDADE_DEBUG_STRING,
                 LogLevel.Information => Constants.SEVERIDADE_INFORMATION_STRING,
                 LogLevel.Warning => Constants.SEVERIDADE_WARNING_STRING,
                 LogLevel.Error => Constants.SEVERIDADE_ERROR_STRING,
-                LogLevel.Critical => Constants.SEVERIDADE_CRITICAL_STRING,
-                _ => Constants.SEVERIDADE_DEFAULT_STRING
+                _ => Constants.SEVERIDADE_DEBUG_STRING
             };
 
         public sealed class LoggerBuilder : ILoggerBuilder

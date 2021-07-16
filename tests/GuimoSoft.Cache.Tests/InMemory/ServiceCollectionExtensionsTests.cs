@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cache.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using GuimoSoft.Cache.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cache.Tests.InMemory
@@ -22,7 +22,7 @@ namespace GuimoSoft.Cache.Tests.InMemory
             services.AddInMemoryCache<FakeKey, FakeValue>(configs => configs.WithTTL(TimeSpan.FromSeconds(60)));
 
             services.FirstOrDefault(sd => sd.ServiceType == typeof(ITypedCache<FakeKey, FakeValue>) &&
-                                          sd.Lifetime == ServiceLifetime.Singleton && 
+                                          sd.Lifetime == ServiceLifetime.Singleton &&
                                           sd.ImplementationInstance is not null)
                 .Should().NotBeNull();
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace GuimoSoft.Core.Examples.Core
+namespace GuimoSoft.Examples.Core
 {
     public class WeatherForecast
     {

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
+using System;
+using System.Threading.Tasks;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {

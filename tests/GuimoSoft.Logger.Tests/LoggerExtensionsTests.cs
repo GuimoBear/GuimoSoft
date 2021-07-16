@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Logger.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Linq;
-using GuimoSoft.Logger.AspNetCore;
 using Xunit;
 
 namespace GuimoSoft.Logger.Tests

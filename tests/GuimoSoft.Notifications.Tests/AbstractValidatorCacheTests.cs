@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
-using Moq;
-using System.Collections.Generic;
-using System.Linq;
+using GuimoSoft.Core;
 using GuimoSoft.Notifications.AspNetCore;
 using GuimoSoft.Notifications.Interfaces;
 using GuimoSoft.Notifications.Tests.Fakes;
 using GuimoSoft.Notifications.Tests.Fixtures;
+using Moq;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
-using GuimoSoft.Core;
 
 namespace GuimoSoft.Notifications.Tests
 {

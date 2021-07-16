@@ -1,12 +1,12 @@
+using GuimoSoft.Examples.Notifications.Application.Validators;
+using GuimoSoft.Examples.Notifications.Domain;
+using GuimoSoft.Notifications.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using GuimoSoft.Examples.Notifications.Application.Validators;
-using GuimoSoft.Examples.Notifications.Domain;
-using GuimoSoft.Notifications.AspNetCore;
 
 namespace GuimoSoft.Examples.Notifications
 {

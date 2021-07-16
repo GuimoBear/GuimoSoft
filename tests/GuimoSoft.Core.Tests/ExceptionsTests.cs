@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Core.AspNetCore.Exceptions;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using GuimoSoft.Core.AspNetCore.Exceptions;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests

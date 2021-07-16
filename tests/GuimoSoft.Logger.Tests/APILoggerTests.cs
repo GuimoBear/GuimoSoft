@@ -36,6 +36,13 @@ namespace GuimoSoft.Logger.Tests
             return (loggerMock, new ApiLogger<APILoggerTests>(loggerMock.Object, contextAccessor));
         }
 
+        private (Mock<ILogger<APILoggerTests>>, ApiLogger<APILoggerTests>) CreateinstanceWithoutContext()
+        {
+            var loggerMock = new Mock<ILogger<APILoggerTests>>();
+
+            return (loggerMock, new ApiLogger<APILoggerTests>(loggerMock.Object, null));
+        }
+
         [Fact]
         public void Se_CriarExpandoObject_Entao_ConteraCorrelationIdETenant()
 
@@ -117,7 +124,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Rastreio(null as string);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Rastreio(null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -308,7 +315,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Depuracao(null as string);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Depuracao(null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -499,7 +506,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Informacao(null as string);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Informacao(null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -690,7 +697,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Atencao(null as string);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Atencao(null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -915,6 +922,19 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
+            apiLogger.Erro(null as ExpandoObject);
+
+            loggerMock.Verify(
+                l => l.Log(
+                    It.IsAny<LogLevel>(),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => true),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
+                    ),
+                Times.Never
+                );
+
             apiLogger
                 .ComPropriedade(string.Empty, string.Empty)
                 .Erro(null as Exception)
@@ -937,7 +957,7 @@ namespace GuimoSoft.Logger.Tests
         {
             (var loggerMock, var apiLogger) = Createinstance();
 
-            apiLogger.Erro(string.Empty, null as Exception);
+            apiLogger.Erro(string.Empty, null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -950,7 +970,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(string.Empty, null as Exception);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(string.Empty, null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -963,7 +983,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.Erro("    ", null as Exception);
+            apiLogger.Erro("    ", null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -976,7 +996,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro("    ", null as Exception);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro("    ", null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -989,7 +1009,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.Erro(null as string, null as Exception);
+            apiLogger.Erro(null, null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1002,7 +1022,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(null as string, null as Exception);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(null, null);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1195,7 +1215,7 @@ namespace GuimoSoft.Logger.Tests
         {
             const string errorMessage = null;
             var exception = new Exception(errorMessage);
-            (var loggerMock, var apiLogger) = Createinstance();
+            (var loggerMock, var apiLogger) = CreateinstanceWithoutContext();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
             expectedExpando.TryAdd(Constants.KEY_ERROR_MESSAGE, exception.Message);
@@ -1259,6 +1279,32 @@ namespace GuimoSoft.Logger.Tests
                     LogLevel.Trace,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => AreSameProperties(v, expected)),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
+                    ),
+                Times.Once
+                );
+
+            var expectedIgnoredObject = new IgnoredTesteLog();
+
+            var expectedIgnoredJson = JsonConvert.SerializeObject(expectedIgnoredObject, SERIALIZER_SETTINGS);
+
+            var expectedIgnoredExpando = apiLogger.CriarDicionarioDeLog();
+            expectedIgnoredExpando.TryAdd("objeto", expectedIgnoredObject);
+            expectedIgnoredExpando.TryAdd(Constants.KEY_MESSAGE, "Teste rastreio");
+            expectedIgnoredExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_TRACE_STRING);
+
+            var expectedIgnored = JsonConvert.SerializeObject(expectedIgnoredExpando, SERIALIZER_SETTINGS);
+
+            apiLogger
+                .ComPropriedade("objeto", expectedIgnoredObject)
+                .Rastreio("Teste rastreio");
+
+            loggerMock.Verify(
+                l => l.Log(
+                    LogLevel.Trace,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => AreSameProperties(v, expectedIgnored)),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)
                     ),

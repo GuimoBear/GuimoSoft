@@ -1,12 +1,11 @@
 using Confluent.Kafka;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Core.Serialization.Interfaces;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Serialization.Interfaces;
 
 namespace GuimoSoft.Bus.Kafka.Producer
 {

@@ -1,4 +1,8 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Cryptography.AspNetCore.Formatters;
+using GuimoSoft.Cryptography.RSA.Services.Interfaces;
+using GuimoSoft.Cryptography.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Internal;
@@ -12,10 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Cryptography.AspNetCore.Formatters;
-using GuimoSoft.Cryptography.RSA.Services.Interfaces;
-using GuimoSoft.Cryptography.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

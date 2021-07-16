@@ -1,8 +1,7 @@
 using FluentAssertions;
-using System;
 using GuimoSoft.Bus.Abstractions.Consumer;
-using GuimoSoft.Bus.Kafka.Common;
 using GuimoSoft.Bus.Tests.Fakes;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Common

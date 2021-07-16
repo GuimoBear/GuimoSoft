@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GuimoSoft.Logger;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using GuimoSoft.Logger;
 
-namespace GuimoSoft.Core.Examples.Core.Controllers
+namespace GuimoSoft.Examples.Core.Controllers
 {
     [ApiController]
     [Route("[controller]")]

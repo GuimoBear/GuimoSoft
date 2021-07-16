@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Core.AspNetCore;
+using GuimoSoft.Core.Providers.Interfaces;
+using GuimoSoft.Logger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Linq;
-using GuimoSoft.Core.AspNetCore;
-using GuimoSoft.Logger;
-using GuimoSoft.Core.Providers.Interfaces;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests

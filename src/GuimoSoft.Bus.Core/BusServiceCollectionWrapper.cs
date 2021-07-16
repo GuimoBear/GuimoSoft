@@ -1,9 +1,12 @@
 ﻿using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Serialization;
-using GuimoSoft.Serialization.Interfaces;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
+using GuimoSoft.Core.Serialization;
+using GuimoSoft.Core.Serialization.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GuimoSoft.Bus.Core
 {
@@ -34,6 +37,26 @@ namespace GuimoSoft.Bus.Core
             where TMessage : IMessage
         {
             MessageSerializerManager.Instance.AddTypedSerializer(serializer);
+            return this;
+        }
+
+        public virtual BusServiceCollectionWrapper WithLogger(IBusLogger logger)
+        {
+            if (logger is null)
+                throw new ArgumentNullException(nameof(logger));
+            RemoveBusLoggerServiceDescriptorIfExists();
+
+            _serviceCollection.AddSingleton(logger);
+            return this;
+        }
+
+        public virtual BusServiceCollectionWrapper WithLogger(Func<IServiceProvider, IBusLogger> loggerFactory)
+        {
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
+            RemoveBusLoggerServiceDescriptorIfExists();
+
+            _serviceCollection.AddSingleton(loggerFactory);
             return this;
         }
 
@@ -70,5 +93,13 @@ namespace GuimoSoft.Bus.Core
 
         IEnumerator IEnumerable.GetEnumerator()
             => _serviceCollection.GetEnumerator();
+
+        protected void RemoveBusLoggerServiceDescriptorIfExists()
+        {
+            var sd = _serviceCollection.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogger));
+            if (sd is not null)
+                _serviceCollection.Remove(sd);
+
+        }
     }
 }

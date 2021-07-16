@@ -1,12 +1,11 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core;
+using GuimoSoft.Bus.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -23,11 +22,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
             serviceCollection.AddSingleton<FakePipelineMessageMiddlewareTwo>();
             serviceCollection.AddSingleton<FakePipelineMessageMiddlewareThree>();
             services = serviceCollection.BuildServiceProvider();
-            var middlewareTypes = new List<Type> 
-            { 
-                typeof(FakePipelineMessageMiddlewareOne), 
-                typeof(FakePipelineMessageMiddlewareTwo), 
-                typeof(FakePipelineMessageMiddlewareThree) 
+            var middlewareTypes = new List<Type>
+            {
+                typeof(FakePipelineMessageMiddlewareOne),
+                typeof(FakePipelineMessageMiddlewareTwo),
+                typeof(FakePipelineMessageMiddlewareThree)
             };
             pipeline = new Pipeline(middlewareTypes);
         }

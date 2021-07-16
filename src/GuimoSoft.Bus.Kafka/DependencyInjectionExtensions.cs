@@ -1,12 +1,14 @@
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core;
+using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
+using GuimoSoft.Bus.Kafka.Common;
+using GuimoSoft.Bus.Kafka.Consumer;
+using GuimoSoft.Bus.Kafka.Producer;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Kafka.Producer;
 
 namespace GuimoSoft.Bus.Kafka
 {
@@ -15,6 +17,8 @@ namespace GuimoSoft.Bus.Kafka
         public static BusConsumerServiceCollectionWrapper AddKafkaConsumer(this IServiceCollection services,
             params Type[] handlerAssemblyMarkerTypes)
         {
+            services.TryAddSingleton<IBusLogger, DefaultBusLogger>();
+
             services.TryAddSingleton<IKafkaTopicCache>(_ => new KafkaTopicCache(services));
 
             services.AddMediatR(handlerAssemblyMarkerTypes);
@@ -33,6 +37,8 @@ namespace GuimoSoft.Bus.Kafka
 
         public static BusServiceCollectionWrapper AddKafkaProducer(this IServiceCollection services)
         {
+            services.TryAddSingleton<IBusLogger, DefaultBusLogger>();
+
             services.TryAddSingleton<IKafkaTopicCache>(_ => new KafkaTopicCache(services));
 
             services.TryAddSingleton<IKafkaProducerBuilder, KafkaProducerBuilder>();

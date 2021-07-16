@@ -3,7 +3,7 @@
     public enum CacheState
     {
         FoundedAndValid,
-        NotFound, 
+        NotFound,
         Expired
     }
 }

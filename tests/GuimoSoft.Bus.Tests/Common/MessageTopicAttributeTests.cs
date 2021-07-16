@@ -1,5 +1,5 @@
-using System;
 using GuimoSoft.Bus.Abstractions;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Common

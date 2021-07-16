@@ -1,5 +1,5 @@
-﻿using GuimoSoft.Notifications.Tests.Fakes;
-using GuimoSoft.Notifications.AspNetCore;
+﻿using GuimoSoft.Notifications.AspNetCore;
+using GuimoSoft.Notifications.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Notifications.Tests.Fixtures

@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Serialization;
-using GuimoSoft.Serialization.Interfaces;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
+using GuimoSoft.Core.Serialization;
+using GuimoSoft.Core.Serialization.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace GuimoSoft.Bus.Core
 {
@@ -63,6 +64,19 @@ namespace GuimoSoft.Bus.Core
         public override BusConsumerServiceCollectionWrapper WithTypedSerializer<TMessage>(TypedSerializer<TMessage> serializer)
         {
             base.WithTypedSerializer(serializer);
+            return this;
+        }
+
+
+        public override BusConsumerServiceCollectionWrapper WithLogger(IBusLogger logger)
+        {
+            base.WithLogger(logger);
+            return this;
+        }
+
+        public override BusConsumerServiceCollectionWrapper WithLogger(Func<IServiceProvider, IBusLogger> loggerFactory)
+        {
+            base.WithLogger(loggerFactory);
             return this;
         }
     }

@@ -1,6 +1,4 @@
-﻿using GuimoSoft.Notifications;
-
-namespace GuimoSoft.Notifications.Tests.Fakes
+﻿namespace GuimoSoft.Notifications.Tests.Fakes
 {
     public class FakeEntity : NotifiableObject, IObjectWithAssociatedErrorCode<FakeErrorCode>
     {

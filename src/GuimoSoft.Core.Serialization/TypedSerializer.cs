@@ -1,7 +1,7 @@
-﻿using System;
-using GuimoSoft.Serialization.Interfaces;
+﻿using GuimoSoft.Core.Serialization.Interfaces;
+using System;
 
-namespace GuimoSoft.Serialization
+namespace GuimoSoft.Core.Serialization
 {
     public abstract class TypedSerializer<TMessage> : IDefaultSerializer
     {

@@ -1,15 +1,14 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Bus.Core;
+using GuimoSoft.Bus.Tests.Fakes;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer

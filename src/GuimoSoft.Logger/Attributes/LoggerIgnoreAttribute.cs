@@ -14,9 +14,9 @@ namespace GuimoSoft.Logger.Attributes
 
         public LoggerIgnoreAttribute(LogLevel ignoredLevel, params LogLevel[] ignoredLevels)
         {
-            IgnoredLevels = new LogLevel[1 + ignoredLevels?.Length ?? 0];
+            IgnoredLevels = new LogLevel[1 + ignoredLevels.Length];
             IgnoredLevels[0] = ignoredLevel;
-            if (ignoredLevels is not null && ignoredLevels.Length > 0)
+            if (ignoredLevels.Length > 0)
                 Array.Copy(ignoredLevels, 0, IgnoredLevels, 1, ignoredLevels.Length);
         }
     }

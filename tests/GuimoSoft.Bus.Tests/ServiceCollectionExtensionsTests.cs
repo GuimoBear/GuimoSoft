@@ -1,15 +1,19 @@
 ﻿using FluentAssertions;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core;
 using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
 using GuimoSoft.Bus.Kafka;
 using GuimoSoft.Bus.Kafka.Common;
 using GuimoSoft.Bus.Kafka.Producer;
 using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Serialization.Interfaces;
+using GuimoSoft.Core.Serialization.Interfaces;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections;
+using System.Linq;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests
@@ -21,11 +25,36 @@ namespace GuimoSoft.Bus.Tests
         {
             var services = new ServiceCollection();
 
-            services
+            var wrapper = services
                 .AddKafkaConsumer(typeof(ServiceCollectionExtensionsTests))
                 .WithMessageMiddleware<FakeMessage, FakeMessageMiddleware>()
                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
                 .WithTypedSerializer(OtherFakeMessageSerializer.Instance);
+
+            services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogger) &&
+                                          sd.ImplementationType == typeof(DefaultBusLogger))
+                .Should().NotBeNull();
+
+            Assert.Throws<ArgumentNullException>(() => wrapper.WithLogger((IBusLogger)null));
+            Assert.Throws<ArgumentNullException>(() => wrapper.WithLogger((Func<IServiceProvider, IBusLogger>)null));
+
+            var fakeLoggerInstance = new FakeBusLogger();
+
+            wrapper
+                .WithLogger(fakeLoggerInstance);
+
+            services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogger) &&
+                                          ReferenceEquals(sd.ImplementationInstance, fakeLoggerInstance))
+                .Should().NotBeNull();
+
+            Func<IServiceProvider, IBusLogger> fakeLoggerParameterlessFactory = _ => new FakeBusLogger();
+
+            wrapper
+                .WithLogger(fakeLoggerParameterlessFactory);
+
+            services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogger) &&
+                                          ReferenceEquals(sd.ImplementationFactory, fakeLoggerParameterlessFactory))
+                .Should().NotBeNull();
 
             services.FirstOrDefault(sd => sd.ServiceType == typeof(IMediator))
                 .Should().NotBeNull();
@@ -78,6 +107,19 @@ namespace GuimoSoft.Bus.Tests
 
             services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageSerializerManager))
                 .Should().NotBeNull();
+
+            wrapper.Contains(messageMiddlewareServiceDescriptor);
+            wrapper.IndexOf(messageMiddlewareServiceDescriptor);
+            wrapper.Remove(messageMiddlewareServiceDescriptor);
+            wrapper.Insert(0, messageMiddlewareServiceDescriptor);
+            wrapper.RemoveAt(0);
+            wrapper.Add(messageMiddlewareServiceDescriptor);
+
+            wrapper.GetEnumerator();
+
+            (wrapper as IEnumerable).GetEnumerator();
+
+
         }
     }
 }

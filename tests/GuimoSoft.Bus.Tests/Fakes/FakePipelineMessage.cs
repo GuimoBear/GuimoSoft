@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
+using System.Collections.Generic;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {

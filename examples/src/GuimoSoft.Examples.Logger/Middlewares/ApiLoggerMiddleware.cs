@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GuimoSoft.Logger;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using GuimoSoft.Logger;
 
 namespace GuimoSoft.Examples.Logger.Middlewares
 {

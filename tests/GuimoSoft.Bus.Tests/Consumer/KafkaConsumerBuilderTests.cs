@@ -1,7 +1,9 @@
-using Microsoft.Extensions.Options;
-using System;
+using GuimoSoft.Bus.Core.Logs.Interfaces;
 using GuimoSoft.Bus.Kafka.Common;
 using GuimoSoft.Bus.Kafka.Consumer;
+using Microsoft.Extensions.Options;
+using Moq;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -12,19 +14,19 @@ namespace GuimoSoft.Bus.Tests.Consumer
         public void ConstructorShouldCreateSampleConsumerBuilder()
         {
             var kafkaOptions = Options.Create(new KafkaOptions());
-            var kafkaEventsOptions = Options.Create(new KafkaEventsOptions());
+            var moqBusLogger = new Mock<IBusLogger>();
 
-            var sut = new KafkaConsumerBuilder(kafkaOptions, kafkaEventsOptions);
+            var sut = new KafkaConsumerBuilder(kafkaOptions, moqBusLogger.Object);
 
             Assert.IsType<KafkaConsumerBuilder>(sut);
         }
 
         [Fact]
-        public void ConstructorShouldThrowIfOptionsIsNull()
+        public void ConstructorShouldThrowIfAnyParameterIsNull()
         {
-            IOptions<KafkaOptions> kafkaOptions = null;
-
-            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(kafkaOptions, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(null, Mock.Of<IBusLogger>()));
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(Options.Create(new KafkaOptions()), null));
         }
 
         [Fact]
@@ -32,15 +34,20 @@ namespace GuimoSoft.Bus.Tests.Consumer
         {
             var kafkaOptions = Options.Create(new KafkaOptions
             {
-                KafkaBootstrapServers = "kafka-bootstrap",
+                KafkaBootstrapServers = "kafka-bootstrap-servers",
                 ConsumerGroupId = "test-group-id",
-                AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest, 
-                Acks = Confluent.Kafka.Acks.All
+                AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest
             });
 
-            var sut = new KafkaConsumerBuilder(kafkaOptions, null);
+            var sut = new KafkaConsumerBuilder(kafkaOptions, Mock.Of<IBusLogger>());
 
             var consumer = sut.Build();
+
+            Assert.NotNull(consumer);
+
+            sut = new KafkaConsumerBuilder(kafkaOptions, Mock.Of<IBusLogger>());
+
+            consumer = sut.Build();
 
             Assert.NotNull(consumer);
         }

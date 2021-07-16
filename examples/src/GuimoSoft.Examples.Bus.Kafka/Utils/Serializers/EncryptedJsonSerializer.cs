@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Text.Json;
+﻿using GuimoSoft.Core.Serialization.Interfaces;
 using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
 using GuimoSoft.Cryptography.RSA.Services;
 using GuimoSoft.Cryptography.RSA.Services.Interfaces;
 using GuimoSoft.Examples.Bus.Kafka.Infra.Data.Repositories;
-using GuimoSoft.Serialization.Interfaces;
+using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Utils.Serializers
 {
@@ -19,7 +19,7 @@ namespace GuimoSoft.Examples.Bus.Kafka.Utils.Serializers
         private readonly Guid _defaultCertificateId;
         private readonly ICrypterService _crypter;
 
-        private EncryptedJsonSerializer() 
+        private EncryptedJsonSerializer()
         {
             _repository = new EnvironmentVariableRsaParametersRepository(password: Environment.GetEnvironmentVariable("RSA_PASSWORD"));
             Guid.TryParse(Environment.GetEnvironmentVariable("RSA_DEFAULT_CERTIFICATE"), out _defaultCertificateId);

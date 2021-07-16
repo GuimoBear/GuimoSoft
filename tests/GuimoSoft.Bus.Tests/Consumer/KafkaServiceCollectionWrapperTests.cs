@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using GuimoSoft.Bus.Core;
 using GuimoSoft.Bus.Core.Interfaces;
 using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Serialization.Interfaces;
+using GuimoSoft.Core.Serialization.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer

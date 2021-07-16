@@ -1,4 +1,4 @@
-﻿using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {

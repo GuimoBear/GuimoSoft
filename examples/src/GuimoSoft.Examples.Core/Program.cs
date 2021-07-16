@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace GuimoSoft.Core.Examples.Core
+namespace GuimoSoft.Examples.Core
 {
     public class Program
     {

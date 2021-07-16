@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cryptography.RSA.Exceptions;
+using GuimoSoft.Cryptography.RSA.Packets;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GuimoSoft.Cryptography.RSA.Exceptions;
-using GuimoSoft.Cryptography.RSA.Packets;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

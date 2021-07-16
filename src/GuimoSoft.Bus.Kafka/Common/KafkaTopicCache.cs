@@ -1,12 +1,12 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Kafka.Common
 {
@@ -60,15 +60,7 @@ namespace GuimoSoft.Bus.Kafka.Common
 
         private ConcurrentDictionary<Type, string> GetTopicCache()
         {
-            var messageTypesWithNotificationHandlers = _serviceCollection
-                .Where(s => s.ServiceType.IsGenericType &&
-                            s.ServiceType.GetGenericTypeDefinition() == typeof(INotificationHandler<>))
-                .Select(s => s.ServiceType.GetGenericArguments()[0])
-                .Where(s => s.IsGenericType &&
-                            s.GetGenericTypeDefinition() == typeof(MessageNotification<>))
-                .Select(s => s.GetGenericArguments()[0])
-                .Where(s => typeof(IMessage).IsAssignableFrom(s))
-                .Distinct();
+            var messageTypesWithNotificationHandlers = GetMessageTypesWithNotificationHandlers();
 
             var result = new Dictionary<Type, string>(messageTypesWithNotificationHandlers.Count());
             foreach (var messageType in messageTypesWithNotificationHandlers)
@@ -83,15 +75,7 @@ namespace GuimoSoft.Bus.Kafka.Common
 
         private ConcurrentDictionary<string, List<Type>> GetMessageTypes()
         {
-            var messageTypesWithNotificationHandlers = _serviceCollection
-                .Where(s => s.ServiceType.IsGenericType &&
-                            s.ServiceType.GetGenericTypeDefinition() == typeof(INotificationHandler<>))
-                .Select(s => s.ServiceType.GetGenericArguments()[0])
-                .Where(s => s.IsGenericType &&
-                            s.GetGenericTypeDefinition() == typeof(MessageNotification<>))
-                .Select(s => s.GetGenericArguments()[0])
-                .Where(s => typeof(IMessage).IsAssignableFrom(s))
-                .Distinct();
+            var messageTypesWithNotificationHandlers = GetMessageTypesWithNotificationHandlers();
 
             var result = new Dictionary<string, List<Type>>();
             foreach (var messageType in messageTypesWithNotificationHandlers)
@@ -106,6 +90,32 @@ namespace GuimoSoft.Bus.Kafka.Common
                 }
             }
             return new ConcurrentDictionary<string, List<Type>>(result);
+        }
+
+        private IEnumerable<Type> GetMessageTypesWithNotificationHandlers()
+        {
+            var concreteHandlers = _serviceCollection
+                .SelectMany(s => s.ServiceType.GetInterfaces().Union(s.ImplementationType?.GetInterfaces() ?? new Type[0]))
+                .Where(contract =>
+                {
+                    return contract.IsGenericType &&
+                           contract.GetGenericTypeDefinition() == typeof(INotificationHandler<>) &&
+                           contract.GenericTypeArguments[0].IsGenericType &&
+                           contract.GenericTypeArguments[0].GetGenericTypeDefinition() == typeof(MessageNotification<>) &&
+                           typeof(IMessage).IsAssignableFrom(contract.GenericTypeArguments[0].GenericTypeArguments[0]);
+                })
+                .Select(contract => contract.GenericTypeArguments[0].GenericTypeArguments[0]);
+
+            return _serviceCollection
+                .Where(s => s.ServiceType.IsGenericType &&
+                            s.ServiceType.GetGenericTypeDefinition() == typeof(INotificationHandler<>))
+                .Select(s => s.ServiceType.GetGenericArguments()[0])
+                .Where(s => s.IsGenericType &&
+                            s.GetGenericTypeDefinition() == typeof(MessageNotification<>))
+                .Select(s => s.GetGenericArguments()[0])
+                .Where(s => typeof(IMessage).IsAssignableFrom(s))
+                .Union(concreteHandlers)
+                .Distinct();
         }
     }
 }

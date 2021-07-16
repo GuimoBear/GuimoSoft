@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "GuimoSoft.Core.Examples.Core": {
+    "GuimoSoft.Examples.Core": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

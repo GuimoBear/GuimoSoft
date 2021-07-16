@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cache.Exceptions;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using GuimoSoft.Cache.Exceptions;
 using Xunit;
 
 namespace GuimoSoft.Cache.Tests

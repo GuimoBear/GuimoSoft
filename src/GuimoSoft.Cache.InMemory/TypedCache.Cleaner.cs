@@ -1,8 +1,8 @@
-﻿using System;
+﻿using GuimoSoft.Cache.Utils;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Cache.Utils;
 
 namespace GuimoSoft.Cache.InMemory
 {
@@ -23,18 +23,11 @@ namespace GuimoSoft.Cache.InMemory
 
         private void ClearCache()
         {
-            try
-            {
-                using var locker = new DisposableLock(_lock);
-                var now = DateTime.UtcNow;
-                var valuesToExclude = _cache.Where(item => item.Value.TTL < now).ToList();
-                foreach (var kvp in valuesToExclude)
-                    _cache.Remove(kvp);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Houve um erro ao limpar o cache: {ex.Message}");
-            }
+            using var locker = new DisposableLock(_lock);
+            var now = DateTime.UtcNow;
+            var valuesToExclude = _cache.Where(item => item.Value.TTL < now).ToList();
+            foreach (var kvp in valuesToExclude)
+                _cache.Remove(kvp);
         }
 
         private async Task DelayToNextCleaning()

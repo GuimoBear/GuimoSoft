@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Moq;
-using System;
-using GuimoSoft.Core.AspNetCore;
+﻿using GuimoSoft.Core.AspNetCore;
 using GuimoSoft.Core.AspNetCore.Constants;
 using GuimoSoft.Core.AspNetCore.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests

@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
+using System.Text.Json.Serialization;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Messages
 {

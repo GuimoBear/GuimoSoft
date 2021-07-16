@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using System;
 using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Serialization;
+using GuimoSoft.Core.Serialization;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core

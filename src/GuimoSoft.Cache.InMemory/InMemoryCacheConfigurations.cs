@@ -1,6 +1,6 @@
-﻿using System;
+﻿using GuimoSoft.Cache.Utils;
+using System;
 using System.Collections.Generic;
-using GuimoSoft.Cache.Utils;
 
 namespace GuimoSoft.Cache
 {

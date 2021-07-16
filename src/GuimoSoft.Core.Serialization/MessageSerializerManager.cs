@@ -1,9 +1,9 @@
-﻿using System;
+﻿using GuimoSoft.Core.Serialization.Interfaces;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using GuimoSoft.Serialization.Interfaces;
 
-namespace GuimoSoft.Serialization
+namespace GuimoSoft.Core.Serialization
 {
     internal sealed class MessageSerializerManager : IMessageSerializerManager
     {

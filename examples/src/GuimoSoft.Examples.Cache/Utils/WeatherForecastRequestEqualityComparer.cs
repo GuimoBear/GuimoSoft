@@ -1,7 +1,7 @@
-﻿using System;
+﻿using GuimoSoft.Examples.Cache.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using GuimoSoft.Examples.Cache.ValueObjects;
 
 namespace GuimoSoft.Examples.Cache.Utils
 {

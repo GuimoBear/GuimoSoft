@@ -1,15 +1,21 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cache.InMemory;
+using GuimoSoft.Cache.Tests.Fakes;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using GuimoSoft.Cache.InMemory;
-using GuimoSoft.Cache.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cache.Tests.InMemory
 {
     public class InMemoryTypedCacheTests
     {
+        [Fact]
+        public void ConstructiorWithNullParameterShouldBeThrowArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new TypedCache<FakeKey, FakeValue>(null));
+        }
+
         [Fact]
         public void When_TryCreateWithConfigurerThrowException_Then_ThrowException()
         {
@@ -35,8 +41,8 @@ namespace GuimoSoft.Cache.Tests.InMemory
                 .OrAdd(() => value);
 
             ReferenceEquals(cachedValue, value)
-                .Should().BeTrue(); 
-            
+                .Should().BeTrue();
+
             cachedValue = sut.Get(key)
                  .OrAdd(() => new FakeValue("test", 5));
 

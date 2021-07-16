@@ -5,7 +5,7 @@ namespace GuimoSoft.Logger.Utils
 {
     internal static class LogLevelAccessor
     {
-        private static AsyncLocal<LogLevel?> _logLevelCurrent = new AsyncLocal<LogLevel?>();
+        private static readonly AsyncLocal<LogLevel?> _logLevelCurrent = new AsyncLocal<LogLevel?>();
 
         public static LogLevel LogLevel
         {

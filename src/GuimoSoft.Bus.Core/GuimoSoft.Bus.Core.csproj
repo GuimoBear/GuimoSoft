@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GuimoSoft.Bus.Abstractions\GuimoSoft.Bus.Abstractions.csproj" />
-    <ProjectReference Include="..\GuimoSoft.Serialization\GuimoSoft.Serialization.csproj" />
+    <ProjectReference Include="..\GuimoSoft.Core.Serialization\GuimoSoft.Core.Serialization.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

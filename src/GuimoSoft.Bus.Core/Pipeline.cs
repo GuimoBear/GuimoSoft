@@ -1,10 +1,10 @@
-﻿using System;
+﻿using GuimoSoft.Bus.Abstractions;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Core
 {

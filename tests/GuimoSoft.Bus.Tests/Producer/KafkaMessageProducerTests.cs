@@ -1,8 +1,8 @@
 using Confluent.Kafka;
 using GuimoSoft.Bus.Kafka.Producer;
 using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Serialization;
-using GuimoSoft.Serialization.Interfaces;
+using GuimoSoft.Core.Serialization;
+using GuimoSoft.Core.Serialization.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using System;

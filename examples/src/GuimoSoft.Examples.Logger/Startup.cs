@@ -1,11 +1,11 @@
+using GuimoSoft.Examples.Logger.Middlewares;
+using GuimoSoft.Logger.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using GuimoSoft.Examples.Logger.Middlewares;
-using GuimoSoft.Logger.AspNetCore;
 
 namespace GuimoSoft.Examples.Logger
 {

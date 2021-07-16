@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GuimoSoft.Logger.Attributes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using GuimoSoft.Logger.Attributes;
 
 namespace GuimoSoft.Logger.Utils
 {
@@ -50,12 +50,6 @@ namespace GuimoSoft.Logger.Utils
             public Key(Type type, LogLevel logLevel)
             {
                 hashCode = HashCode.Combine(type, logLevel);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is Key key &&
-                       hashCode == key.hashCode;
             }
 
             public override int GetHashCode()

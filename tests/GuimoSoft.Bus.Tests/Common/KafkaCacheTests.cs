@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Bus.Kafka.Common;
+using GuimoSoft.Bus.Tests.Fakes;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Common
@@ -16,7 +16,8 @@ namespace GuimoSoft.Bus.Tests.Common
         private IServiceCollection CreateServiceCollectionWithoutAnotherFakeMessageNotificationHandler()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<MessageNotification<FakeMessage>>>());
+            serviceCollection.AddTransient<FakeMessageHandler>();
+            serviceCollection.AddTransient<SecondFakeMessageHandler>();
             serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<MessageNotification<OtherFakeMessage>>>());
 
             return serviceCollection;
@@ -95,7 +96,7 @@ namespace GuimoSoft.Bus.Tests.Common
 
             var type = typeof(FakeMessage);
 
-            var expected = new List<Type> { type };
+            var expected = new List<Type> { type, typeof(SecondFakeMessage) };
 
             var actual = sut[FakeMessage.TOPIC_NAME];
 

@@ -1,4 +1,9 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Cryptography.RSA.Exceptions;
+using GuimoSoft.Cryptography.RSA.Packets;
+using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
+using GuimoSoft.Cryptography.RSA.Services;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
@@ -7,11 +12,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Cryptography.RSA.Exceptions;
-using GuimoSoft.Cryptography.RSA.Packets;
-using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
-using GuimoSoft.Cryptography.RSA.Services;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests
@@ -207,7 +207,7 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
         private async ValueTask<string> GetDecodedMessage(byte[] content)
         {
             using var inputStream = new MemoryStream(content);
-            using var outputStream = new MemoryStream(); 
+            using var outputStream = new MemoryStream();
             using var rsa = new RSACryptoServiceProvider();
             rsa.ImportParameters(PublicAndPrivateRSA2048Parameters);
 

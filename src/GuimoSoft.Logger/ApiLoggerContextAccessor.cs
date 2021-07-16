@@ -5,7 +5,7 @@ namespace GuimoSoft.Logger
 {
     internal class ApiLoggerContextAccessor : IApiLoggerContextAccessor
     {
-        private static AsyncLocal<ApiLogerContextHolder> _apiLoggercontextCurrent = new AsyncLocal<ApiLogerContextHolder>();
+        private static readonly AsyncLocal<ApiLogerContextHolder> _apiLoggercontextCurrent = new AsyncLocal<ApiLogerContextHolder>();
 
         public IDictionary<string, object> Context
         {

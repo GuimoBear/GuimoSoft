@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using System.Collections.Generic;
-using GuimoSoft.Notifications.Tests.Fakes;
-using Xunit;
 using GuimoSoft.Core;
+using GuimoSoft.Notifications.Tests.Fakes;
+using System.Collections.Generic;
+using Xunit;
 
 namespace GuimoSoft.Notifications.Tests
 {

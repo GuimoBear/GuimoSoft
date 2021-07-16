@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GuimoSoft.Logger.AspNetCore;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GuimoSoft.Logger.AspNetCore;
 using Xunit;
 
 namespace GuimoSoft.Logger.Tests

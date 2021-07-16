@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using System;
-using System.Linq;
 using GuimoSoft.Cryptography.RSA.Exceptions;
 using GuimoSoft.Cryptography.RSA.Packets;
 using GuimoSoft.Cryptography.Tests.Fixtures;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

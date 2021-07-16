@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using GuimoSoft.Core.Serialization;
+using System.Text;
 using System.Text.Json;
-using GuimoSoft.Serialization;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {

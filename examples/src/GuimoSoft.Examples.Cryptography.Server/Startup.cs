@@ -1,3 +1,5 @@
+using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Examples.Cryptography.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Examples.Cryptography.Core;
 
 namespace GuimoSoft.Examples.Cryptography.Server
 {
