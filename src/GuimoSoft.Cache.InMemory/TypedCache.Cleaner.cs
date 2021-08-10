@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Cache.Utils;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GuimoSoft.Cache.Utils;
 
 namespace GuimoSoft.Cache.InMemory
 {

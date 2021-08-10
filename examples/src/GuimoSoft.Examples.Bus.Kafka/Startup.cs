@@ -1,11 +1,3 @@
-using GuimoSoft.Bus.Kafka;
-using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage;
-using GuimoSoft.Examples.Bus.Kafka.Messages;
-using GuimoSoft.Examples.Bus.Kafka.Utils;
-using GuimoSoft.Examples.Bus.Kafka.Utils.Serializers;
-using GuimoSoft.Logger;
-using GuimoSoft.Logger.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using GuimoSoft.Bus.Kafka;
+using GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage;
+using GuimoSoft.Examples.Bus.Kafka.Messages;
+using GuimoSoft.Examples.Bus.Kafka.Utils;
+using GuimoSoft.Examples.Bus.Kafka.Utils.Serializers;
+using GuimoSoft.Logger.AspNetCore;
 
 namespace GuimoSoft.Examples.Bus.Kafka
 {
@@ -35,20 +33,29 @@ namespace GuimoSoft.Examples.Bus.Kafka
 
             services.AddApiLogger();
 
-            services.AddOptions<KafkaOptions>()
-                .Configure(opt =>
-                {
-                    opt.KafkaBootstrapServers = Environment.GetEnvironmentVariable("KAFKA_HOSTS");
-                    opt.ConsumerGroupId = Environment.GetEnvironmentVariable("KAFKA_CONSUMER_GROUP_ID");
-                });
-
             var wrapper = services
-                .AddKafkaProducer()
-                .AddKafkaConsumer(typeof(Startup))
-                .WithDefaultSerializer(EncryptedJsonSerializer.Instance)
-                .WithLogger(prov => new BusLogger(prov.GetRequiredService<IApiLogger<BusLogger>>()));
-
-            wrapper.WithMessageMiddleware<HelloMessage, HelloMessageMiddleware>();
+                .AddKafkaProducer(config =>
+                {
+                    config
+                        .ToServer(options =>
+                        {
+                            options.BootstrapServers = Environment.GetEnvironmentVariable("KAFKA_HOSTS");
+                            options.Acks = Confluent.Kafka.Acks.All;
+                        })
+                        .WithDefaultSerializer(EncryptedJsonSerializer.Instance)
+                        .Produce().FromType<HelloMessage>().ToEndpoint(HelloMessage.TOPIC_NAME);
+                })
+                .AddKafkaConsumer(config => 
+                {
+                    config
+                        .FromServer(options =>
+                        {
+                            options.BootstrapServers = Environment.GetEnvironmentVariable("KAFKA_HOSTS");
+                            options.GroupId = Environment.GetEnvironmentVariable("KAFKA_CONSUMER_GROUP_ID");
+                        })
+                        .WithDefaultSerializer(EncryptedJsonSerializer.Instance)
+                        .Consume().OfType<HelloMessage>().WithMiddleware<HelloMessageMiddleware>().FromEndpoint(HelloMessage.TOPIC_NAME);
+                });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

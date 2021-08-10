@@ -27,7 +27,9 @@ namespace GuimoSoft.Core
 
         public bool Equals(Tenant other)
         {
-            return other?.Value?.Equals(Value) ?? false;
+            if (other is null)
+                return false;
+            return other.Value.Equals(Value);
         }
 
         public override int GetHashCode()

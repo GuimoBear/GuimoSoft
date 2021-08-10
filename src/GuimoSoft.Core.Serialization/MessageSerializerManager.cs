@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Core.Serialization.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Core.Serialization
 {

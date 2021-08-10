@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Core;
+using Moq;
+using System.Collections.Generic;
+using System.Linq;
 using GuimoSoft.Notifications.AspNetCore;
 using GuimoSoft.Notifications.Interfaces;
 using GuimoSoft.Notifications.Tests.Fakes;
 using GuimoSoft.Notifications.Tests.Fixtures;
-using Moq;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
+using GuimoSoft.Core;
 
 namespace GuimoSoft.Notifications.Tests
 {
@@ -40,10 +40,6 @@ namespace GuimoSoft.Notifications.Tests
                 .Setup(x => x.AddNotifications(It.IsAny<IEnumerable<Notification>>()))
                 .Callback<IEnumerable<Notification>>(notifications.AddRange);
 
-            moqNotificationContext
-                .Setup(x => x.AssociateErrorCode(It.IsAny<FakeErrorCode>()))
-                .Verifiable();
-
             executor.Validate(new FakeEntity(), moqNotificationContext.Object);
 
             moqNotificationContext
@@ -74,10 +70,6 @@ namespace GuimoSoft.Notifications.Tests
             moqNotificationContext
                 .Setup(x => x.AddNotifications(It.IsAny<IEnumerable<Notification>>()))
                 .Callback<IEnumerable<Notification>>(notifications.AddRange);
-
-            moqNotificationContext
-                .Setup(x => x.AssociateErrorCode(It.IsAny<FakeErrorCode>()))
-                .Verifiable();
 
             var executor = executors[0] as ValidationExecutor<FakeErrorCode, FakeEntity>;
 

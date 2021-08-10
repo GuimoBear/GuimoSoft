@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Core.Tests.Fakes;
 using Microsoft.OpenApi.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
+using GuimoSoft.Core.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests

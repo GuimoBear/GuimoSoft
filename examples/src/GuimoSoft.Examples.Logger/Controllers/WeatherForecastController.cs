@@ -1,9 +1,9 @@
-﻿using GuimoSoft.Logger;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GuimoSoft.Logger;
 
 namespace GuimoSoft.Examples.Logger.Controllers
 {

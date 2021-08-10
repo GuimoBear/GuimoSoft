@@ -1,10 +1,10 @@
-﻿using GuimoSoft.Cryptography.RSA.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc.Formatters;
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using GuimoSoft.Cryptography.RSA.Services.Interfaces;
 
 namespace GuimoSoft.Cryptography.AspNetCore.Formatters
 {

@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Cryptography.RSA.Exceptions;
-using GuimoSoft.Cryptography.RSA.Packets;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GuimoSoft.Cryptography.RSA.Exceptions;
+using GuimoSoft.Cryptography.RSA.Packets;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests
@@ -20,19 +20,29 @@ namespace GuimoSoft.Cryptography.Tests
             Assert.Throws<ArgumentNullException>(() => new PasswordEncryptedPackage(default));
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("a")]
+        public void Dado_UmPacoteCriado_Se_EncryptComPasswordInvalido_Entao_EstouraArgumentException(string password)
+        {
+            var sut = new PasswordEncryptedPackage(Array.Empty<byte>());
+            Assert.Throws<ArgumentException>(() => sut.Encrypt(password));
+        }
+
         [Fact]
         public void Dado_UmPacoteComOConteudoModificado_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
         {
 
             var package = new PasswordEncryptedPackage(TEST_BYTES_CONTENT.ToArray());
-            var bytes = package.Encrypt(TEST_PASSWORD);
+            var bytes = package.Encrypt(TEST_PASSWORD, Encoding.ASCII);
             bytes[8] = (byte)(bytes[8] ^ 112);
             bytes[9] = (byte)(bytes[9] ^ 112);
             bytes[10] = (byte)(bytes[10] ^ 112);
 
             var newPackage = new PasswordEncryptedPackage(bytes);
 
-            Assert.Throws<CorruptedPackageException>(() => newPackage.Decrypt(TEST_PASSWORD));
+            Assert.Throws<CorruptedPackageException>(() => newPackage.Decrypt(TEST_PASSWORD, Encoding.ASCII));
         }
 
         [Fact]

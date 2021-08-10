@@ -17,8 +17,8 @@ namespace GuimoSoft.Notifications.Tests
                 .Should().BeFalse();
 
             entity.Notifications
-                .Should().NotBeEmpty();
-
+                .Should().NotBeEmpty(); 
+            
             entity = new FakeEntity("test");
 
             entity.Validate(entity, FakeEntityValidator.Instance);

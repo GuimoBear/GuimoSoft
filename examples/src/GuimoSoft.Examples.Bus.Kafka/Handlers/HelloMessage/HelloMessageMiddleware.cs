@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Bus.Abstractions;
+﻿using System;
+using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Logger;
-using System;
-using System.Threading.Tasks;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
 {
@@ -15,13 +15,17 @@ namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
             _logger = logger;
         }
 
-        public async Task InvokeAsync(ConsumptionContext<Messages.HelloMessage> context, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<Messages.HelloMessage> context, Func<Task> next)
         {
             await Task.Delay(TimeSpan.FromSeconds(2));
             _logger
                 .ComPropriedade("name", context.Message.Name)
                 .ComPropriedade("timestamp", DateTime.Now)
                 .Informacao($"Middleware");
+
+            if (context.Message.ThrowException)
+                throw new ArgumentException(nameof(context));
+
             await next();
         }
     }

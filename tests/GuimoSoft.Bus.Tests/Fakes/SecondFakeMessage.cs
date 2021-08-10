@@ -2,7 +2,6 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    [MessageTopic(TOPIC_NAME)]
     public class SecondFakeMessage : IMessage
     {
         public const string TOPIC_NAME = "fake-message";

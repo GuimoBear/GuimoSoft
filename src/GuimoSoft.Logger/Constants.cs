@@ -1,6 +1,6 @@
 ﻿namespace GuimoSoft.Logger
 {
-    static class Constants
+    internal static class Constants
     {
         public const string KEY_CORRELATION_ID = "correlation-id";
         public const string KEY_TENANT = "bandeira";

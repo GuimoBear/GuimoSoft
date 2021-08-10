@@ -1,11 +1,11 @@
-using GuimoSoft.Core;
-using GuimoSoft.Core.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using GuimoSoft.Core.AspNetCore;
+using GuimoSoft.Core;
 
 namespace GuimoSoft.Examples.Core
 {

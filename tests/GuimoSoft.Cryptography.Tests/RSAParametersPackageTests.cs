@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
+using System;
+using System.Linq;
 using GuimoSoft.Cryptography.RSA.Exceptions;
 using GuimoSoft.Cryptography.RSA.Packets;
 using GuimoSoft.Cryptography.Tests.Fixtures;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests
@@ -22,6 +22,44 @@ namespace GuimoSoft.Cryptography.Tests
         public void Dado_UmPacoteNulo_Se_Construir_Entao_EstouraArgumentnullException()
         {
             Assert.Throws<ArgumentNullException>(() => new RsaParametersPackage(default));
+        }
+
+        [Fact]
+        public void Dado_UmPacoteComUmArrayVazio_Se_Construir_Entao_EstouraArgumentNullException()
+        {
+            Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(Array.Empty<byte>()));
+        }
+
+        [Fact]
+        public void Dado_UmPacoteComOConteudoApenasComOIdentificador_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        {
+            var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
+
+            Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(package.Bytes.Take(16).ToArray()));
+        }
+
+        [Fact]
+        public void Dado_UmPacoteComOConteudoApenasComOIdentificadorEOTamanho_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        {
+            var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
+
+            Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(package.Bytes.Take(18).ToArray()));
+        }
+
+        [Fact]
+        public void Dado_UmPacoteComOConteudoApenasComOIdentificadorOTamanhoEOInclusorDeChavePrivada_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        {
+            var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
+
+            Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(package.Bytes.Take(19).ToArray()));
+        }
+
+        [Fact]
+        public void Dado_UmPacoteComOConteudoApenasComOIdentificadorOTamanhoOInclusorDeChavePrivadaESemOCRC_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        {
+            var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
+
+            Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(package.Bytes.Take(package.Bytes.Length - 2).ToArray()));
         }
 
         [Fact]

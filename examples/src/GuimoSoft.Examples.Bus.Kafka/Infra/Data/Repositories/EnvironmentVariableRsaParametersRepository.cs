@@ -1,10 +1,10 @@
-﻿using GuimoSoft.Cryptography.RSA.Packets;
-using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using GuimoSoft.Cryptography.RSA.Packets;
+using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Infra.Data.Repositories
 {

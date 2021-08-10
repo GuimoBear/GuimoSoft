@@ -64,7 +64,38 @@ namespace GuimoSoft.Core.Tests
             object objectStringCorrelationId = "teste";
 
             Assert.True(correlationId.Equals(objectStringCorrelationId));
-            Assert.Equal(correlationId.GetHashCode(), correlationId.GetHashCode());
+            Assert.Equal(correlationId.GetHashCode(), correlationId.GetHashCode()); 
+            
+            objectStringCorrelationId = null;
+
+            Assert.False(correlationId.Equals(objectStringCorrelationId));
+        }
+
+        [Fact]
+        public void Se_CorrelationIsTeste_Entao_EqualComCorrelationIdTeste_Entao_RetornaTrue()
+        {
+            CorrelationId correlationId = "teste";
+            CorrelationId objectStringCorrelationId = "teste";
+
+            Assert.True(correlationId.Equals((object)objectStringCorrelationId));
+        }
+
+        [Fact]
+        public void Se_CorrelationIsTeste_Entao_EqualComObject_Entao_RetornaFalse()
+        {
+            CorrelationId correlationId = "teste";
+            var anotherObject = new object();
+
+            Assert.False(correlationId.Equals(anotherObject));
+        }
+
+        [Fact]
+        public void Se_CorrelationIsTeste_Entao_EqualComStringNula_Entao_RetornaFalse()
+        {
+            CorrelationId correlationId = "teste";
+            string nullString = null;
+
+            Assert.False(correlationId.Equals(nullString));
         }
     }
 }

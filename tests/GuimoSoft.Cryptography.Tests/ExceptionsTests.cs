@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Cryptography.RSA.Exceptions;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using GuimoSoft.Cryptography.RSA.Exceptions;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using GuimoSoft.Notifications.AspNetCore;
 using GuimoSoft.Notifications.Interfaces;
 using GuimoSoft.Notifications.Tests.Fakes;
 using GuimoSoft.Notifications.Tests.Fixtures;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using Xunit;
 
 namespace GuimoSoft.Notifications.Tests

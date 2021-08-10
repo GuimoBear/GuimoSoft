@@ -1,10 +1,10 @@
-﻿using GuimoSoft.Logger.AspNetCore;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GuimoSoft.Logger.AspNetCore;
 using Xunit;
 
 namespace GuimoSoft.Logger.Tests
@@ -21,9 +21,6 @@ namespace GuimoSoft.Logger.Tests
         public async Task When_CallInvokeAsync_Then_CreateContextInstance()
         {
             var moqAccessor = new Mock<IApiLoggerContextAccessor>();
-            moqAccessor
-                .SetupSet(x => x.Context = It.IsAny<IDictionary<string, object>>())
-                .Verifiable();
 
             var sut = new ApiLoggerAccessorInitializerMiddleware(moqAccessor.Object);
 

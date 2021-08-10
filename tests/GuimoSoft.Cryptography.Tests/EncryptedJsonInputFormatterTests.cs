@@ -1,8 +1,4 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Cryptography.AspNetCore.Formatters;
-using GuimoSoft.Cryptography.RSA.Services.Interfaces;
-using GuimoSoft.Cryptography.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Internal;
@@ -16,6 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Cryptography.AspNetCore.Formatters;
+using GuimoSoft.Cryptography.RSA.Services.Interfaces;
+using GuimoSoft.Cryptography.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests
@@ -74,6 +74,40 @@ namespace GuimoSoft.Cryptography.Tests
 
             moqHeaders.Verify(x => x.TryGetValue(Constants.RSA_IDENTIFIER_HEADER, out certId), Times.Once);
         }
+
+
+        [Fact]
+        public async Task RequestWithCertIdHeaderAndValidGuidAndInvalidJson_Return_SuccessInputFormatterResult()
+        {
+            var request = new FakeRequest("test", 2);
+            var stringContent = JsonConvert.SerializeObject(request).Substring(0, 15);
+            var contentBytes = Encoding.UTF8.GetBytes(stringContent);
+
+            var (moqHeaders, moqHttpContext) = GetHttpContext(contentBytes);
+            var modelMetadata = GetModelMetadata(request.GetType());
+
+            StringValues certId = Guid.NewGuid().ToString();
+            moqHeaders.Setup(x => x.TryGetValue(Constants.RSA_IDENTIFIER_HEADER, out certId))
+                .Returns(true);
+
+            var inputFormatterContext = new InputFormatterContext(moqHttpContext.Object, typeof(FakeRequest).FullName, new ModelStateDictionary(), modelMetadata, (stream, encoding) => new StreamReader(stream, encoding));
+
+            var moqCrypterService = new Mock<ICrypterService>();
+            moqCrypterService.Setup(x => x.Decrypt(It.IsAny<Guid>(), It.IsAny<Stream>()))
+                .ReturnsAsync(contentBytes);
+
+            var sut = new EncryptedJsonInputFormatter(moqCrypterService.Object);
+
+            var result = await sut.ReadRequestBodyAsync(inputFormatterContext);
+
+            result
+                .Should().BeEquivalentTo(InputFormatterResult.Success(null));
+
+            moqHeaders.Verify(x => x.TryGetValue(Constants.RSA_IDENTIFIER_HEADER, out certId), Times.Once);
+
+            moqCrypterService.Verify(x => x.Decrypt(It.IsAny<Guid>(), It.IsAny<Stream>()), Times.Once);
+        }
+
 
         [Fact]
         public async Task RequestWithCertIdHeaderAndValidGuid_Return_SuccessInputFormatterResult()

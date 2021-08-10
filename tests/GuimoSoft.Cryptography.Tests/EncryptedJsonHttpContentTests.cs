@@ -1,7 +1,4 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Cryptography.RSA.Http;
-using GuimoSoft.Cryptography.RSA.Services.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using System;
@@ -10,6 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Cryptography.RSA.Http;
+using GuimoSoft.Cryptography.RSA.Services.Interfaces;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests

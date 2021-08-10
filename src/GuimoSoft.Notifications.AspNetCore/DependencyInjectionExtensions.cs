@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Notifications.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reflection;
+using GuimoSoft.Notifications.Interfaces;
 
 namespace GuimoSoft.Notifications.AspNetCore
 {

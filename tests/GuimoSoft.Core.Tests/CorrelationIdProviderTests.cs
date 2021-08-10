@@ -1,9 +1,9 @@
-﻿using GuimoSoft.Core.AspNetCore;
-using GuimoSoft.Core.AspNetCore.Constants;
-using GuimoSoft.Core.AspNetCore.Exceptions;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
+using GuimoSoft.Core.AspNetCore;
+using GuimoSoft.Core.AspNetCore.Constants;
+using GuimoSoft.Core.AspNetCore.Exceptions;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests
@@ -54,6 +54,53 @@ namespace GuimoSoft.Core.Tests
                 RequestConstants.CORRELATION_ID_HEADER,
                 expectedCorrelationId
             ), Times.Once);
+
+            accessorMock
+                .SetupGet(a => a.HttpContext.Response.Headers)
+                .Returns(default(IHeaderDictionary));
+
+            (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+
+            accessorMock
+                .SetupGet(a => a.HttpContext.Response.Headers)
+                .Returns(default(IHeaderDictionary));
+
+            provider.SetCorrelationIdInResponseHeader();
+
+            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
+                RequestConstants.CORRELATION_ID_HEADER,
+                expectedCorrelationId
+            ), Times.Never);
+
+            (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+
+            accessorMock
+                .SetupGet(a => a.HttpContext.Response)
+                .Returns(default(HttpResponse));
+
+            provider.SetCorrelationIdInResponseHeader();
+
+            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
+                RequestConstants.CORRELATION_ID_HEADER,
+                expectedCorrelationId
+            ), Times.Never); 
+            
+            (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+
+            accessorMock
+                .SetupGet(a => a.HttpContext)
+                .Returns(default(HttpContext));
+
+            provider.SetCorrelationIdInResponseHeader();
+
+            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
+                RequestConstants.CORRELATION_ID_HEADER,
+                expectedCorrelationId
+            ), Times.Never);
+
+            provider = new CorrelationIdProvider(null, Mock.Of<IProviderExtension>());
+
+            provider.SetCorrelationIdInResponseHeader();
         }
 
         [Theory]

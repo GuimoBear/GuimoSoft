@@ -8,7 +8,7 @@ namespace GuimoSoft.Core
 
         private CorrelationId(string correlationId)
         {
-            Value = correlationId ?? string.Empty;
+            Value = correlationId;
         }
 
         public override bool Equals(object obj)

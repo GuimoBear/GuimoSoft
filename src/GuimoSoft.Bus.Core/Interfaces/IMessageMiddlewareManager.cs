@@ -1,23 +1,25 @@
-﻿using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Bus.Core.Internal;
 
 namespace GuimoSoft.Bus.Core.Interfaces
 {
     internal interface IMessageMiddlewareExecutorProvider
     {
-        Pipeline GetPipeline(Type messageType);
+        Pipeline GetPipeline(BusName brokerName, Enum @switch, Type messageType);
     }
 
     public interface IMessageMiddlewareRegister
     {
-        void Register<TMessage, TType>()
+        void Register<TMessage, TMiddleware>(BusName brokerName, Enum @switch, ServiceLifetime lifetime)
             where TMessage : IMessage
-            where TType : class, IMessageMiddleware<TMessage>;
+            where TMiddleware : class, IMessageMiddleware<TMessage>;
 
-        void Register<TMessage, TType>(Func<IServiceProvider, TType> factory)
+        void Register<TMessage, TMiddleware>(BusName brokerName, Enum @switch, Func<IServiceProvider, TMiddleware> factory, ServiceLifetime lifetime)
             where TMessage : IMessage
-            where TType : class, IMessageMiddleware<TMessage>;
+            where TMiddleware : class, IMessageMiddleware<TMessage>;
     }
 
     internal interface IMessageMiddlewareManager : IMessageMiddlewareExecutorProvider, IMessageMiddlewareRegister

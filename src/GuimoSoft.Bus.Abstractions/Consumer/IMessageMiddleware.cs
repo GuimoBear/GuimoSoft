@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace GuimoSoft.Bus.Abstractions.Consumer
 {
-    public interface IMessageMiddleware<TType>
-        where TType : IMessage
+    public interface IMessageMiddleware<TMessage>
+        where TMessage : IMessage
     {
-        Task InvokeAsync(ConsumptionContext<TType> context, Func<Task> next);
+        Task InvokeAsync(ConsumeContext<TMessage> context, Func<Task> next);
     }
 }

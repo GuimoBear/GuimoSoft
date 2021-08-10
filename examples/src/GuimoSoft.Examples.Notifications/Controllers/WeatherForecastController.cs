@@ -1,9 +1,9 @@
-﻿using GuimoSoft.Examples.Cache.ValueObjects;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GuimoSoft.Examples.Cache.ValueObjects;
 
 namespace GuimoSoft.Examples.Notifications.Controllers
 {

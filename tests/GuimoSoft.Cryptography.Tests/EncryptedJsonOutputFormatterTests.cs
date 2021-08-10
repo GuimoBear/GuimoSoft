@@ -1,17 +1,16 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Cryptography.AspNetCore;
-using GuimoSoft.Cryptography.AspNetCore.Formatters;
-using GuimoSoft.Cryptography.RSA.Services.Interfaces;
-using GuimoSoft.Cryptography.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using GuimoSoft.Cryptography.AspNetCore;
+using GuimoSoft.Cryptography.AspNetCore.Formatters;
+using GuimoSoft.Cryptography.RSA.Services.Interfaces;
+using GuimoSoft.Cryptography.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cryptography.Tests
@@ -75,14 +74,8 @@ namespace GuimoSoft.Cryptography.Tests
             request.SetupGet(f => f.ContentType).Returns(contentType);
 
             var responseHeaders = new Mock<IHeaderDictionary>();
-            responseHeaders
-                .Setup(x => x.Add(It.IsAny<string>(), It.IsAny<StringValues>()))
-                .Verifiable();
 
             var moqResponseBody = new Mock<Stream>();
-            moqResponseBody
-                .Setup(x => x.WriteAsync(It.IsAny<ReadOnlyMemory<byte>>(), It.IsAny<CancellationToken>()))
-                .Verifiable();
 
             var response = new Mock<HttpResponse>();
             response.SetupGet(r => r.Headers).Returns(responseHeaders.Object);

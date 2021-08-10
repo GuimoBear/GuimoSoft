@@ -1,6 +1,8 @@
+using MediatR;
+
 namespace GuimoSoft.Bus.Abstractions
 {
-    public interface IMessage
+    public interface IMessage : INotification
     {
     }
 }

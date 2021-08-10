@@ -1,5 +1,5 @@
-﻿using GuimoSoft.Cache.Exceptions;
-using System;
+﻿using System;
+using GuimoSoft.Cache.Exceptions;
 
 namespace GuimoSoft.Cache
 {

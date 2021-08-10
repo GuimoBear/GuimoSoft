@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Bus.Tests.Fakes;
 using System.Text.Json;
+using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests

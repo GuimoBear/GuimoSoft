@@ -1,5 +1,5 @@
-﻿using GuimoSoft.Core.Serialization.Interfaces;
-using System;
+﻿using System;
+using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Core.Serialization
 {

@@ -1,13 +1,12 @@
-﻿using GuimoSoft.Bus.Abstractions.Consumer;
-using MediatR;
+﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class FakeMessageHandler : INotificationHandler<MessageNotification<FakeMessage>>
+    public class FakeMessageHandler : INotificationHandler<FakeMessage>
     {
-        public Task Handle(MessageNotification<FakeMessage> notification, CancellationToken cancellationToken)
+        public Task Handle(FakeMessage notification, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

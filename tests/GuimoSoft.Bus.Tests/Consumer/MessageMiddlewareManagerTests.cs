@@ -1,9 +1,12 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Bus.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -17,7 +20,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
             var sut = new MessageMiddlewareManager(serviceCollection);
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>();
+            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
@@ -41,7 +44,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     return new FakeMessageMiddleware();
                 };
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(factory);
+            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
@@ -60,7 +63,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
             var sut = new MessageMiddlewareManager(serviceCollection);
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(default(Func<IServiceProvider, FakeMessageMiddleware>));
+            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, default(Func<IServiceProvider, FakeMessageMiddleware>), ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
@@ -76,9 +79,9 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
             var sut = new MessageMiddlewareManager(serviceCollection);
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>();
+            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
 
-            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeMessage, FakeMessageMiddleware>())
+            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton))
                 .Message.Should().Be($"Não foi possível registrar o middleware do tipo '{typeof(FakeMessageMiddleware).FullName}'");
 
             using (var prov = serviceCollection.BuildServiceProvider())
@@ -89,17 +92,19 @@ namespace GuimoSoft.Bus.Tests.Consumer
         }
 
         [Fact]
-        public void Dado_TresMiddlewares_Se_GetPipeline_Entao_ExecutaACriacaoERetornaComSucesso()
+        public async Task Dado_TresMiddlewares_Se_GetPipeline_Entao_ExecutaACriacaoERetornaComSucesso()
         {
             var serviceCollection = new ServiceCollection();
 
             var sut = new MessageMiddlewareManager(serviceCollection);
 
             serviceCollection.AddSingleton<IMessageMiddlewareExecutorProvider>(sut);
+            serviceCollection.AddSingleton(typeof(IConsumeContextAccessor<>), typeof(ConsumeContextAccessor<>));
+            serviceCollection.AddSingleton(typeof(ConsumeContextAccessorInitializerMiddleware<>));
 
-            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareOne>();
-            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareTwo>();
-            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareThree>();
+            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareOne>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareTwo>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareThree>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
@@ -115,10 +120,12 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 executorProvider
                     .Should().NotBeNull();
 
-                var pipeline = executorProvider.GetPipeline(typeof(FakePipelineMessage));
+                var pipeline = executorProvider.GetPipeline(BusName.Kafka, ServerName.Default, typeof(FakePipelineMessage));
 
                 pipeline
                     .Should().NotBeNull();
+
+                await pipeline.Execute(new FakePipelineMessage(FakePipelineMessageMiddlewareOne.Name), prov, new ConsumeInformations(BusName.Kafka, ServerName.Default, "a"), CancellationToken.None);
             }
         }
 
@@ -144,9 +151,9 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     return new FakeMessageThrowExceptionMiddleware();
                 };
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(factory);
+            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
 
-            sut.Register<FakeMessage, FakeMessageThrowExceptionMiddleware>(factoryTwo);
+            sut.Register<FakeMessage, FakeMessageThrowExceptionMiddleware>(BusName.Kafka, ServerName.Default, factoryTwo, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
@@ -186,9 +193,9 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     return new FakeMessageMiddleware();
                 };
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(factory);
+            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
 
-            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeMessage, FakeMessageMiddleware>(factoryTwo))
+            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factoryTwo, ServiceLifetime.Singleton))
                 .Message.Should().Be($"Não foi possível registrar o middleware do tipo '{typeof(FakeMessageMiddleware).FullName}'");
 
             using (var prov = serviceCollection.BuildServiceProvider())

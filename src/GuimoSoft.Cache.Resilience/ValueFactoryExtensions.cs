@@ -1,5 +1,5 @@
-﻿using GuimoSoft.Cache.Resilience;
-using Polly;
+﻿using Polly;
+using GuimoSoft.Cache.Resilience;
 
 namespace GuimoSoft.Cache
 {

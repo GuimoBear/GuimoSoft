@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Cache.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using GuimoSoft.Cache.Utils;
 
 namespace GuimoSoft.Cache.InMemory
 {

@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Examples.Bus.Kafka.Messages;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Examples.Bus.Kafka.Messages;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Controllers
 {
@@ -18,10 +18,10 @@ namespace GuimoSoft.Examples.Bus.Kafka.Controllers
         }
 
         [HttpGet]
-        [Route("/{name}")]
-        public async Task SayHello([FromRoute] string name)
+        [Route("/{name}/{throwException}")]
+        public async Task SayHello([FromRoute] string name, bool throwException)
         {
-            await _producer.ProduceAsync(Guid.NewGuid().ToString(), new HelloMessage(name));
+            await _producer.ProduceAsync(Guid.NewGuid().ToString(), new HelloMessage(name, throwException));
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Logger.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Linq;
+using GuimoSoft.Logger.AspNetCore;
 using Xunit;
 
 namespace GuimoSoft.Logger.Tests
@@ -40,9 +40,6 @@ namespace GuimoSoft.Logger.Tests
         public void When_CallUseApiLoggerContextAccessor_Then_AddMiddlewareInApplicationBuilder()
         {
             var moqApplicationBuilder = new Mock<IApplicationBuilder>();
-            moqApplicationBuilder
-                .Setup(x => x.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()))
-                .Verifiable();
 
             moqApplicationBuilder.Object.UseApiLoggerContextAccessor();
 

@@ -1,7 +1,5 @@
 ﻿using DeepEqual.Syntax;
 using FluentAssertions;
-using GuimoSoft.Logger.Tests.Fake;
-using GuimoSoft.Logger.Utils;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
@@ -10,6 +8,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Threading.Tasks;
+using GuimoSoft.Logger.Tests.Fake;
+using GuimoSoft.Logger.Utils;
 using Xunit;
 
 namespace GuimoSoft.Logger.Tests
@@ -124,7 +124,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Rastreio(null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Rastreio(null as string);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -315,7 +315,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Depuracao(null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Depuracao(null as string);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -506,7 +506,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Informacao(null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Informacao(null as string);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -697,7 +697,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Atencao(null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Atencao(null as string);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -957,7 +957,7 @@ namespace GuimoSoft.Logger.Tests
         {
             (var loggerMock, var apiLogger) = Createinstance();
 
-            apiLogger.Erro(string.Empty, null);
+            apiLogger.Erro(string.Empty, null as Exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -970,7 +970,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(string.Empty, null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(string.Empty, null as Exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -983,7 +983,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.Erro("    ", null);
+            apiLogger.Erro("    ", null as Exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -996,7 +996,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro("    ", null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro("    ", null as Exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1009,7 +1009,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.Erro(null, null);
+            apiLogger.Erro(null as string, null as Exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1022,7 +1022,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Never
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(null, null);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Erro(null as string, null as Exception);
 
             loggerMock.Verify(
                 l => l.Log(

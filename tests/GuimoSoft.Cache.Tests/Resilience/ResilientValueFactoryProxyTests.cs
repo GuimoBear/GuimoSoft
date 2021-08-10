@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Cache.Resilience;
-using GuimoSoft.Cache.Tests.Fakes;
 using Moq;
 using Polly;
 using System;
 using System.Threading.Tasks;
+using GuimoSoft.Cache.Resilience;
+using GuimoSoft.Cache.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Cache.Tests.Resilience

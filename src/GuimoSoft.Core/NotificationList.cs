@@ -16,23 +16,23 @@ namespace GuimoSoft.Core
         [JsonPropertyName("message")]
         public string Message { get => GetMessageOrDefault(ErrorCode); }
         [JsonPropertyName("fields")]
-        public List<Notification> Notifications { get; private set; } = new List<Notification>();
+        public List<Notification> Notifications { get; private set; }
 
         public NotificationList(TErrorCode errorCode, Notification notification)
         {
             ErrorCode = GetErrorCodeOrDefault(errorCode);
-            Notifications.Add(notification);
+            Notifications = new List<Notification> { notification };
         }
 
         public NotificationList(TErrorCode errorCode, List<Notification> notifications)
         {
             ErrorCode = GetErrorCodeOrDefault(errorCode);
-            Notifications = notifications ?? Notifications;
+            Notifications = notifications ?? new List<Notification>();
         }
 
         public NotificationList(TErrorCode errorCode)
+            : this(errorCode, default(List<Notification>))
         {
-            ErrorCode = GetErrorCodeOrDefault(errorCode);
         }
 
         private static TErrorCode GetErrorCodeOrDefault(TErrorCode errorCode)

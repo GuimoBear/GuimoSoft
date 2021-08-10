@@ -1,9 +1,12 @@
-using GuimoSoft.Bus.Core.Logs.Interfaces;
-using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Bus.Kafka.Consumer;
-using Microsoft.Extensions.Options;
+using Confluent.Kafka;
+using MediatR;
 using Moq;
 using System;
+using System.Collections.Generic;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Kafka.Consumer;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -13,11 +16,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
         [Fact]
         public void ConstructorShouldCreateSampleConsumerBuilder()
         {
-            var kafkaOptions = Options.Create(new KafkaOptions());
-            var moqBusLogger = new Mock<IBusLogger>();
-
-            var sut = new KafkaConsumerBuilder(kafkaOptions, moqBusLogger.Object);
-
+            var sut = new KafkaConsumerBuilder(Mock.Of<IBusOptionsDictionary<ConsumerConfig>>(), Mock.Of<IBusLogDispatcher>());
             Assert.IsType<KafkaConsumerBuilder>(sut);
         }
 
@@ -25,31 +24,27 @@ namespace GuimoSoft.Bus.Tests.Consumer
         public void ConstructorShouldThrowIfAnyParameterIsNull()
         {
             Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(null, Mock.Of<IBusLogger>()));
-            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(Options.Create(new KafkaOptions()), null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(null, Mock.Of<IBusLogDispatcher>()));
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerBuilder(Mock.Of<IBusOptionsDictionary<ConsumerConfig>>(), null));
         }
 
         [Fact]
         public void BuildShouldReturnNonNullConsumer()
         {
-            var kafkaOptions = Options.Create(new KafkaOptions
-            {
-                KafkaBootstrapServers = "kafka-bootstrap-servers",
-                ConsumerGroupId = "test-group-id",
-                AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest
-            });
+            var moqDictionary = new Mock<IBusOptionsDictionary<ConsumerConfig>>();
 
-            var sut = new KafkaConsumerBuilder(kafkaOptions, Mock.Of<IBusLogger>());
+            var sut = new KafkaConsumerBuilder(moqDictionary.Object, Mock.Of<IBusLogDispatcher>());
 
-            var consumer = sut.Build();
+            Assert.Throws<KeyNotFoundException>(() => sut.Build(ServerName.Default));
 
-            Assert.NotNull(consumer);
+            var kafkaOptions = new ConsumerConfig() { GroupId = "fake-group-id" };
+            moqDictionary
+                .Setup(x => x.TryGetValue(ServerName.Default, out kafkaOptions))
+                .Returns(true);
 
-            sut = new KafkaConsumerBuilder(kafkaOptions, Mock.Of<IBusLogger>());
+            var producer = sut.Build(ServerName.Default);
 
-            consumer = sut.Build();
-
-            Assert.NotNull(consumer);
+            Assert.NotNull(producer);
         }
     }
 }

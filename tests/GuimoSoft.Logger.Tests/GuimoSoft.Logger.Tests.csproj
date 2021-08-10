@@ -29,9 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\GuimoSoft.Core\GuimoSoft.Core.csproj" />
     <ProjectReference Include="..\..\src\GuimoSoft.Logger.AspNetCore\GuimoSoft.Logger.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\GuimoSoft.Logger\GuimoSoft.Logger.csproj" />
+    <ProjectReference Include="..\..\src\GuimoSoft.Core\GuimoSoft.Core.csproj" />
   </ItemGroup>
 
 </Project>

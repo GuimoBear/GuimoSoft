@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
+using System;
 using GuimoSoft.Bus.Tests.Fakes;
 using GuimoSoft.Core.Serialization;
-using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core
@@ -17,24 +17,55 @@ namespace GuimoSoft.Bus.Tests.Core
         [Fact]
         public void When_SetDefaultSerializerWithAnValidSerializer_Then_SetSerializer()
         {
-            MessageSerializerManager.Instance.SetDefaultSerializer(FakeDefaultSerializer.Instance);
-            MessageSerializerManager.Instance.SetDefaultSerializer(JsonMessageSerializer.Instance);
+            lock (Utils.Lock)
+            { 
+                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
+                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+
+                MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
+                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+
+                MessageSerializerManager.Instance.SetDefaultSerializer(FakeDefaultSerializer.Instance);
+
+                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
+                    .Should().BeSameAs(FakeDefaultSerializer.Instance);
+
+                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
+                    .Should().BeSameAs(FakeDefaultSerializer.Instance);
+
+                MessageSerializerManager.Instance.SetDefaultSerializer(JsonMessageSerializer.Instance);
+
+                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
+                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+
+                MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
+                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+
+                Utils.ResetarMessageSerializerManager();
+            }
         }
 
         [Fact]
         public void When_AddTypedSerializerWithNullSerializer_Then_ThrowArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => MessageSerializerManager.Instance.AddTypedSerializer<OtherFakeMessage>(null));
+            Assert.Throws<ArgumentNullException>(() => MessageSerializerManager.Instance.AddTypedSerializer<FakeMessage>(null));
         }
 
         [Fact]
         public void When_AddTypedSerializerWithAnValidTypedSerializer_Then_SetTypedSerializer()
         {
-            MessageSerializerManager.Instance.AddTypedSerializer(OtherFakeMessageSerializer.Instance);
-            var actual = MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage));
+            lock (Utils.Lock)
+            {
+                MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
+                    .Should().BeSameAs(JsonMessageSerializer.Instance);
 
-            ReferenceEquals(OtherFakeMessageSerializer.Instance, actual)
-                .Should().BeTrue();
+               MessageSerializerManager.Instance.AddTypedSerializer(OtherFakeMessageSerializer.Instance);
+
+               MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
+                    .Should().BeSameAs(OtherFakeMessageSerializer.Instance);
+
+                Utils.ResetarMessageSerializerManager();
+            }
         }
     }
 }

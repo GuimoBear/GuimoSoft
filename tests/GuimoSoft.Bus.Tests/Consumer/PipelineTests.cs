@@ -1,17 +1,21 @@
 ﻿using FluentAssertions;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {
     public class PipelineTests
     {
+
+        private static readonly IReadOnlyDictionary<string, string> EMPTY_HEADER = new Dictionary<string, string>();
+
         private readonly IServiceProvider services;
         private readonly Pipeline pipeline;
 
@@ -28,13 +32,23 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 typeof(FakePipelineMessageMiddlewareTwo),
                 typeof(FakePipelineMessageMiddlewareThree)
             };
-            pipeline = new Pipeline(middlewareTypes);
+            pipeline = new Pipeline(middlewareTypes, typeof(FakePipelineMessage));
         }
 
         [Fact]
-        public void ConstructiorWithNullParameterShouldBeThrowArgumentNullException()
+        public void ConstructiorWithInvalidParametersShouldBeThrowArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Pipeline(null));
+            Assert.Throws<ArgumentNullException>(() => new Pipeline(null, default));
+            Assert.Throws<ArgumentException>(() => new Pipeline(new List<Type>(), typeof(PipelineTests)));
+
+            var middlewareTypes = new List<Type>
+            {
+                typeof(FakePipelineMessageMiddlewareOne),
+                typeof(FakePipelineMessageMiddlewareTwo),
+                typeof(FakePipelineMessageMiddlewareThree),
+                typeof(FakeMessageMiddleware)
+            };
+            Assert.Throws<ArgumentException>(() => new Pipeline(middlewareTypes, typeof(FakePipelineMessage)));
         }
 
         [Fact]
@@ -42,7 +56,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
         {
             var message = new FakePipelineMessage();
             using var scope = services.CreateScope();
-            var context = await pipeline.Execute(message.GetType(), message, scope.ServiceProvider) as ConsumptionContext<FakePipelineMessage>;
+            var context = await pipeline.Execute(message, scope.ServiceProvider, new ConsumeInformations(BusName.Kafka, FakeServerName.FakeHost2, "e"), CancellationToken.None) as ConsumeContext<FakePipelineMessage>;
 
             context
                 .Should().NotBeNull();
@@ -76,7 +90,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
             var message = new FakePipelineMessage(FakePipelineMessageMiddlewareTwo.Name);
             using var scope = services.CreateScope();
 
-            var context = await pipeline.Execute(message.GetType(), message, scope.ServiceProvider) as ConsumptionContext<FakePipelineMessage>;
+            var context = await pipeline.Execute(message, scope.ServiceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None) as ConsumeContext<FakePipelineMessage>;
 
             message
                 .MiddlewareNames.Should().NotBeNull().And.HaveCount(2);

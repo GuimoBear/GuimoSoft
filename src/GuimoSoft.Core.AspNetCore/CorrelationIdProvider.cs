@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Core.AspNetCore.Constants;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using GuimoSoft.Core.AspNetCore.Constants;
 using GuimoSoft.Core.AspNetCore.Exceptions;
 using GuimoSoft.Core.Providers.Interfaces;
-using Microsoft.AspNetCore.Http;
-using System;
 
 namespace GuimoSoft.Core.AspNetCore
 {

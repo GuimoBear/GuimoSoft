@@ -1,9 +1,9 @@
-﻿using GuimoSoft.Cryptography.RSA.Http.Factories;
-using GuimoSoft.Cryptography.RSA.Services;
-using GuimoSoft.Examples.Cryptography.Core;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GuimoSoft.Cryptography.RSA.Http.Factories;
+using GuimoSoft.Cryptography.RSA.Services;
+using GuimoSoft.Examples.Cryptography.Core;
 
 namespace GuimoSoft.Examples.Cryptography.Client
 {

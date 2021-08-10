@@ -6,7 +6,7 @@ namespace GuimoSoft.Examples.Cache.Utils
 {
     public sealed class WeatherForecastEqualityComparer : IEqualityComparer<WeatherForecast>
     {
-        public static readonly WeatherForecastEqualityComparer Instance
+        public static readonly WeatherForecastEqualityComparer Instance 
             = new WeatherForecastEqualityComparer();
 
         private WeatherForecastEqualityComparer() { }

@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Cache.Delegates;
-using Polly;
+﻿using Polly;
 using System;
 using System.Threading.Tasks;
+using GuimoSoft.Cache.Delegates;
 
 namespace GuimoSoft.Cache.Resilience
 {

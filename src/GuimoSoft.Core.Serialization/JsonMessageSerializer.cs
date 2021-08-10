@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Core.Serialization.Interfaces;
-using System;
+﻿using System;
 using System.Text;
 using System.Text.Json;
+using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Core.Serialization
 {

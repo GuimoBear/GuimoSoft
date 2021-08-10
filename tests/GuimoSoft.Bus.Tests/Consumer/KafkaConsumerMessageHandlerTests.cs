@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Bus.Kafka.Consumer;
-using Moq;
+﻿using Moq;
 using System.Threading;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Kafka.Consumer;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -12,10 +12,6 @@ namespace GuimoSoft.Bus.Tests.Consumer
         public async Task KafkaConsumerMessageHandlerFacts()
         {
             var moqKafkaMessageConsumerManager = new Mock<IKafkaMessageConsumerManager>();
-
-            moqKafkaMessageConsumerManager
-                .Setup(x => x.StartConsumers(It.IsAny<CancellationToken>()))
-                .Verifiable();
 
             var sut = new KafkaConsumerMessageHandler(moqKafkaMessageConsumerManager.Object);
 

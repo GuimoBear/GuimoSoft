@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Cryptography.AspNetCore.Formatters;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using GuimoSoft.Cryptography.AspNetCore.Formatters;
 using GuimoSoft.Cryptography.RSA.Repositories.Interfaces;
 using GuimoSoft.Cryptography.RSA.Services;
-using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace GuimoSoft.Cryptography.AspNetCore
 {

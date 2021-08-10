@@ -1,5 +1,5 @@
-﻿using GuimoSoft.Cache.Delegates;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using GuimoSoft.Cache.Delegates;
 
 namespace GuimoSoft.Cache
 {
@@ -13,9 +13,9 @@ namespace GuimoSoft.Cache
         private ValueFactory<TValue> _valueFactory = default;
 
         internal CacheItemBuilder(
-            TKey key,
-            TryGetCachedItem<TKey, TValue> tryGetCachedValueFunc,
-            ValueCreated<TKey, TValue> onValueCreated,
+            TKey key, 
+            TryGetCachedItem<TKey, TValue> tryGetCachedValueFunc, 
+            ValueCreated<TKey, TValue> onValueCreated, 
             IValueFactoryProxy<TValue> valueFactoryProxy)
         {
             _key = key;

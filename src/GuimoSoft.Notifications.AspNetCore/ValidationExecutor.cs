@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using GuimoSoft.Notifications.Interfaces;
 using System;
+using GuimoSoft.Notifications.Interfaces;
 
 namespace GuimoSoft.Notifications.AspNetCore
 {

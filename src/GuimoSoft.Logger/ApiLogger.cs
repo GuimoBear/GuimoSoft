@@ -1,11 +1,11 @@
-﻿using GuimoSoft.Logger.Utils;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
+using GuimoSoft.Logger.Utils;
 
 namespace GuimoSoft.Logger
 {

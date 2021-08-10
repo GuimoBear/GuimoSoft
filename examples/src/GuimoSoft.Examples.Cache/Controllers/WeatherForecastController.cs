@@ -1,11 +1,12 @@
-﻿using GuimoSoft.Cache;
-using GuimoSoft.Examples.Cache.ValueObjects;
-using GuimoSoft.Logger;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GuimoSoft.Cache;
+using GuimoSoft.Examples.Cache.ValueObjects;
+using GuimoSoft.Logger;
 
 namespace GuimoSoft.Examples.Cache.Controllers
 {
@@ -59,7 +60,7 @@ namespace GuimoSoft.Examples.Cache.Controllers
                         Summary = request.City
                     };
                 });
-
+            
         }
     }
 }

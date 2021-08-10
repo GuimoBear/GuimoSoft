@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Cache.InMemory;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using GuimoSoft.Cache.InMemory;
 
 namespace GuimoSoft.Cache
 {

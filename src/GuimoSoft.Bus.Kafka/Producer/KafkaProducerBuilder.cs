@@ -1,35 +1,32 @@
 using Confluent.Kafka;
-using GuimoSoft.Bus.Core.Logs.Interfaces;
-using GuimoSoft.Bus.Kafka.Common;
-using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Kafka.Common;
 
 namespace GuimoSoft.Bus.Kafka.Producer
 {
-    public class KafkaProducerBuilder : IKafkaProducerBuilder
+    internal class KafkaProducerBuilder : ClientBuilder, IKafkaProducerBuilder
     {
-        private readonly KafkaOptions _kafkaOptions;
-        private readonly IBusLogger _busLogger;
+        private readonly IBusOptionsDictionary<ProducerConfig> _options;
 
-        public KafkaProducerBuilder(IOptions<KafkaOptions> kafkaOptions, IBusLogger busLogger)
+        public KafkaProducerBuilder(IBusOptionsDictionary<ProducerConfig> options, IBusLogDispatcher logger)
+            : base(logger)
         {
-            _kafkaOptions = kafkaOptions?.Value
-                            ?? throw new ArgumentNullException(nameof(kafkaOptions));
-            _busLogger = busLogger ?? throw new ArgumentNullException(nameof(busLogger));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public IProducer<string, byte[]> Build()
+        public IProducer<string, byte[]> Build(Enum @switch)
         {
-            var config = new ProducerConfig
-            {
-                BootstrapServers = _kafkaOptions.KafkaBootstrapServers,
-                Acks = _kafkaOptions.Acks
-            };
+            if (!_options.TryGetValue(@switch, out var ProducerConfig))
+                throw new KeyNotFoundException($"N�o existe uma configura��o do Kafka para o server {@switch}");
 
-            var producerBuilder = new ProducerBuilder<string, byte[]>(config);
+            var producerBuilder = new ProducerBuilder<string, byte[]>(ProducerConfig);
 
-            producerBuilder.SetLogHandler((_, kafkaLogMessage) => _busLogger.LogAsync(KafkaLogConverter.Cast(kafkaLogMessage)).ConfigureAwait(false));
-            producerBuilder.SetErrorHandler((_, kafkaError) => _busLogger.ExceptionAsync(KafkaLogConverter.Cast(kafkaError)).ConfigureAwait(false));
+            producerBuilder.SetLogHandler((_, kafkaLogMessage) => LogMessage(@switch, Finality.Produce, kafkaLogMessage));
+            producerBuilder.SetErrorHandler((_, kafkaError) => LogException(@switch, Finality.Produce, kafkaError));
 
             return producerBuilder.Build();
         }

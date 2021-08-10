@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
@@ -9,7 +9,7 @@ namespace GuimoSoft.Bus.Tests.Fakes
     {
         public const string Name = nameof(FakePipelineMessageMiddlewareTwo);
 
-        public async Task InvokeAsync(ConsumptionContext<FakePipelineMessage> context, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<FakePipelineMessage> context, Func<Task> next)
         {
             context.Message.MiddlewareNames.Add(Name);
             context.Items.Add(Name, true);

@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Core;
-using GuimoSoft.Notifications.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GuimoSoft.Core;
+using GuimoSoft.Notifications.Interfaces;
 
 namespace GuimoSoft.Notifications
 {

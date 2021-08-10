@@ -1,7 +1,7 @@
-﻿using GuimoSoft.Core.AspNetCore.Constants;
+﻿using Microsoft.AspNetCore.Http;
+using GuimoSoft.Core.AspNetCore.Constants;
 using GuimoSoft.Core.AspNetCore.Exceptions;
 using GuimoSoft.Core.Providers.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace GuimoSoft.Core.AspNetCore
 {
@@ -48,12 +48,15 @@ namespace GuimoSoft.Core.AspNetCore
 
         private bool TentarObterPorHeaderOrigem(out Tenant tenant)
         {
-            var strOrigem = accessor?.HttpContext?.Request?.Headers?[RequestConstants.ORIGEM_HEADER];
-
-            if (!string.IsNullOrEmpty(strOrigem))
+            if (accessor?.HttpContext?.Request is not null)
             {
-                tenant = strOrigem.ToString().ToLowerInvariant();
-                return true;
+                var strOrigem = accessor.HttpContext.Request.Headers[RequestConstants.ORIGEM_HEADER];
+
+                if (!string.IsNullOrEmpty(strOrigem))
+                {
+                    tenant = strOrigem.ToString().ToLowerInvariant();
+                    return true;
+                }
             }
             tenant = default;
             return false;
@@ -66,7 +69,7 @@ namespace GuimoSoft.Core.AspNetCore
                 tenantAlteradoAnteriormente = true;
                 tenant = value;
             }
-            else if (tenantAlteradoAnteriormente && !string.IsNullOrEmpty(value?.Value) && tenant != value)
+            else if (!string.IsNullOrEmpty(value?.Value) && !value.Equals(tenant))
                 throw new TenantJaSetadoException(tenant, value);
         }
     }

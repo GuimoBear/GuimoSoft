@@ -1,5 +1,5 @@
-﻿using GuimoSoft.Cache.Delegates;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using GuimoSoft.Cache.Delegates;
 
 namespace GuimoSoft.Cache
 {

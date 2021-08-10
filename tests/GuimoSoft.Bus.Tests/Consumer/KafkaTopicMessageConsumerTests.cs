@@ -1,476 +1,600 @@
 using Confluent.Kafka;
 using FluentAssertions;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using GuimoSoft.Bus.Core;
-using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Bus.Core.Logs;
-using GuimoSoft.Bus.Core.Logs.Interfaces;
-using GuimoSoft.Bus.Kafka.Common;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Core.Serialization;
-using GuimoSoft.Core.Serialization.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Core.Logs.Builder;
+using GuimoSoft.Bus.Kafka.Consumer;
+using GuimoSoft.Bus.Tests.Fakes;
+using GuimoSoft.Core.Serialization;
+using GuimoSoft.Core.Serialization.Interfaces;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {
     public class KafkaTopicMessageConsumerTests
     {
-        private static Mock<IKafkaTopicCache> CreateKafkaTopicCache()
+        private static (Mock<IBusLogDispatcher>, Mock<IMediator>) CreateLoggerMock<TMessage>(BusName bus)
+            where TMessage : IMessage
         {
-            var mockCache = new Mock<IKafkaTopicCache>();
-            mockCache.SetupGet(cache => cache[typeof(FakeMessage)]).Returns(FakeMessage.TOPIC_NAME);
-            mockCache.SetupGet(cache => cache[typeof(OtherFakeMessage)]).Returns(OtherFakeMessage.TOPIC_NAME);
-            mockCache.SetupGet(cache => cache[typeof(AnotherFakeMessage)]).Returns(AnotherFakeMessage.TOPIC_NAME);
+            var moqMediator = new Mock<IMediator>();
 
-            mockCache.SetupGet(cache => cache[FakeMessage.TOPIC_NAME]).Returns(new List<Type> { typeof(FakeMessage) });
-            mockCache.SetupGet(cache => cache[OtherFakeMessage.TOPIC_NAME]).Returns(new List<Type> { typeof(OtherFakeMessage) });
-            mockCache.SetupGet(cache => cache[AnotherFakeMessage.TOPIC_NAME]).Returns(new List<Type> { typeof(AnotherFakeMessage) });
+            var logBuilder = new BusLogDispatcherBuilder(moqMediator.Object, bus);
 
-            return mockCache;
+            var moqLogger = new Mock<IBusLogDispatcher>();
+
+            moqLogger
+                .Setup(x => x.FromBus(bus)).Returns(logBuilder);
+
+            return (moqLogger, moqMediator);
+        }
+
+        private static Mock<IMessageTypeCache> CreateMessageTypeTopicCache(string topicName)
+        {
+            var mockMessageTypeCache = new Mock<IMessageTypeCache>();
+
+            mockMessageTypeCache
+                .Setup(x => x.Get(BusName.Kafka, Finality.Consume, ServerName.Default, topicName))
+                .Returns(new List<Type> { typeof(FakeMessage) });
+
+            return mockMessageTypeCache;
         }
 
         [Fact]
         public void ConstructorShouldThrowArgumentNullExceptionIfBusLoggerIsNull()
         {
             Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(null, null, null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), null, null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IMessageMiddlewareExecutorProvider>(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IMessageMiddlewareExecutorProvider>(), Mock.Of<IBusSerializerManager>(), null));
         }
 
         [Fact]
         public void StartConsumingSubscribesToCorrectTopic()
         {
-            const string expectedTopic = "fake-messages";
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                const string expectedTopic = "fake-messages";
 
-            var stubCache = CreateKafkaTopicCache();
-            var stubMediator = Mock.Of<IMediator>();
-            var serviceProvider = BuildServiceProvider(stubMediator);
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            var mockConsumer = new Mock<IConsumer<string, byte[]>>();
-            // throw exception to avoid infinite loop
-            mockConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Throws<OperationCanceledException>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(mockConsumer.Object);
+                var stubCache = CreateMessageTypeTopicCache(expectedTopic);
+                var stubMediator = Mock.Of<IMediator>();
+                var serviceProvider = BuildServiceProvider(stubMediator);
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                var mockConsumer = new Mock<IConsumer<string, byte[]>>();
+                // throw exception to avoid infinite loop
+                mockConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Throws<OperationCanceledException>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(mockConsumer.Object);
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            var cts = new CancellationTokenSource();
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(expectedTopic, cts.Token));
-            Thread.Sleep(50);
-            cts.Cancel();
-            task.Wait();
+                var cts = new CancellationTokenSource();
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, expectedTopic, cts.Token));
+                Thread.Sleep(50);
+                cts.Cancel();
+                task.Wait();
 
-            mockConsumer.Verify(x => x.Subscribe(expectedTopic));
+                mockConsumer.Verify(x => x.Subscribe(expectedTopic));
 
-            moqBusLogger
-                .Verify(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()), Times.Once);
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionMessage<FakeMessage>>(), It.IsAny<CancellationToken>()), Times.Never);
+            }
         }
 
         [Fact]
         public void StartConsumingConsumesMessageFromConsumer()
         {
-            var stubCache = CreateKafkaTopicCache();
-            var stubMediator = Mock.Of<IMediator>();
-            var serviceProvider = BuildServiceProvider(stubMediator);
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            var mockConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(mockConsumer.Object);
-            // throw exception to avoid infinite loop
-            mockConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Throws<OperationCanceledException>();
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubMediator = Mock.Of<IMediator>();
+                var serviceProvider = BuildServiceProvider(stubMediator);
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                var mockConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(mockConsumer.Object);
+                // throw exception to avoid infinite loop
+                mockConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Throws<OperationCanceledException>();
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            var cts = new CancellationTokenSource();
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cts.Token));
-            Thread.Sleep(50);
-            cts.Cancel();
-            task.Wait();
+                var cts = new CancellationTokenSource();
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cts.Token));
+                Thread.Sleep(50);
+                cts.Cancel();
+                task.Wait();
 
-            mockConsumer.Verify(x => x.Consume(It.IsAny<CancellationToken>()));
+                mockConsumer.Verify(x => x.Consume(It.IsAny<CancellationToken>()));
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionMessage<FakeMessage>>(), It.IsAny<CancellationToken>()), Times.Never);
+            }
         }
 
         [Fact]
         public void StartConsumingClosesConsumerWhenCancelled()
         {
-            var stubCache = CreateKafkaTopicCache();
-            var stubMediator = Mock.Of<IMediator>();
-            var serviceProvider = BuildServiceProvider(stubMediator);
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            var mockConsumer = new Mock<IConsumer<string, byte[]>>();
-            mockConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Throws<OperationCanceledException>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(mockConsumer.Object);
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubMediator = Mock.Of<IMediator>();
+                var serviceProvider = BuildServiceProvider(stubMediator);
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                var mockConsumer = new Mock<IConsumer<string, byte[]>>();
+                mockConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Throws<OperationCanceledException>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(mockConsumer.Object);
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            var cts = new CancellationTokenSource();
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cts.Token));
-            Thread.Sleep(50);
-            cts.Cancel();
-            task.Wait();
+                var cts = new CancellationTokenSource();
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cts.Token));
+                Thread.Sleep(50);
+                cts.Cancel();
+                task.Wait();
 
-            mockConsumer.Verify(x => x.Close());
+                mockConsumer.Verify(x => x.Close());
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionMessage<FakeMessage>>(), It.IsAny<CancellationToken>()), Times.Never);
+            }
+        }
+
+        [Fact]
+        public void StartConsumingWithSerializerThrowingAnExceptionLogThisException()
+        {
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage);
+                    }); ;
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
+
+                var moqDefaultSerializer = new Mock<IDefaultSerializer>();
+                moqDefaultSerializer
+                    .Setup(x => x.Deserialize(It.IsAny<Type>(), It.IsAny<byte[]>()))
+                    .Throws<Exception>();
+
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(moqDefaultSerializer.Object);
+
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
+
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
+
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                task.Wait();
+
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionMessage<FakeMessage>>(), It.IsAny<CancellationToken>()), Times.Never);
+            }
+        }
+
+        [Fact]
+        public void StartConsumingWithSerializerReturningNullLogMessage()
+        {
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage);
+                    }); ;
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
+
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(Mock.Of<IDefaultSerializer>());
+
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
+
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
+
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                task.Wait();
+
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusLogMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+            }
         }
 
         [Fact]
         public void StartConsumingPublishesConsumedMessageToMediator()
         {
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
-            var fakeMessageNotification = new MessageNotification<FakeMessage>(fakeMessage);
-            var cancellationTokenSource = new CancellationTokenSource();
-            var mockMediator = new Mock<IMediator>();
-            var serviceProvider = BuildServiceProvider(mockMediator.Object);
-            var stubCache = CreateKafkaTopicCache();
-            var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Returns(() =>
-                {
-                    cancellationTokenSource.Cancel();
-                    return BuildFakeConsumeResult(fakeMessage);
-                }); ;
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(stubConsumer.Object);
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage);
+                    }); ;
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
-            task.Wait();
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                task.Wait();
 
-            moqSerializerManager
-                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Once);
-
-            mockMediator.Verify(x =>
-                x.Publish(
-                    fakeMessageNotification,
-                    It.IsAny<CancellationToken>()));
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
+            }
         }
 
         [Fact]
         public void StartConsumingPublishesConsumedMessageToMediatorWithMiddleware()
         {
-            var middlewareExecuted = false;
-
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
-            var fakeMessageNotification = new MessageNotification<FakeMessage>(fakeMessage);
-            var cancellationTokenSource = new CancellationTokenSource();
-            var mockMediator = new Mock<IMediator>();
-
-            var serviceProvider = BuildServiceProviderWithMiddleware<FakeMessage>(mockMediator.Object, message =>
+            lock (Utils.Lock)
             {
-                middlewareExecuted = true;
-            });
+                Utils.ResetarSingletons();
+                var middlewareExecuted = false;
 
-            var stubCache = CreateKafkaTopicCache();
-            var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Returns(() =>
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+
+                var serviceProvider = BuildServiceProviderWithMiddleware<FakeMessage>(mockMediator.Object, message =>
                 {
-                    cancellationTokenSource.Cancel();
-                    return BuildFakeConsumeResult(fakeMessage);
+                    middlewareExecuted = true;
                 });
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(stubConsumer.Object);
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage);
+                    });
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            task.Wait();
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
-            mockMediator.Verify(x =>
-                x.Publish(
-                    fakeMessageNotification,
-                    It.IsAny<CancellationToken>()));
+                task.Wait();
 
-            middlewareExecuted.Should().BeTrue();
+                middlewareExecuted.Should().BeTrue();
 
-            moqSerializerManager
-                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Once);
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
+            }
         }
 
         [Fact]
         public void StartConsumingPublishesConsumedMessageToMediatorWithMiddlewareThrowingAnException()
         {
-            var middlewareExecuted = false;
-
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
-            var cancellationTokenSource = new CancellationTokenSource();
-            var mockMediator = new Mock<IMediator>();
-
-            var serviceProvider = BuildServiceProviderWithMiddleware<FakeMessage>(mockMediator.Object, message =>
+            lock (Utils.Lock)
             {
-                middlewareExecuted = true;
-                throw new Exception();
-            });
+                Utils.ResetarSingletons();
+                var middlewareExecuted = false;
 
-            var stubCache = CreateKafkaTopicCache();
-            var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Returns(() =>
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+
+                var serviceProvider = BuildServiceProviderWithMiddleware<FakeMessage>(mockMediator.Object, message =>
                 {
-                    cancellationTokenSource.Cancel();
-                    return BuildFakeConsumeResult(fakeMessage);
-                }); ;
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(stubConsumer.Object);
+                    middlewareExecuted = true;
+                    throw new Exception();
+                });
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage, true);
+                    }); ;
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            task.Wait();
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
-            mockMediator.Verify(x =>
-                x.Publish(
-                    It.Is<object>(i => i.GetType() == typeof(MessageNotification<FakeMessage>)),
-                    It.IsAny<CancellationToken>()), Times.Never);
+                task.Wait();
 
-            middlewareExecuted.Should().BeTrue();
+                mockMediator.Verify(x =>
+                    x.Publish(
+                        It.Is<object>(i => i.GetType() == typeof(FakeMessage)),
+                        It.IsAny<CancellationToken>()), Times.Never);
 
-            moqSerializerManager
-                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Once);
+                middlewareExecuted.Should().BeTrue();
 
-            moqBusLogger
-                .Verify(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()), Times.Once);
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+            }
         }
 
         [Fact]
         public void StartConsumingPublishesConsumedMessageToMediatorWithMiddlewareThrowingOperationCanceledException()
         {
-            var middlewareExecuted = false;
-
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
-            var cancellationTokenSource = new CancellationTokenSource();
-            var mockMediator = new Mock<IMediator>();
-
-            var serviceProvider = BuildServiceProviderWithMiddleware<FakeMessage>(mockMediator.Object, message =>
+            lock (Utils.Lock)
             {
-                middlewareExecuted = true;
-                throw new OperationCanceledException();
-            });
+                Utils.ResetarSingletons();
+                var middlewareExecuted = false;
 
-            var stubCache = CreateKafkaTopicCache();
-            var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Returns(() =>
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+
+                var serviceProvider = BuildServiceProviderWithMiddleware<FakeMessage>(mockMediator.Object, message =>
                 {
-                    cancellationTokenSource.Cancel();
-                    return BuildFakeConsumeResult(fakeMessage);
-                }); ;
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(stubConsumer.Object);
+                    middlewareExecuted = true;
+                    throw new OperationCanceledException();
+                });
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage);
+                    }); ;
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            task.Wait();
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
+                var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
-            mockMediator.Verify(x =>
-                x.Publish(
-                    It.Is<object>(i => i.GetType() == typeof(MessageNotification<FakeMessage>)),
-                    It.IsAny<CancellationToken>()), Times.Never);
+                task.Wait();
 
-            middlewareExecuted.Should().BeTrue();
+                mockMediator.Verify(x =>
+                    x.Publish(
+                        It.Is<object>(i => i.GetType() == typeof(FakeMessage)),
+                        It.IsAny<CancellationToken>()), Times.Never);
 
-            moqSerializerManager
-                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Once);
+                middlewareExecuted.Should().BeTrue();
 
-            moqBusLogger
-                .Verify(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()), Times.Once);
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
+            }
         }
 
         [Fact]
         public void StartConsumingPublishesWithTopicCacheThrowsExceptionConsumedMessageToMediator()
         {
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
-            var cancellationTokenSource = new CancellationTokenSource();
-            var mockMediator = new Mock<IMediator>();
-            var serviceProvider = BuildServiceProvider(mockMediator.Object);
-            var stubCache = CreateKafkaTopicCache();
-            stubCache.SetupGet(cache => cache[FakeMessage.TOPIC_NAME]).Throws<KeyNotFoundException>();
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME + "s");
+                stubCache
+                    .Setup(cache => cache.Get(BusName.Kafka, Finality.Consume, ServerName.Default, FakeMessage.TOPIC_NAME))
+                    .Throws<KeyNotFoundException>();
 
-            var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Returns(() =>
-                {
-                    cancellationTokenSource.Cancel();
-                    return BuildFakeConsumeResult(fakeMessage);
-                });
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(stubConsumer.Object);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeResult(fakeMessage);
+                    });
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                Assert.Throws<KeyNotFoundException>(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
 
-            task.Wait();
+                stubCache
+                    .Verify(x => x.Get(BusName.Kafka, Finality.Consume, ServerName.Default, FakeMessage.TOPIC_NAME), Times.Once);
 
-            mockMediator.Verify(x =>
-                x.Publish(
-                    It.Is<object>(i => i.GetType() == typeof(MessageNotification<FakeMessage>)),
-                    It.IsAny<CancellationToken>()), Times.Never);
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Never);
 
-            moqSerializerManager
-                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Never);
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            }
         }
 
         [Fact]
-        public async Task StartConsumingPublishesInvalidMessageConsumedMessageToMediator()
+        public void StartConsumingPublishesInvalidMessageConsumedMessageToMediator()
         {
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
-            var cancellationTokenSource = new CancellationTokenSource();
-            var mockMediator = new Mock<IMediator>();
-            var serviceProvider = BuildServiceProvider(mockMediator.Object);
-            var stubCache = CreateKafkaTopicCache();
-            var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-            stubConsumer
-                .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
-                .Returns(() =>
-                {
-                    cancellationTokenSource.Cancel();
-                    return BuildFakeConsumeWithInvalidMessageResult();
-                });
-            var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
-            stubMessageConsumerBuilder
-                .Setup(x => x.Build())
-                .Returns(stubConsumer.Object);
+            lock (Utils.Lock)
+            {
+                Utils.ResetarSingletons();
+                var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+                var cancellationTokenSource = new CancellationTokenSource();
+                var mockMediator = new Mock<IMediator>();
+                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var stubCache = CreateMessageTypeTopicCache(FakeMessage.TOPIC_NAME);
+                var stubConsumer = new Mock<IConsumer<string, byte[]>>();
+                stubConsumer
+                    .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
+                    .Returns(() =>
+                    {
+                        cancellationTokenSource.Cancel();
+                        return BuildFakeConsumeWithInvalidMessageResult();
+                    });
+                var stubMessageConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
+                stubMessageConsumerBuilder
+                    .Setup(x => x.Build(It.IsAny<ServerName>()))
+                    .Returns(stubConsumer.Object);
 
-            var moqSerializerManager = new Mock<IMessageSerializerManager>();
-            moqSerializerManager
-                .Setup(x => x.GetSerializer(typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                var moqSerializerManager = new Mock<IBusSerializerManager>();
+                moqSerializerManager
+                    .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)))
+                    .Returns(JsonMessageSerializer.Instance);
 
-            var moqBusLogger = new Mock<IBusLogger>();
-            moqBusLogger
-                .Setup(x => x.ExceptionAsync(It.IsAny<ExceptionMessage>()))
-                .Verifiable();
+                var (moqLogger, moqMediator) = CreateLoggerMock<FakeMessage>(BusName.Kafka);
 
-            var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqBusLogger.Object);
+                var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-            _ = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
-            await Task.Delay(500);
-            cancellationTokenSource.Cancel();
+                _ = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
+                Thread.Sleep(500);
+                cancellationTokenSource.Cancel();
 
-            mockMediator.Verify(x =>
-                x.Publish(
-                    It.Is<object>(i => i.GetType() == typeof(MessageNotification<FakeMessage>)),
-                    It.IsAny<CancellationToken>()), Times.Never);
+                moqSerializerManager
+                    .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);
 
-            moqSerializerManager
-                .Verify(x => x.GetSerializer(typeof(FakeMessage)), Times.Once);
+                moqMediator
+                    .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+
+                moqMediator
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => obj.GetType().Equals(typeof(BusTypedExceptionMessage<FakeMessage>))), It.IsAny<CancellationToken>()), Times.Never);
+            }
         }
 
         private static ServiceProvider BuildServiceProvider(IMediator mediator)
@@ -478,7 +602,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
             var serviceCollection = new ServiceCollection();
             var stubMiddlewareManager = new Mock<IMessageMiddlewareExecutorProvider>();
             serviceCollection.AddSingleton<MediatorPublisherMiddleware<FakeMessage>>();
-            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(MediatorPublisherMiddleware<FakeMessage>) }));
+            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<BusName>(), It.IsAny<Enum>(), It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(MediatorPublisherMiddleware<FakeMessage>) }, typeof(FakeMessage)));
             serviceCollection.AddScoped(s => mediator);
             serviceCollection.AddSingleton(s => stubMiddlewareManager.Object);
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -489,12 +613,12 @@ namespace GuimoSoft.Bus.Tests.Consumer
             where TMessageType : IMessage
         {
             var stubMiddlewareManager = new Mock<IMessageMiddlewareExecutorProvider>();
-            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(FakeMessageMiddlewareWithFuncOnConstructor), typeof(MediatorPublisherMiddleware<FakeMessage>) }));
+            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<BusName>(), It.IsAny<Enum>(), It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(FakeMessageMiddlewareWithFuncOnConstructor), typeof(MediatorPublisherMiddleware<FakeMessage>) }, typeof(FakeMessage)));
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(_ => new FakeMessageMiddlewareWithFuncOnConstructor(context =>
             {
-                onMiddlewareExecuted((context as ConsumptionContext<TMessageType>).Message);
+                onMiddlewareExecuted((context as ConsumeContext<TMessageType>).Message);
                 return Task.CompletedTask;
             }));
             serviceCollection.AddSingleton<MediatorPublisherMiddleware<FakeMessage>>();
@@ -504,17 +628,17 @@ namespace GuimoSoft.Bus.Tests.Consumer
             return serviceProvider;
         }
 
-        private static ConsumeResult<string, byte[]> BuildFakeConsumeResult(FakeMessage fakeMessage)
+        private static ConsumeResult<string, byte[]> BuildFakeConsumeResult(FakeMessage fakeMessage, bool nullHeader = false)
         {
             return new ConsumeResult<string, byte[]>
             {
                 Message = new Message<string, byte[]>
                 {
                     Value = JsonSerializer.SerializeToUtf8Bytes(fakeMessage),
-                    Headers = new Headers
+                    Headers = !nullHeader ? new Headers
                     {
                         {"message-type", Encoding.UTF8.GetBytes(fakeMessage.GetType().AssemblyQualifiedName)}
-                    }
+                    } : null
                 }
             };
         }

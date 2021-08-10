@@ -1,8 +1,8 @@
-﻿using GuimoSoft.Examples.Notifications.Domain;
-using GuimoSoft.Notifications;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Text.Json.Serialization;
+using GuimoSoft.Examples.Notifications.Domain;
+using GuimoSoft.Notifications;
 
 namespace GuimoSoft.Examples.Cache.ValueObjects
 {

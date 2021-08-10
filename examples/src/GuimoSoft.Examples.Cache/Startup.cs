@@ -1,7 +1,3 @@
-using GuimoSoft.Cache;
-using GuimoSoft.Examples.Cache.Utils;
-using GuimoSoft.Examples.Cache.ValueObjects;
-using GuimoSoft.Logger.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +7,10 @@ using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Timeout;
 using System;
+using GuimoSoft.Cache;
+using GuimoSoft.Examples.Cache.Utils;
+using GuimoSoft.Examples.Cache.ValueObjects;
+using GuimoSoft.Logger.AspNetCore;
 
 namespace GuimoSoft.Examples.Cache
 {

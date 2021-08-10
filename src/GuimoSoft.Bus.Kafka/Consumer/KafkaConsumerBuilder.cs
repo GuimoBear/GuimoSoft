@@ -1,37 +1,32 @@
 using Confluent.Kafka;
-using GuimoSoft.Bus.Core.Logs.Interfaces;
-using GuimoSoft.Bus.Kafka.Common;
-using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Kafka.Common;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
-    public class KafkaConsumerBuilder : IKafkaConsumerBuilder
+    internal class KafkaConsumerBuilder : ClientBuilder, IKafkaConsumerBuilder
     {
-        private readonly KafkaOptions _kafkaOptions;
-        private readonly IBusLogger _busLogger;
+        private readonly IBusOptionsDictionary<ConsumerConfig> _options;
 
-        public KafkaConsumerBuilder(IOptions<KafkaOptions> kafkaOptions, IBusLogger busLogger)
+        public KafkaConsumerBuilder(IBusOptionsDictionary<ConsumerConfig> options, IBusLogDispatcher logger)
+            : base(logger)
         {
-            _kafkaOptions = kafkaOptions?.Value
-                            ?? throw new ArgumentNullException(nameof(kafkaOptions));
-            _busLogger = busLogger ?? throw new ArgumentNullException(nameof(busLogger));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public IConsumer<string, byte[]> Build()
+        public IConsumer<string, byte[]> Build(Enum @switch)
         {
-            var consumerConfig = new ConsumerConfig()
-            {
-                GroupId = _kafkaOptions.ConsumerGroupId,
-                BootstrapServers = _kafkaOptions.KafkaBootstrapServers,
-                AutoOffsetReset = _kafkaOptions.AutoOffsetReset,
-                Acks = _kafkaOptions.Acks
-            };
+            if (!_options.TryGetValue(@switch, out var consumerConfig))
+                throw new KeyNotFoundException($"N�o existe uma configura��o do Kafka para o server {@switch}");
 
             var consumerBuilder = new ConsumerBuilder<string, byte[]>(consumerConfig);
 
-            consumerBuilder.SetLogHandler((_, kafkaLogMessage) => _busLogger.LogAsync(KafkaLogConverter.Cast(kafkaLogMessage)).ConfigureAwait(false));
-            consumerBuilder.SetErrorHandler((_, kafkaError) => _busLogger.ExceptionAsync(KafkaLogConverter.Cast(kafkaError)).ConfigureAwait(false));
+            consumerBuilder.SetLogHandler((_, kafkaLogMessage) => LogMessage(@switch, Finality.Consume, kafkaLogMessage));
+            consumerBuilder.SetErrorHandler((_, kafkaError) => LogException(@switch, Finality.Consume, kafkaError));
 
             return consumerBuilder.Build();
         }

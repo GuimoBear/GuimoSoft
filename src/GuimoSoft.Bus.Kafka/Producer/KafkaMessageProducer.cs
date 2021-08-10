@@ -1,38 +1,39 @@
 using Confluent.Kafka;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Core.Serialization.Interfaces;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
 
 namespace GuimoSoft.Bus.Kafka.Producer
 {
-    internal sealed class KafkaMessageProducer : IMessageProducer, IDisposable
+    internal sealed class KafkaMessageProducer : IBusMessageProducer, IDisposable
     {
-        private readonly Lazy<IProducer<string, byte[]>> _cachedProducer;
-        private readonly IMessageSerializerManager _messageSerializerManager;
+        private readonly object _lock = new();
 
-        public KafkaMessageProducer(IKafkaProducerBuilder kafkaProducerBuilder, IMessageSerializerManager messageSerializerManager)
+        private readonly IKafkaProducerBuilder _kafkaProducerBuilder;
+        private readonly IBusSerializerManager _busSerializerManager;
+        private readonly IDictionary<Enum, IProducer<string, byte[]>> _cachedProducers;
+
+        public KafkaMessageProducer(IKafkaProducerBuilder kafkaProducerBuilder, IBusSerializerManager busSerializerManager)
         {
-            _cachedProducer = new Lazy<IProducer<string, byte[]>>(() => kafkaProducerBuilder.Build());
-            _messageSerializerManager = messageSerializerManager;
+            _kafkaProducerBuilder = kafkaProducerBuilder ?? throw new ArgumentNullException(nameof(kafkaProducerBuilder));
+            _busSerializerManager = busSerializerManager ?? throw new ArgumentNullException(nameof(busSerializerManager));
+            _cachedProducers = new Dictionary<Enum, IProducer<string, byte[]>>();
         }
 
         public void Dispose()
         {
-            if (_cachedProducer.IsValueCreated) _cachedProducer.Value.Dispose();
+            foreach (var (_, producer) in _cachedProducers)
+                producer.Dispose();
         }
 
-        public async Task ProduceAsync<TMessage>(string key, TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage
+        public async Task ProduceAsync<TMessage>(string key, TMessage message, Enum @switch, string endpoint, CancellationToken cancellationToken = default) where TMessage : IMessage
         {
-            var topic = Attribute.GetCustomAttributes(message.GetType())
-                .OfType<MessageTopicAttribute>()
-                .Single()
-                .Topic;
-
-            var serializer = _messageSerializerManager.GetSerializer(typeof(TMessage));
+            ValidateParameters(key, message, endpoint);
+            var serializer = _busSerializerManager.GetSerializer(BusName.Kafka, Finality.Produce, @switch, typeof(TMessage));
             var serializedMessage = serializer.Serialize(message);
 
             var messageType = message.GetType().AssemblyQualifiedName;
@@ -46,7 +47,30 @@ namespace GuimoSoft.Bus.Kafka.Producer
                 }
             };
 
-            await _cachedProducer.Value.ProduceAsync(topic, producedMessage, cancellationToken);
+            await GetProducer(@switch).ProduceAsync(endpoint, producedMessage, cancellationToken);
+        }
+
+        private static void ValidateParameters<TMessage>(string key, TMessage message, string endpoint) where TMessage : IMessage
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException("� necess�rio informar uma chave para enviar a mensagem", nameof(key));
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+            if (string.IsNullOrWhiteSpace(endpoint))
+                throw new ArgumentException("� necess�rio informar um endpoint para enviar a mensagem", nameof(endpoint));
+        }
+
+        private IProducer<string, byte[]> GetProducer(Enum @switch)
+        {
+            lock (_lock)
+            {
+                if (!_cachedProducers.TryGetValue(@switch, out var producer))
+                {
+                    producer = _kafkaProducerBuilder.Build(@switch);
+                    _cachedProducers.Add(@switch, producer);
+                }
+                return producer;
+            }
         }
     }
 }

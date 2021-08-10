@@ -1,9 +1,9 @@
-﻿using GuimoSoft.Core.AspNetCore;
-using GuimoSoft.Logger;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Threading.Tasks;
+using GuimoSoft.Core.AspNetCore;
+using GuimoSoft.Logger;
 using Xunit;
 
 namespace GuimoSoft.Core.Tests
@@ -17,9 +17,7 @@ namespace GuimoSoft.Core.Tests
             Tenant tenant = "test";
 
             var moqAccessor = new Mock<IApiLoggerContextAccessor>();
-            moqAccessor
-                .Setup(x => x.Context.Add(It.IsAny<string>(), It.IsAny<object>()))
-                .Verifiable();
+            moqAccessor.Setup(x => x.Context.Add(It.IsAny<string>(), It.IsAny<object>()));
 
             var sut = new CoreValueObjectsInitializerMiddleware();
 

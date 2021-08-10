@@ -60,5 +60,35 @@ namespace GuimoSoft.Core.Tests
 
             Assert.True(tenant.Equals(objectStringTenant));
         }
+
+        [Fact]
+        public void Se_TenantNull_Entao_CastParaStringImplicito_RetornaStringNula()
+        {
+            Tenant tenant = null;
+            string expected = tenant;
+
+            expected
+                .Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Se_TenantIsTeste_Entao_EqualsComObjectRetornaFalse()
+        {
+            Tenant tenant = "teste";
+            var anotherObject = new object();
+
+            tenant.Equals(anotherObject)
+                .Should().BeFalse();
+        }
+
+        [Fact]
+        public void Se_TenantIsTeste_EntaoEqualComTenantNullRetornaFalse()
+        {
+            Tenant tenant = "teste";
+            Tenant another = null;
+
+            tenant.Equals(another)
+                .Should().BeFalse();
+        }
     }
 }

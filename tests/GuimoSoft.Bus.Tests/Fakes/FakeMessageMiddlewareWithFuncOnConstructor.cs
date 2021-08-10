@@ -1,20 +1,20 @@
-﻿using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    class FakeMessageMiddlewareWithFuncOnConstructor : IMessageMiddleware<FakeMessage>
+    internal class FakeMessageMiddlewareWithFuncOnConstructor : IMessageMiddleware<FakeMessage>
     {
-        private readonly Func<ConsumptionContext<FakeMessage>, Task> _func;
+        private readonly Func<ConsumeContext<FakeMessage>, Task> _func;
 
-        public FakeMessageMiddlewareWithFuncOnConstructor(Func<ConsumptionContext<FakeMessage>, Task> func)
+        public FakeMessageMiddlewareWithFuncOnConstructor(Func<ConsumeContext<FakeMessage>, Task> func)
         {
             _func = func;
         }
 
-        public async Task InvokeAsync(ConsumptionContext<FakeMessage> message, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<FakeMessage> message, Func<Task> next)
         {
             await _func(message);
             await next();

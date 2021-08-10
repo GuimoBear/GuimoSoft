@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
+using Polly;
 using GuimoSoft.Cache.Tests.Fakes;
 using GuimoSoft.Cache.Utils;
-using Polly;
 using Xunit;
 
 namespace GuimoSoft.Cache.Tests
