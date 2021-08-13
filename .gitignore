@@ -357,4 +357,6 @@ MigrationBackup/
 lcov.info
 .env
 
+*opencover.xml
+
 ./build-*/
