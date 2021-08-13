@@ -30,30 +30,22 @@ namespace GuimoSoft.Cryptography.AspNetCore.Formatters
 
         public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
         {
-            MemoryStream ms = default;
-            try
+            if (context.HttpContext.Request.Headers.TryGetValue(Constants.RSA_IDENTIFIER_HEADER, out var rsaIdString) &&
+                Guid.TryParse(rsaIdString, out var id))
             {
-                if (context.HttpContext.Request.Headers.TryGetValue(Constants.RSA_IDENTIFIER_HEADER, out var rsaIdString) &&
-                   Guid.TryParse(rsaIdString, out var id))
+                string strContent;
+                if (context.HttpContext.Request.ContentType.StartsWith(Constants.ENCRYPTED_BASE64_CONTENT_TYPE))
                 {
-                    var body = context.HttpContext.Request.Body;
-                    if (context.HttpContext.Request.ContentType.StartsWith(Constants.ENCRYPTED_BASE64_CONTENT_TYPE))
-                    {
-                        ms = new MemoryStream(Convert.FromBase64String(await body.ReadAsStringAsync()));
-                        ms.Position = 0;
-                        body = ms;
-                    }
-                    var strContent = Encoding.UTF8.GetString(await service.Decrypt(id, body));
-                    var model = JsonConvert.DeserializeObject(strContent, context.ModelType, jsonSerializerSettings);
-                    return InputFormatterResult.Success(model);
+                    using var ms = new MemoryStream(Convert.FromBase64String(await context.HttpContext.Request.Body.ReadAsStringAsync()));
+                    ms.Position = 0;
+                    strContent = Encoding.UTF8.GetString(await service.Decrypt(id, ms));
                 }
-                return InputFormatterResult.Failure();
+                else
+                    strContent = Encoding.UTF8.GetString(await service.Decrypt(id, context.HttpContext.Request.Body));
+                var model = JsonConvert.DeserializeObject(strContent, context.ModelType, jsonSerializerSettings);
+                return InputFormatterResult.Success(model);
             }
-            finally
-            {
-                if (ms != default)
-                    await ms.DisposeAsync();
-            }
+            return InputFormatterResult.Failure();
         }
 
         private static void HandleDeserializationIgnoreError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)

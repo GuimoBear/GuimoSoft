@@ -48,7 +48,8 @@ namespace GuimoSoft.Bus.Tests
                                 .OfType<FakePipelineMessage>()
                                 .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Scoped)
                                 .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo(), ServiceLifetime.Singleton)
-                                .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .FromEndpoint(FakePipelineMessage.TOPIC_NAME)
+                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
                     })
                     .AddKafkaProducer(configurer =>
                     {
@@ -66,7 +67,8 @@ namespace GuimoSoft.Bus.Tests
                             .Produce()
                                 .FromType<OtherFakeMessage>()
                                 .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME);
+                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
+                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
                     });
 
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaMessageConsumerManager)).Should().NotBeNull();
@@ -129,6 +131,9 @@ namespace GuimoSoft.Bus.Tests
                     .AddKafkaConsumerSwitcher<ServerName>(switcher =>
                     {
                         switcher
+                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
+
+                        switcher
                             .When(ServerName.Host1)
                                 .FromServer(options =>
                                 {
@@ -175,6 +180,9 @@ namespace GuimoSoft.Bus.Tests
                     })
                     .AddKafkaProducerSwitcher<ServerName>(switcher =>
                     {
+                        switcher
+                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
+
                         switcher
                             .When(ServerName.Host1)
                                 .ToServer(options =>
@@ -409,24 +417,6 @@ namespace GuimoSoft.Bus.Tests
                 Utils.ResetarSingletons();
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         [Fact]
         public void BusAlreadyConfiguredExceptionOnConsumerFacts()
@@ -676,21 +666,6 @@ namespace GuimoSoft.Bus.Tests
                 Utils.ResetarSingletons();
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         private enum ServerName
         {

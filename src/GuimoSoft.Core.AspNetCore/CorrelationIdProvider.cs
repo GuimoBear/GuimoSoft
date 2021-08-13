@@ -29,7 +29,7 @@ namespace GuimoSoft.Core.AspNetCore
                 {
                     var correlationId = accessor.HttpContext.Request.Headers[RequestConstants.CORRELATION_ID_HEADER].ToString();
                     if (string.IsNullOrEmpty(correlationId))
-                        correlationId = providerExtension.GetCorrelationId(accessor?.HttpContext)
+                        correlationId = providerExtension.GetCorrelationId(accessor.HttpContext)
                             .ConfigureAwait(false)
                             .GetAwaiter()
                             .GetResult();

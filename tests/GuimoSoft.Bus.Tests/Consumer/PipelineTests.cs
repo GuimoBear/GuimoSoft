@@ -13,6 +13,12 @@ namespace GuimoSoft.Bus.Tests.Consumer
 {
     public class PipelineTests
     {
+        public static readonly IEnumerable<object[]> ConstructorInvalidData
+            = new List<object[]>
+            {
+                new object[] { new List<Type>(), typeof(PipelineTests) },
+                new object[] { new List<Type> { typeof(FakePipelineMessageMiddlewareOne), typeof(FakePipelineMessageMiddlewareTwo), typeof(FakePipelineMessageMiddlewareThree), typeof(FakeMessageMiddleware) }, typeof(FakePipelineMessage) },
+            };
 
         private static readonly IReadOnlyDictionary<string, string> EMPTY_HEADER = new Dictionary<string, string>();
 
@@ -36,19 +42,16 @@ namespace GuimoSoft.Bus.Tests.Consumer
         }
 
         [Fact]
-        public void ConstructiorWithInvalidParametersShouldBeThrowArgumentNullException()
+        public void ConstructorWithNullParametersShouldBeThrowArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => new Pipeline(null, default));
-            Assert.Throws<ArgumentException>(() => new Pipeline(new List<Type>(), typeof(PipelineTests)));
+        }
 
-            var middlewareTypes = new List<Type>
-            {
-                typeof(FakePipelineMessageMiddlewareOne),
-                typeof(FakePipelineMessageMiddlewareTwo),
-                typeof(FakePipelineMessageMiddlewareThree),
-                typeof(FakeMessageMiddleware)
-            };
-            Assert.Throws<ArgumentException>(() => new Pipeline(middlewareTypes, typeof(FakePipelineMessage)));
+        [Theory]
+        [MemberData(nameof(ConstructorInvalidData))]
+        public void ConstructorWithInvalidParametersShouldBeThrowArgumentException(IReadOnlyList<Type> middlewareTypes, Type messageType)
+        {
+            Assert.Throws<ArgumentException>(() => new Pipeline(middlewareTypes, messageType));
         }
 
         [Fact]

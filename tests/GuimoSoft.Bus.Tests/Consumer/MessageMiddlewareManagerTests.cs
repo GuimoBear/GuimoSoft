@@ -92,7 +92,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
         }
 
         [Fact]
-        public async Task Dado_TresMiddlewares_Se_GetPipeline_Entao_ExecutaACriacaoERetornaComSucesso()
+        public async Task Dado_TresMiddlewares_Quando_GetPipeline_Entao_RetornaACriacaoComSucesso()
         {
             var serviceCollection = new ServiceCollection();
 
@@ -130,7 +130,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
         }
 
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Se_RegistrarComMetodoDeFabricaEAdicionaOutroMiddlewareSemFabrica_Entao_TipoEhRegistradoNaCollectionApenasUmaVez()
+        public void Dado_UmFakeMessageMiddleware_Quando_ForRegistradoMetodoDeFabricaESemFabrica_Entao_MetodoDeFabricaSeraRequisitadaApenasUmaVez()
         {
             var serviceCollection = new ServiceCollection();
 

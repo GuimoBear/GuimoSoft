@@ -30,6 +30,17 @@ namespace GuimoSoft.Cache.Tests
                 .Should().BeNull();
         }
 
+        [Fact]
+        public async Task OrAddAsyncFacts()
+        {
+            var sut = new CacheItemBuilder<string, FakeValue>("teste", FakeReturnCachedValue, null, null);
+
+            var result = await sut.OrAddAsync(default);
+
+            result
+                .Should().BeNull();
+        }
+
         private static bool FakeReturnCachedValue(string key, out CacheState cacheState, out FakeValue value)
         {
             cacheState = CacheState.NotFound;

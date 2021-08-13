@@ -31,7 +31,7 @@ namespace GuimoSoft.Bus.Tests.Core
         }
 
         [Fact]
-        public void Se_ConstruirBusAlreadyConfiguredException_Entao_NaoEstouraErro()
+        public void ValidarConstrutor_BusAlreadyConfiguredException_NaoLancaExcecao()
         {
             _ = new BusAlreadyConfiguredException(BusName.Kafka, ServerName.Default);
             SerializeTest(new BusAlreadyConfiguredException(BusName.Kafka, ServerName.Default));
@@ -39,7 +39,7 @@ namespace GuimoSoft.Bus.Tests.Core
         }
 
         [Fact]
-        public void Se_ConstruirBusOptionsMissingException_Entao_NaoEstouraErro()
+        public void ValidarConstrutor_BusOptionsMissingException_NaoLancaExcecao()
         {
             _ = new BusOptionsMissingException(BusName.Kafka, ServerName.Default, typeof(ProducerConfig));
             SerializeTest(new BusOptionsMissingException(BusName.Kafka, ServerName.Default, typeof(ProducerConfig)));

@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -26,6 +25,17 @@ namespace GuimoSoft.Bus.Tests.Consumer
 {
     public class KafkaTopicMessageConsumerTests
     {
+        public static readonly IEnumerable<object[]> ConstructorData
+            = new List<object[]>
+            {
+                new object[] { null, null, null, null, null, null },
+                new object[] { Mock.Of<IKafkaConsumerBuilder>(), null, null, null, null, null },
+                new object[] { Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), null, null, null, null },
+                new object[] { Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), null, null, null },
+                new object[] { Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IMessageMiddlewareExecutorProvider>(), null, null },
+                new object[] { Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IMessageMiddlewareExecutorProvider>(), Mock.Of<IBusSerializerManager>(), null }
+            };
+
         private static (Mock<IBusLogDispatcher>, Mock<IMediator>) CreateLoggerMock<TMessage>(BusName bus)
             where TMessage : IMessage
         {
@@ -52,15 +62,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
             return mockMessageTypeCache;
         }
 
-        [Fact]
-        public void ConstructorShouldThrowArgumentNullExceptionIfBusLoggerIsNull()
+        [Theory]
+        [MemberData(nameof(ConstructorData))]
+        internal void ConstructorShouldThrowArgumentNullExceptionIfBusLoggerIsNull(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IMessageTypeCache cache, IMessageMiddlewareExecutorProvider middlewareManager, IBusSerializerManager busSerializerManager, IBusLogDispatcher log)
         {
-            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(null, null, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), null, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IMessageMiddlewareExecutorProvider>(), null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IMessageMiddlewareExecutorProvider>(), Mock.Of<IBusSerializerManager>(), null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaTopicMessageConsumer(kafkaConsumerBuilder, serviceProvider, cache, middlewareManager, busSerializerManager, log));
         }
 
         [Fact]
@@ -582,9 +588,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 var sut = new KafkaTopicMessageConsumer(stubMessageConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IMessageMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
-                _ = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token));
-                Thread.Sleep(500);
-                cancellationTokenSource.Cancel();
+                Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeMessage.TOPIC_NAME, cancellationTokenSource.Token)).Wait();
 
                 moqSerializerManager
                     .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeMessage)), Times.Once);

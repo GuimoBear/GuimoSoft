@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace GuimoSoft.Core.Tests
 {
     public class ProviderExtensionTests
     {
+        private static readonly object _lock = new();
+
         [Fact]
         public void When_CallUseAdditionalTenantProviderWithNullProvider_Then_ThrowArgumentNullException()
         {
@@ -21,37 +24,123 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public async Task When_CallGetTenantWithRegisteredAddictionalProvider_Then_ReturnTenant()
+        public void Given_NoRegisteredAdictionalProvider_When_CallGetTenant_Then_ReturnDefaultTenant()
         {
-            var moqHttpContext = new Mock<HttpContext>();
-            moqHttpContext
-                .Setup(x => x.Request.Path)
-                .Returns("/teste");
+            lock (_lock)
+            {
+                var sut = new ProviderExtension();
 
-            ProviderExtension.UseAdditionalTenantProvider(GetTenantFromRequest);
+                var moqHttpContext = new Mock<HttpContext>();
 
-            var sut = new ProviderExtension();
+                var result = sut.GetTenant(moqHttpContext.Object).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            await sut.GetTenant(moqHttpContext.Object);
+                result
+                    .Should().Be(default(Tenant));
 
-            moqHttpContext.Verify(x => x.Request.Path, Times.Once);
+                ProviderExtension.additionalTenantProvidersSingleton.Clear();
+            }
         }
 
         [Fact]
-        public async Task When_CallGetCorrelationIdWithRegisteredAddictionalProvider_Then_ReturnTenant()
+        public void Given_RegisteredAdictionalProviderReturningAnNullTenant_When_CallGetTenant_Then_ReturnDefaultTenant()
         {
-            var moqHttpContext = new Mock<HttpContext>();
-            moqHttpContext
-                .Setup(x => x.Request.Path)
-                .Returns("/teste");
+            lock (_lock)
+            {
+                ProviderExtension.UseAdditionalTenantProvider(_ => Task.FromResult<Tenant>(default));
 
-            ProviderExtension.UseAdditionalCorrelationIdProvider(GetCorrelationIdFromRequest);
+                var sut = new ProviderExtension();
 
-            var sut = new ProviderExtension();
+                var moqHttpContext = new Mock<HttpContext>();
 
-            await sut.GetCorrelationId(moqHttpContext.Object);
+                var result = sut.GetTenant(moqHttpContext.Object).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            moqHttpContext.Verify(x => x.Request.Path, Times.Once);
+                result
+                    .Should().Be(default(Tenant));
+
+                ProviderExtension.additionalTenantProvidersSingleton.Clear();
+            }
+        }
+
+        [Fact]
+        public void When_CallGetTenantWithRegisteredAddictionalProvider_Then_ReturnTenant()
+        {
+            lock (_lock)
+            {
+                var moqHttpContext = new Mock<HttpContext>();
+                moqHttpContext
+                    .Setup(x => x.Request.Path)
+                    .Returns("/teste");
+
+                ProviderExtension.UseAdditionalTenantProvider(GetTenantFromRequest);
+
+                var sut = new ProviderExtension();
+
+                sut.GetTenant(moqHttpContext.Object).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                moqHttpContext.Verify(x => x.Request.Path, Times.Once);
+
+                ProviderExtension.additionalTenantProvidersSingleton.Clear();
+            }
+        }
+
+        [Fact]
+        public void Given_NoRegisteredAdictionalProvider_When_CallGetCorrelationId_Then_ReturnDefaultTenant()
+        {
+            lock (_lock)
+            {
+                var sut = new ProviderExtension();
+
+                var moqHttpContext = new Mock<HttpContext>();
+
+                var result = sut.GetCorrelationId(moqHttpContext.Object).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                result
+                    .Should().Be(default(CorrelationId));
+
+                ProviderExtension.additionalCorrelationIdProvidersSingleton.Clear();
+            }
+        }
+
+        [Fact]
+        public void Given_RegisteredAdictionalProviderReturningAnNullCorrelationId_When_CallGetCorrelationId_Then_ReturnDefaultTenant()
+        {
+            lock (_lock)
+            {
+                ProviderExtension.UseAdditionalCorrelationIdProvider(_ => Task.FromResult<CorrelationId>(default));
+
+                var sut = new ProviderExtension();
+
+                var moqHttpContext = new Mock<HttpContext>();
+
+                var result = sut.GetCorrelationId(moqHttpContext.Object).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                result
+                    .Should().Be(default(CorrelationId));
+
+                ProviderExtension.additionalCorrelationIdProvidersSingleton.Clear();
+            }
+        }
+
+        [Fact]
+        public void When_CallGetCorrelationIdWithRegisteredAddictionalProvider_Then_ReturnTenant()
+        {
+            lock (_lock)
+            {
+                var moqHttpContext = new Mock<HttpContext>();
+                moqHttpContext
+                    .Setup(x => x.Request.Path)
+                    .Returns("/teste");
+
+                ProviderExtension.UseAdditionalCorrelationIdProvider(GetCorrelationIdFromRequest);
+
+                var sut = new ProviderExtension();
+
+                sut.GetCorrelationId(moqHttpContext.Object).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                moqHttpContext.Verify(x => x.Request.Path, Times.Once);
+
+                ProviderExtension.additionalCorrelationIdProvidersSingleton.Clear();
+            }
         }
 
         private static Task<Tenant> GetTenantFromRequest(HttpContext context)

@@ -1,8 +1,8 @@
-# GuimoSoft.Core.Bus
+# GuimoSoft.Bus
 
 > Qualquer dúvida acerca de algum termo desconhecido, acesse nosso [**_glossário_**](glossario.md)
 
-O Projeto de Bus do GuimoSoft tem a finalidade de facilitar o trabalho com mensagens em brokers.
+O Projeto de Bus do ViaPag.Core tem a finalidade de facilitar o trabalho com mensagens em brokers.
 
 Foi desenhado para que a integração da solução com estes brokers sejam feitas de forma descritiva e de fácil leitura, afim de tornar estas integrações mais simples e amigáveis.
 
@@ -111,16 +111,17 @@ services
     .AddKafkaProducer(configurer =>
     {
         configurer
-            .WithDefaultSerializer(CustomDefaultSerializer.Instance) // Serializador padrão opcional
+            .WithDefaultSerializer(CustomDefaultSerializer.Instance) // (OPCIONAL) Serializador padrão
             .Produce()
                 .FromType<HelloMessage>()
-                .WithSerializer(HelloMessageSerializer.Instance) // Serializador por tipo opcional
+                .WithSerializer(HelloMessageSerializer.Instance) // (OPCIONAL) Serializador por tipo
                 .ToEndpoint(HelloMessage.TOPIC_NAME)
             .ToServer(options =>
             {
                 options.BootstrapServers = "localhost:9093";
                 options.Acks = Confluent.Kafka.Acks.All;
-            });
+            })
+            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
     });
 ```
 
@@ -155,17 +156,18 @@ services
     .AddKafkaConsumer(configurer =>
     {
         configurer
-            .WithDefaultSerializer(CustomDefaultSerializer.Instance) // Serializador padrão opcional
+            .WithDefaultSerializer(CustomDefaultSerializer.Instance) // (OPCIONAL) Serializador padrão
             .Consume()
                 .OfType<HelloMessage>()
-                .WithSerializer(HelloMessageSerializer.Instance) // Serializador por tipo opcional
-                .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Transient) // Middleware optional
+                .WithSerializer(HelloMessageSerializer.Instance) // (OPCIONAL) Serializador por tipo
+                .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Transient) // (OPCIONAL) Middleware
                 .FromEndpoint(HelloMessage.TOPIC_NAME)
             .FromServer(options =>
             {
                 options.BootstrapServers = "google.com:9093";
                 options.GroupId = "test";
-            });
+            })
+            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
     })
 ```
 

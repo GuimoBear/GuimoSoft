@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using GuimoSoft.Core.AspNetCore;
@@ -44,48 +45,79 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_HeaderCorrelationIdNaoEhNuloOuVazio_Entao_SetHeaderIsSameFromRequest()
+        public void SetCorrelationIdInResponseHeaderWithoutAccessorShouldNotSetHeader()
         {
-            var expectedCorrelationId = Guid.NewGuid().ToString();
-            (var accessorMock, var provider) = CriarProvider(expectedCorrelationId);
-            provider.SetCorrelationIdInResponseHeader();
-
-            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
-                RequestConstants.CORRELATION_ID_HEADER,
-                expectedCorrelationId
-            ), Times.Once);
-
-            accessorMock
-                .SetupGet(a => a.HttpContext.Response.Headers)
-                .Returns(default(IHeaderDictionary));
-
-            (accessorMock, provider) = CriarProvider(expectedCorrelationId);
-
-            accessorMock
-                .SetupGet(a => a.HttpContext.Response.Headers)
-                .Returns(default(IHeaderDictionary));
+            var provider = new CorrelationIdProvider(null, Mock.Of<IProviderExtension>());
 
             provider.SetCorrelationIdInResponseHeader();
+        }
 
-            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
-                RequestConstants.CORRELATION_ID_HEADER,
-                expectedCorrelationId
-            ), Times.Never);
+        [Fact]
+        public void ObterWithoutAnyInnerProviderShouldReturnEmptyCorrelationId()
+        {
+            var sut = new CorrelationIdProvider(null, Mock.Of<IProviderExtension>());
 
-            (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+            sut.Get()
+                .Should().NotBeNull();
+        }
 
-            accessorMock
+        [Fact]
+        public void ObterWithoutHttpContextAccessorShouldReturnEmptyCorrelationId()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+
+            moqAccessor
+                .SetupGet(a => a.HttpContext)
+                .Returns(default(HttpContext));
+
+            provider.Get()
+                .Should().NotBeNull();
+        }
+
+        [Fact]
+        public void ObterWithoutResponseShouldReturnEmptyCorrelationId()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+
+            moqAccessor
                 .SetupGet(a => a.HttpContext.Response)
                 .Returns(default(HttpResponse));
 
-            provider.SetCorrelationIdInResponseHeader();
+            provider.Get()
+                .Should().NotBeNull();
+        }
 
-            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
-                RequestConstants.CORRELATION_ID_HEADER,
-                expectedCorrelationId
-            ), Times.Never); 
-            
-            (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+        [Fact]
+        public void ObterWithoutHeadersShouldReturnEmptyCorrelationId()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+
+            moqAccessor
+                .SetupGet(a => a.HttpContext.Response.Headers)
+                .Returns(default(IHeaderDictionary));
+
+            provider.Get()
+                .Should().NotBeNull();
+        }
+
+        [Fact]
+        public void ObterWithoutOrigemHeaderShouldReturnEmptyCorrelationId()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+
+            moqAccessor
+                .Setup(x => x.HttpContext.Request.Headers[RequestConstants.ORIGEM_HEADER])
+                .Returns("");
+
+            provider.Get()
+                .Should().NotBeNull();
+        }
+
+        [Fact]
+        public void SetCorrelationIdInResponseHeaderWithoutHttpContextShouldNotSetHeader()
+        {
+            var expectedCorrelationId = Guid.NewGuid().ToString();
+            var (accessorMock, provider) = CriarProvider(expectedCorrelationId);
 
             accessorMock
                 .SetupGet(a => a.HttpContext)
@@ -97,10 +129,55 @@ namespace GuimoSoft.Core.Tests
                 RequestConstants.CORRELATION_ID_HEADER,
                 expectedCorrelationId
             ), Times.Never);
+        }
 
-            provider = new CorrelationIdProvider(null, Mock.Of<IProviderExtension>());
+        [Fact]
+        public void SetCorrelationIdInResponseHeaderWithoutResponseShouldNotSetHeader()
+        {
+            var expectedCorrelationId = Guid.NewGuid().ToString();
+            var (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+
+            accessorMock
+                .SetupGet(a => a.HttpContext.Response)
+                .Returns(default(HttpResponse));
 
             provider.SetCorrelationIdInResponseHeader();
+
+            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
+                RequestConstants.CORRELATION_ID_HEADER,
+                expectedCorrelationId
+            ), Times.Never);
+        }
+
+        [Fact]
+        public void SetCorrelationIdInResponseHeaderWithoutHeadersShouldNotSetHeader()
+        {
+            var expectedCorrelationId = Guid.NewGuid().ToString();
+            var (accessorMock, provider) = CriarProvider(expectedCorrelationId);
+
+            accessorMock
+                .SetupGet(a => a.HttpContext.Response.Headers)
+                .Returns(default(IHeaderDictionary));
+
+            provider.SetCorrelationIdInResponseHeader();
+
+            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
+                RequestConstants.CORRELATION_ID_HEADER,
+                expectedCorrelationId
+            ), Times.Never);
+        }
+
+        [Fact]
+        public void SetCorrelationIdInResponseHeaderShouldSetHeader()
+        {
+            var expectedCorrelationId = Guid.NewGuid().ToString();
+            (var accessorMock, var provider) = CriarProvider(expectedCorrelationId);
+            provider.SetCorrelationIdInResponseHeader();
+
+            accessorMock.Verify(a => a.HttpContext.Response.Headers.Add(
+                RequestConstants.CORRELATION_ID_HEADER,
+                expectedCorrelationId
+            ), Times.Once);
         }
 
         [Theory]
@@ -118,8 +195,6 @@ namespace GuimoSoft.Core.Tests
                 correlationId
             ), Times.Once);
         }
-
-
 
         [Theory]
         [InlineData("")]
@@ -188,6 +263,11 @@ namespace GuimoSoft.Core.Tests
             provider.SetCorrelationId(newRandomCorrelationId);
 
             Assert.Throws<CorrelationIdJaSetadoException>(() => provider.SetCorrelationId(strCorrelationId));
+        }
+        private (Mock<IHttpContextAccessor>, CorrelationIdProvider) CriarProviderSemMoqPresetado()
+        {
+            var moq = new Mock<IHttpContextAccessor>();
+            return (moq, new CorrelationIdProvider(moq.Object, Mock.Of<IProviderExtension>()));
         }
     }
 }

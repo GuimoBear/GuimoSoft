@@ -59,10 +59,9 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                         .FromBus(BusName.Kafka).AndSwitch(@switch).AndFinality(Finality.Consume)
                         .WhileListening().TheEndpoint(topic)
                         .Write().Message($"Houve um erro ao consumir a mensagem do tópico {topic}")
-                        .With(ex is OperationCanceledException ? BusLogLevel.Warning : BusLogLevel.Error)
+                        .With(BusLogLevel.Warning)
                         .Publish().AnException(ex, cancellationToken);
-                    if (ex is OperationCanceledException)
-                        break;
+                    break;
                 }
             }
         }

@@ -5,6 +5,8 @@ using GuimoSoft.Cryptography.RSA.Exceptions;
 using GuimoSoft.Cryptography.RSA.Packets;
 using GuimoSoft.Cryptography.Tests.Fixtures;
 using Xunit;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace GuimoSoft.Cryptography.Tests
 {
@@ -25,13 +27,13 @@ namespace GuimoSoft.Cryptography.Tests
         }
 
         [Fact]
-        public void Dado_UmPacoteComUmArrayVazio_Se_Construir_Entao_EstouraArgumentNullException()
+        public void Dado_UmPacoteComUmArrayVazio_Quando_ChamarConstrutor_Entao_LancaArgumentNullException()
         {
             Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(Array.Empty<byte>()));
         }
 
         [Fact]
-        public void Dado_UmPacoteComOConteudoApenasComOIdentificador_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        public void Dado_UmPacoteComApenasIdentificador_Quando_CriarPacote_Entao_LancaCorruptedPackageException()
         {
             var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
 
@@ -39,7 +41,7 @@ namespace GuimoSoft.Cryptography.Tests
         }
 
         [Fact]
-        public void Dado_UmPacoteComOConteudoApenasComOIdentificadorEOTamanho_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        public void Dado_UmPacoteComOIdentificadorEOTamanho_Quando_CriarPacote_Entao_LancaCorruptedPackageException()
         {
             var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
 
@@ -47,7 +49,7 @@ namespace GuimoSoft.Cryptography.Tests
         }
 
         [Fact]
-        public void Dado_UmPacoteComOConteudoApenasComOIdentificadorOTamanhoEOInclusorDeChavePrivada_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        public void Dado_UmPacoteSemPayload_Quando_CriarPacote_Entao_LancaCorruptedPackageException()
         {
             var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
 
@@ -55,7 +57,7 @@ namespace GuimoSoft.Cryptography.Tests
         }
 
         [Fact]
-        public void Dado_UmPacoteComOConteudoApenasComOIdentificadorOTamanhoOInclusorDeChavePrivadaESemOCRC_Se_CriarPacote_Entao_EstouraCorruptedPackageException()
+        public void Dado_UmPacoteSemOCRC_Quando_CriarPacote_Entao_LancaCorruptedPackageException()
         {
             var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicRSA2048Parameters);
 
@@ -127,7 +129,7 @@ namespace GuimoSoft.Cryptography.Tests
         public void Dado_UmPacoteComChavePublicaEPrivadaEComOInicioRemovido_Se_CriarPacote_Entao_EstouraInsufficientContentInStreamException()
         {
             var package = new RsaParametersPackage(fixture.Identifier, fixture.PublicAndPrivateRSA2048Parameters);
-            var bytes = package.Bytes.Skip(40).ToArray();
+            var bytes = package.Bytes.Skip(50).ToArray();
 
             Assert.Throws<InsufficientContentInStreamException>(() => new RsaParametersPackage(bytes));
         }
@@ -184,6 +186,21 @@ namespace GuimoSoft.Cryptography.Tests
                 .Should().BeEquivalentTo(fixture.PublicAndPrivateRSA2048Parameters.P);
             newPackage.Content.Q
                 .Should().BeEquivalentTo(fixture.PublicAndPrivateRSA2048Parameters.Q);
+        }
+
+        [Fact]
+        public async Task Dado_UmPacoteComChavePublicaEPrivadaIntegro_Se_WriteIntoStreamAsync_Entao_ExcreveConteudoSemErro()
+        {
+            using var ms = new MemoryStream();
+
+            var sut = new RsaParametersPackage(fixture.Identifier, fixture.PublicAndPrivateRSA2048Parameters);
+
+            await sut.WriteIntoStreamAsync(ms);
+
+            ms.Position = 0;
+
+            ms.ToArray()
+                .Should().BeEquivalentTo(sut.Bytes);
         }
     }
 }

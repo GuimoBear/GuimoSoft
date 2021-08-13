@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Utils;
 
 namespace GuimoSoft.Bus.Core.Consumer
 {
@@ -29,6 +30,15 @@ namespace GuimoSoft.Bus.Core.Consumer
             var builder = new ConsumerBuilder<TOptions>(_busName, @switch, _assemblies, _services);
             _builders.Add(builder);
             return builder;
+        }
+
+        public ConsumerSwitcherBuilder<TSwitch, TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        {
+            if (assemblies is not null)
+                foreach (var assembly in assemblies)
+                    _assemblies.TryAddAssembly(assembly);
+
+            return this;
         }
 
         internal void ValidateAfterConfigured()

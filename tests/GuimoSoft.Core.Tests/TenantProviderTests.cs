@@ -59,26 +59,32 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void ObterFacts()
+        public void ObterDeProviderExtensionsFacts()
         {
-            var provider = CriarProviderSemHeaderMasComProviderExtension("teste");
+            var sut = CriarProviderSemHeaderMasComProviderExtension("teste");
 
-            provider.Obter()
+            sut.Obter()
                 .Should().Be("teste");
 
-            provider = CriarProviderComAccessorNuloMasComProviderExtension("teste");
+            sut = CriarProviderComAccessorNuloMasComProviderExtension("teste");
 
-            provider.Obter()
+            sut.Obter()
                 .Should().Be("teste");
+        }
 
-            provider = new TenantProvider(null, Mock.Of<IProviderExtension>());
+        [Fact]
+        public void ObterWithoutAnyInnerProviderShouldReturnEmptyTenant()
+        {
+            var sut = new TenantProvider(null, Mock.Of<IProviderExtension>());
 
-            provider.Obter()
+            sut.Obter()
                 .Should().Be(new Tenant(""));
+        }
 
-            Mock<IHttpContextAccessor> moqAccessor = default;
-
-            (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+        [Fact]
+        public void ObterWithoutHttpContextAccessorShouldReturnEmptyTenant()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
 
             moqAccessor
                 .SetupGet(a => a.HttpContext)
@@ -86,8 +92,12 @@ namespace GuimoSoft.Core.Tests
 
             provider.Obter()
                 .Should().Be(new Tenant(""));
+        }
 
-            (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+        [Fact]
+        public void ObterWithoutResponseShouldReturnEmptyTenant()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
 
             moqAccessor
                 .SetupGet(a => a.HttpContext.Response)
@@ -95,8 +105,12 @@ namespace GuimoSoft.Core.Tests
 
             provider.Obter()
                 .Should().Be(new Tenant(""));
+        }
 
-            (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+        [Fact]
+        public void ObterWithoutHeadersShouldReturnEmptyTenant()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
 
             moqAccessor
                 .SetupGet(a => a.HttpContext.Response.Headers)
@@ -104,8 +118,12 @@ namespace GuimoSoft.Core.Tests
 
             provider.Obter()
                 .Should().Be(new Tenant(""));
+        }
 
-            (moqAccessor, provider) = CriarProviderSemMoqPresetado();
+        [Fact]
+        public void ObterWithoutOrigemHeaderShouldReturnEmptyTenant()
+        {
+            var (moqAccessor, provider) = CriarProviderSemMoqPresetado();
 
             moqAccessor
                 .Setup(x => x.HttpContext.Request.Headers[RequestConstants.ORIGEM_HEADER])
@@ -115,22 +133,37 @@ namespace GuimoSoft.Core.Tests
                 .Should().Be(new Tenant(""));
         }
 
-        [Fact]
-        public void SetTenantFacts()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void SetTenantWithIgnoredDataFacts(string strTenant)
         {
             var (_, provider) = CriarProvider("teste");
 
-            provider.SetTenant(null);
+            provider.SetTenant(strTenant);
+            provider.SetTenant(strTenant);
+        }
 
-            provider.SetTenant(null);
-
-            provider.SetTenant("");
-
-            provider.SetTenant("");
+        [Fact]
+        public void SetTenantWithSameTenantShouldNotThrowAnyException()
+        {
+            var (_, provider) = CriarProvider("teste");
 
             provider.SetTenant("teste");
 
             provider.SetTenant("teste");
+        }
+
+        [Fact]
+        public void SetTenantWithDifferentTenantShouldThrowTenantJaSetadoException()
+        {
+            var (_, provider) = CriarProvider("teste");
+
+            provider.SetTenant("teste");
+
+            provider.SetTenant("teste");
+
+            provider.SetTenant(null);
 
             Assert.Throws<TenantJaSetadoException>(() => provider.SetTenant("teste 2"));
         }

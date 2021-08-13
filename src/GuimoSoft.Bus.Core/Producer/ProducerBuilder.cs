@@ -5,6 +5,7 @@ using System.Reflection;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Exceptions;
 using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Core.Utils;
 using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Bus.Core.Producer
@@ -42,6 +43,15 @@ namespace GuimoSoft.Bus.Core.Producer
         public ProducerBuilder<TOptions> WithDefaultSerializer(IDefaultSerializer defaultSerializer)
         {
             _busSerializerManager.SetDefaultSerializer(_busName, Finality.Produce, _switch, defaultSerializer);
+
+            return this;
+        }
+
+        public ProducerBuilder<TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        {
+            if (assemblies is not null)
+                foreach (var assembly in assemblies)
+                    _assemblies.TryAddAssembly(assembly);
 
             return this;
         }

@@ -14,12 +14,19 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
 {
     public class MessageProducerTests
     {
-        [Fact]
-        public void ConstructorShouldThrowIfAnyParameterIsNull()
+        public static readonly IEnumerable<object[]> ConstructorInvalidData
+            = new List<object[]>
+            {
+                new object[] { null, null, null },
+                new object[] { Mock.Of<IProducerManager>(), null, null },
+                new object[] { Mock.Of<IProducerManager>(), Mock.Of<IMessageTypeCache>(), null },
+            };
+
+        [Theory]
+        [MemberData(nameof(ConstructorInvalidData))]
+        internal void ConstructorShouldThrowIfAnyParameterIsNull(IProducerManager producerManager, IMessageTypeCache messageTypeCache, IServiceProvider services)
         {
-            Assert.Throws<ArgumentNullException>(() => new MessageProducer(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new MessageProducer(Mock.Of<IProducerManager>(), null, null));
-            Assert.Throws<ArgumentNullException>(() => new MessageProducer(Mock.Of<IProducerManager>(), Mock.Of<IMessageTypeCache>(), null));
+            Assert.Throws<ArgumentNullException>(() => new MessageProducer(producerManager, messageTypeCache, services));
         }
 
         [Theory]

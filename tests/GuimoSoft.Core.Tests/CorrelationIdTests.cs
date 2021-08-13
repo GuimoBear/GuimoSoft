@@ -72,7 +72,7 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_CorrelationIsTeste_Entao_EqualComCorrelationIdTeste_Entao_RetornaTrue()
+        public void Dado_CorrelationIsString_Quando_EqualComString_Entao_RetornaTrue()
         {
             CorrelationId correlationId = "teste";
             CorrelationId objectStringCorrelationId = "teste";
@@ -81,7 +81,7 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_CorrelationIsTeste_Entao_EqualComObject_Entao_RetornaFalse()
+        public void Dado_CorrelationIsString_Quando_EqualComObject_Entao_RetornaFalse()
         {
             CorrelationId correlationId = "teste";
             var anotherObject = new object();
@@ -90,7 +90,7 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_CorrelationIsTeste_Entao_EqualComStringNula_Entao_RetornaFalse()
+        public void Dado_CorrelationIsString_Quando_EqualComStringNula_Entao_RetornaFalse()
         {
             CorrelationId correlationId = "teste";
             string nullString = null;

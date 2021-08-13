@@ -62,7 +62,7 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_TenantNull_Entao_CastParaStringImplicito_RetornaStringNula()
+        public void Dado_TenantNull_Quando_CastParaStringImplicito_Entao_RetornaStringNula()
         {
             Tenant tenant = null;
             string expected = tenant;
@@ -72,7 +72,7 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_TenantIsTeste_Entao_EqualsComObjectRetornaFalse()
+        public void Dado_TenantIsString_Quando_EqualsComObject_Entao_RetornaFalse()
         {
             Tenant tenant = "teste";
             var anotherObject = new object();
@@ -82,7 +82,7 @@ namespace GuimoSoft.Core.Tests
         }
 
         [Fact]
-        public void Se_TenantIsTeste_EntaoEqualComTenantNullRetornaFalse()
+        public void Dado_TenantIsString_Quando_EqualTenantNull_Entao_RetornaFalse()
         {
             Tenant tenant = "teste";
             Tenant another = null;

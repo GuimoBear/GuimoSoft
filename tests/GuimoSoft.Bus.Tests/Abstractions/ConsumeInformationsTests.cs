@@ -7,18 +7,24 @@ namespace GuimoSoft.Bus.Tests.Abstractions
 {
     public class ConsumeInformationsTests
     {
+        [Theory]
+        [InlineData(null, "value")]
+        [InlineData("", "value")]
+        [InlineData(" ", "value")]
+        [InlineData("key", null)]
+        [InlineData("key", "")]
+        [InlineData("key", " ")]
+        public void AddHeadersWithInvalidDataShouldThrowArgumentException(string key, string value)
+        {
+            var sut = new ConsumeInformations(BusName.Kafka, ServerName.Default, "");
+
+            Assert.Throws<ArgumentException>(() => sut.AddHeader(key, value));
+        }
+
         [Fact]
         public void AddHeaderFacts()
         {
             var sut = new ConsumeInformations(BusName.Kafka, ServerName.Default, "");
-
-            Assert.Throws<ArgumentException>(() => sut.AddHeader(null, "value"));
-            Assert.Throws<ArgumentException>(() => sut.AddHeader("", "value"));
-            Assert.Throws<ArgumentException>(() => sut.AddHeader(" ", "value"));
-
-            Assert.Throws<ArgumentException>(() => sut.AddHeader("key", null));
-            Assert.Throws<ArgumentException>(() => sut.AddHeader("key", ""));
-            Assert.Throws<ArgumentException>(() => sut.AddHeader("key", " "));
 
             sut.Headers
                 .Should().BeEmpty();

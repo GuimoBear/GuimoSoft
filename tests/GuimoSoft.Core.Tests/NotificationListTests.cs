@@ -10,6 +10,30 @@ namespace GuimoSoft.Core.Tests
     public class NotificationListTests
     {
         [Fact]
+        public void NotificationFacts()
+        {
+            var expectedNotification = new Notification("teste", "teste", "test");
+
+            var sut = new Notification(expectedNotification.Field, expectedNotification.Message, expectedNotification.Value);
+
+            sut
+                .Should().BeEquivalentTo(expectedNotification);
+        }
+
+        [Fact]
+        public void NotificationResultFacts()
+        {
+            var expectedNotification = new Notification("teste", "teste", "test");
+
+            var expectedNotificationResult = new NotificationResult<FakeErrorCode>(new NotificationList<FakeErrorCode>(FakeErrorCode.FakeErrorCode1, expectedNotification));
+
+            var sut = new NotificationResult<FakeErrorCode>(expectedNotificationResult.Notifications);
+
+            sut
+                .Should().BeEquivalentTo(expectedNotificationResult);
+        }
+
+        [Fact]
         public void Dado_UmaNotificacao_Se_CriarNotificationList_Entao_NaoRetornaErro()
         {
             var sut = new NotificationList<FakeErrorCode>(FakeErrorCode.FakeErrorCode1);

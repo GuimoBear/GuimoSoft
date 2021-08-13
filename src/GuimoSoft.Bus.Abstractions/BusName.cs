@@ -2,6 +2,7 @@
 {
     public enum BusName
     {
+        None,
         Kafka
     }
 }

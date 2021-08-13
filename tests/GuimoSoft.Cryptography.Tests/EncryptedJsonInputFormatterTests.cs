@@ -77,7 +77,7 @@ namespace GuimoSoft.Cryptography.Tests
 
 
         [Fact]
-        public async Task RequestWithCertIdHeaderAndValidGuidAndInvalidJson_Return_SuccessInputFormatterResult()
+        public async Task RequestWithInvalidEncryptedJson_Return_SuccessfulInputFormatterResult()
         {
             var request = new FakeRequest("test", 2);
             var stringContent = JsonConvert.SerializeObject(request).Substring(0, 15);

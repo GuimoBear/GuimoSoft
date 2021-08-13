@@ -53,7 +53,7 @@ namespace GuimoSoft.Core
 
         public static implicit operator string(CorrelationId correlationId)
         {
-            return correlationId.Value;
+            return correlationId?.Value;
         }
     }
 }

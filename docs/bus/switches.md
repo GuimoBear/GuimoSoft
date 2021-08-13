@@ -37,6 +37,9 @@ services
     .AddKafkaConsumerSwitcher<ServerName>(switcher =>
     {
         switcher
+            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
+
+        switcher
             .When(ServerName.Host1)
                 .Consume()
                     .OfType<HelloMessage>()
@@ -63,6 +66,9 @@ services
     })
     .AddKafkaProducerSwitcher<ServerName>(switcher =>
     {
+        switcher
+            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
+            
         switcher
             .When(ServerName.Host1)
                 .Produce()

@@ -24,7 +24,7 @@ namespace GuimoSoft.Cryptography.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData("a")]
-        public void Dado_UmPacoteCriado_Se_EncryptComPasswordInvalido_Entao_EstouraArgumentException(string password)
+        public void Dado_PasswordInvalido_Quando_Encriptar_Entao_LancaArgumentException(string password)
         {
             var sut = new PasswordEncryptedPackage(Array.Empty<byte>());
             Assert.Throws<ArgumentException>(() => sut.Encrypt(password));
