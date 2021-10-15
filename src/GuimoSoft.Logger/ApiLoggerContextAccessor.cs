@@ -24,7 +24,7 @@ namespace GuimoSoft.Logger
             }
         }
 
-        private class ApiLogerContextHolder
+        private sealed class ApiLogerContextHolder
         {
             public IDictionary<string, object> Context;
         }

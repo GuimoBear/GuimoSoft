@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Immutable;
 
 namespace GuimoSoft.Logger.Attributes
 {
@@ -8,16 +9,20 @@ namespace GuimoSoft.Logger.Attributes
     {
         private static readonly LogLevel[] _allLogLevels = Enum.GetValues<LogLevel>();
 
-        public readonly LogLevel[] IgnoredLevels = _allLogLevels;
+        public readonly ImmutableArray<LogLevel> IgnoredLevels;
 
-        public LoggerIgnoreAttribute() { }
+        public LoggerIgnoreAttribute() 
+        {
+            IgnoredLevels = ImmutableArray.Create(_allLogLevels);
+        }
 
         public LoggerIgnoreAttribute(LogLevel ignoredLevel, params LogLevel[] ignoredLevels)
         {
-            IgnoredLevels = new LogLevel[1 + ignoredLevels.Length];
-            IgnoredLevels[0] = ignoredLevel;
+            var _ignoredLevels = new LogLevel[1 + ignoredLevels.Length];
+            _ignoredLevels[0] = ignoredLevel;
             if (ignoredLevels.Length > 0)
-                Array.Copy(ignoredLevels, 0, IgnoredLevels, 1, ignoredLevels.Length);
+                Array.Copy(ignoredLevels, 0, _ignoredLevels, 1, ignoredLevels.Length);
+            IgnoredLevels = ImmutableArray.Create(_ignoredLevels);
         }
     }
 }

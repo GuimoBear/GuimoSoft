@@ -58,9 +58,9 @@ namespace GuimoSoft.Bus.Core.Internal
 
         private static IEnumerable<Type> GetHandlerTypes(Type eventType)
         {
-            return eventType
-                   .Assembly
-                   .GetTypes()
+            return Singletons
+                   .GetAssemblies()
+                   .SelectMany(a => a.GetTypes())
                    .Where(type =>
                           type
                               .GetInterfaces()

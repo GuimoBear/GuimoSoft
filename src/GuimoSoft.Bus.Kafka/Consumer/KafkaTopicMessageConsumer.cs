@@ -150,7 +150,7 @@ namespace GuimoSoft.Bus.Kafka.Consumer
             return informations;
         }
 
-        private class EventTypeResolver
+        private sealed class EventTypeResolver
         {
             public Type EventType { get; }
             public IDefaultSerializer Serializer { get; }

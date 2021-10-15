@@ -2,6 +2,6 @@
 {
     public interface IMessageStage
     {
-        ILogLevelAndDataStage Message(string message);
+        ILogLevelAndDataStage Message(string @event);
     }
 }

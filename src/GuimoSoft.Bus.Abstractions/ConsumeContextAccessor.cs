@@ -24,7 +24,7 @@ namespace GuimoSoft.Bus.Abstractions
             }
         }
 
-        private class ConsumeContextHolder
+        private sealed class ConsumeContextHolder
         {
             public ConsumeContext<TEvent> Context;
         }
