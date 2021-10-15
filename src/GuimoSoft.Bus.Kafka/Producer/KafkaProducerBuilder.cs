@@ -25,7 +25,7 @@ namespace GuimoSoft.Bus.Kafka.Producer
 
             var producerBuilder = new ProducerBuilder<string, byte[]>(ProducerConfig);
 
-            producerBuilder.SetLogHandler((_, kafkaLogMessage) => LogMessage(@switch, Finality.Produce, kafkaLogMessage));
+            producerBuilder.SetLogHandler((_, kafkaLogEvent) => LogEvent(@switch, Finality.Produce, kafkaLogEvent));
             producerBuilder.SetErrorHandler((_, kafkaError) => LogException(@switch, Finality.Produce, kafkaError));
 
             return producerBuilder.Build();

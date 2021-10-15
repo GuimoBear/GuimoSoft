@@ -6,37 +6,37 @@ using GuimoSoft.Bus.Core.Interfaces;
 
 namespace GuimoSoft.Bus.Core.Internal
 {
-    internal class MessageTypeCache : IMessageTypeCache
+    internal class EventTypeCache : IEventTypeCache
     {
         private readonly object _lock = new();
 
-        private readonly ICollection<MessageTypeItem> _messageTypes;
+        private readonly ICollection<EventTypeItem> _eventTypes;
 
-        public MessageTypeCache()
+        public EventTypeCache()
         {
-            _messageTypes = new List<MessageTypeItem>();
+            _eventTypes = new List<EventTypeItem>();
         }
 
         public void Add(BusName busName, Finality finality, Enum @switch, Type type, string endpoint)
         {
-            if (!typeof(IMessage).IsAssignableFrom(type))
-                throw new ArgumentException($"{type.Name} deve implementar a interface {nameof(IMessage)}");
+            if (!typeof(IEvent).IsAssignableFrom(type))
+                throw new ArgumentException($"{type.Name} deve implementar a interface {nameof(IEvent)}");
             if (@switch is null)
                 throw new ArgumentNullException(nameof(@switch));
             if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException("É necessário informar um endpoint para haver o registro", nameof(endpoint));
 
-            var item = new MessageTypeItem(busName, finality, @switch, type, endpoint);
+            var item = new EventTypeItem(busName, finality, @switch, type, endpoint);
             lock (_lock)
             {
-                if (!_messageTypes.Contains(item))
-                    _messageTypes.Add(item);
+                if (!_eventTypes.Contains(item))
+                    _eventTypes.Add(item);
             }
         }
 
         public IEnumerable<Enum> GetSwitchers(BusName busName, Finality finality)
         {
-            var items = _messageTypes
+            var items = _eventTypes
                 .Where(mt => mt.Bus.Equals(busName) && mt.Finality.Equals(finality))
                 .Select(mt => mt.Switch)
                 .Distinct()
@@ -50,7 +50,7 @@ namespace GuimoSoft.Bus.Core.Internal
         {
             if (@switch is null)
                 throw new ArgumentNullException(nameof(@switch));
-            var items = _messageTypes
+            var items = _eventTypes
                 .Where(mt => mt.Bus.Equals(busName) && mt.Finality.Equals(finality) && mt.Switch.Equals(@switch))
                 .Select(mt => mt.Endpoint)
                 .ToList();
@@ -60,24 +60,24 @@ namespace GuimoSoft.Bus.Core.Internal
             return items;
         }
 
-        public IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, IMessage message)
+        public IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, IEvent @event)
         {
-            if (message is null)
-                throw new ArgumentNullException(nameof(message));
-            var messageType = message.GetType();
+            if (@event is null)
+                throw new ArgumentNullException(nameof(@event));
+            var eventType = @event.GetType();
 
-            return Get(busName, finality, @switch, messageType);
+            return Get(busName, finality, @switch, eventType);
         }
 
-        public IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, Type messageType)
+        public IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, Type eventType)
         {
-            if (messageType is null)
-                throw new ArgumentNullException(nameof(messageType));
+            if (eventType is null)
+                throw new ArgumentNullException(nameof(eventType));
             if (@switch is null)
                 throw new ArgumentNullException(nameof(@switch));
 
-            var items = _messageTypes
-                .Where(mt => mt.Bus.Equals(busName) && mt.Finality.Equals(finality) && mt.Switch.Equals(@switch) && mt.Type.Equals(messageType))
+            var items = _eventTypes
+                .Where(mt => mt.Bus.Equals(busName) && mt.Finality.Equals(finality) && mt.Switch.Equals(@switch) && mt.Type.Equals(eventType))
                 .Select(mt => mt.Endpoint)
                 .ToList();
             if (items.Count == 0)
@@ -92,7 +92,7 @@ namespace GuimoSoft.Bus.Core.Internal
             if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException("É necessário informar um endpoint obter os tipos da mensagem", nameof(endpoint));
 
-            var items = _messageTypes
+            var items = _eventTypes
                 .Where(mt => mt.Bus.Equals(busName) && mt.Finality.Equals(finality) && mt.Switch.Equals(@switch) && mt.Endpoint.Equals(endpoint))
                 .Select(mt => mt.Type)
                 .ToList();
@@ -101,22 +101,22 @@ namespace GuimoSoft.Bus.Core.Internal
             return items;
         }
 
-        public IEnumerable<(BusName BusName, Enum Switch, string Endpoint)> Get(Type messageType)
+        public IEnumerable<(BusName BusName, Enum Switch, string Endpoint)> Get(Type eventType)
         {
-            if (messageType is null)
-                throw new ArgumentNullException(nameof(messageType));
+            if (eventType is null)
+                throw new ArgumentNullException(nameof(eventType));
 
-            var items = _messageTypes
-                   .Where(mt => mt.Finality.Equals(Finality.Produce) && mt.Type.Equals(messageType))
+            var items = _eventTypes
+                   .Where(mt => mt.Finality.Equals(Finality.Produce) && mt.Type.Equals(eventType))
                    .Select(mt => (mt.Bus, mt.Switch, mt.Endpoint))
                    .ToList();
 
             if (items.Count == 0)
-                throw new KeyNotFoundException($"Não existem endpoints configurados para a mensagem do tipo {messageType}");
+                throw new KeyNotFoundException($"Não existem endpoints configurados para a mensagem do tipo {eventType}");
             return items;
         }
 
-        internal sealed class MessageTypeItem
+        internal sealed class EventTypeItem
         {
             public BusName Bus { get; }
             public Finality Finality { get; }
@@ -126,7 +126,7 @@ namespace GuimoSoft.Bus.Core.Internal
 
             private readonly int _hashCode;
 
-            public MessageTypeItem(BusName bus, Finality finality, Enum @switch, Type type, string endpoint)
+            public EventTypeItem(BusName bus, Finality finality, Enum @switch, Type type, string endpoint)
             {
                 Bus = bus;
                 Finality = finality;
@@ -139,7 +139,7 @@ namespace GuimoSoft.Bus.Core.Internal
 
             public override bool Equals(object obj)
             {
-                return obj is MessageTypeItem item &&
+                return obj is EventTypeItem item &&
                        item.GetHashCode().Equals(GetHashCode());
             }
 

@@ -5,26 +5,26 @@ using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Core.Utils;
 
-namespace GuimoSoft.Bus.Core.Consumer
+namespace GuimoSoft.Bus.Core.Listener
 {
-    public class EndpointConsumerBuilder<TOptions>
+    public class EndpointListenerBuilder<TOptions>
         where TOptions : class, new()
     {
-        private readonly ConsumerBuilder<TOptions> _parent;
+        private readonly ListenerBuilder<TOptions> _parent;
         private readonly BusName _busName;
         private readonly Enum _switch;
         private readonly BusSerializerManager _busSerializerManager;
-        private readonly MessageMiddlewareManager _middlewareManager;
-        private readonly MessageTypeCache _messageTypesCache;
+        private readonly EventMiddlewareManager _middlewareManager;
+        private readonly EventTypeCache _eventTypesCache;
         private readonly ICollection<Assembly> _assemblies;
 
-        internal EndpointConsumerBuilder(
-            ConsumerBuilder<TOptions> parent,
+        internal EndpointListenerBuilder(
+            ListenerBuilder<TOptions> parent,
             BusName busName,
             Enum @switch,
             BusSerializerManager busSerializerManager,
-            MessageMiddlewareManager middlewareManager,
-            MessageTypeCache messageTypesCache,
+            EventMiddlewareManager middlewareManager,
+            EventTypeCache eventTypesCache,
             ICollection<Assembly> assemblies)
         {
             _parent = parent;
@@ -33,14 +33,14 @@ namespace GuimoSoft.Bus.Core.Consumer
 
             _busSerializerManager = busSerializerManager;
             _middlewareManager = middlewareManager;
-            _messageTypesCache = messageTypesCache;
+            _eventTypesCache = eventTypesCache;
             _assemblies = assemblies;
         }
 
-        public TypedEndpointConsumerBuilder<TOptions, TMessage> OfType<TMessage>() where TMessage : IMessage
+        public TypedEndpointListenerBuilder<TOptions, TEvent> OfType<TEvent>() where TEvent : IEvent
         {
-            _assemblies.TryAddAssembly(typeof(TMessage).Assembly);
-            return new TypedEndpointConsumerBuilder<TOptions, TMessage>(_parent, _busName, _switch, _busSerializerManager, _middlewareManager, _messageTypesCache);
+            _assemblies.TryAddAssembly(typeof(TEvent).Assembly);
+            return new TypedEndpointListenerBuilder<TOptions, TEvent>(_parent, _busName, _switch, _busSerializerManager, _middlewareManager, _eventTypesCache);
         }
     }
 }

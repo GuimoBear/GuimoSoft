@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Logger;
 
-namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
+namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloEvent
 {
-    public class HelloMessageHandler : INotificationHandler<Messages.HelloMessage>
+    public class HelloEventHandler : INotificationHandler<Events.HelloEvent>
     {
-        private readonly IApiLogger<HelloMessageHandler> _logger;
-        private readonly IConsumeContextAccessor<Messages.HelloMessage> _contextAccessor;
+        private readonly IApiLogger<HelloEventHandler> _logger;
+        private readonly IConsumeContextAccessor<Events.HelloEvent> _contextAccessor;
 
-        public HelloMessageHandler(IApiLogger<HelloMessageHandler> logger, IConsumeContextAccessor<Messages.HelloMessage> contextAccessor)
+        public HelloEventHandler(IApiLogger<HelloEventHandler> logger, IConsumeContextAccessor<Events.HelloEvent> contextAccessor)
         {
             _logger = logger;
             _contextAccessor = contextAccessor;
         }
 
-        public async Task Handle(Messages.HelloMessage notification, CancellationToken cancellationToken)
+        public async Task Handle(Events.HelloEvent notification, CancellationToken cancellationToken)
         {
             await Task.Delay(TimeSpan.FromSeconds(2));
 

@@ -19,7 +19,7 @@
     },
     "GuimoSoft.Examples.Notifications": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunEvents": "true",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5000",

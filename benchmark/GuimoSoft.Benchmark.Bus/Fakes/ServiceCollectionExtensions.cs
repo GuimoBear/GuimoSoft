@@ -16,9 +16,9 @@ namespace GuimoSoft.Benchmark.Bus.Fakes
 
             services.AddSingleton(InMemoryBroker.Consumer);
             services.AddSingleton(InMemoryBroker.Producer);
-            services.AddTransient<IMessageProducer, InMemoryMessageProducer>();
+            services.AddTransient<IEventBus, InMemoryEventProducer>();
             services.AddTransient<IKafkaConsumerBuilder, InMemoryKafkaConsumerBuilder>();
-            services.AddTransient<IMessageProducer, InMemoryMessageProducer>();
+            services.AddTransient<IEventBus, InMemoryEventProducer>();
 
             return services;
         }

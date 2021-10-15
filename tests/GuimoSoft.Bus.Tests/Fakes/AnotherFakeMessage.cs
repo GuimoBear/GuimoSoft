@@ -2,11 +2,11 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class AnotherFakeMessage : IMessage
+    public class AnotherFakeEvent : IEvent
     {
-        public const string TOPIC_NAME = "another-fake-message";
+        public const string TOPIC_NAME = "another-fake-event";
 
-        public AnotherFakeMessage(string key, string someAnotherProperty)
+        public AnotherFakeEvent(string key, string someAnotherProperty)
         {
             Key = key;
             SomeAnotherProperty = someAnotherProperty;

@@ -9,18 +9,18 @@ using GuimoSoft.Bus.Core.Interfaces;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
-    public class KafkaMessageConsumerManager : IKafkaMessageConsumerManager
+    public class KafkaEventConsumerManager : IKafkaEventConsumerManager
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IMessageTypeCache _cache;
+        private readonly IEventTypeCache _cache;
 
         private bool _started = false;
         private readonly IList<Task> _tasks;
 
-        public KafkaMessageConsumerManager(IServiceProvider serviceProvider)
+        public KafkaEventConsumerManager(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _cache = _serviceProvider.GetRequiredService<IMessageTypeCache>();
+            _cache = _serviceProvider.GetRequiredService<IEventTypeCache>();
 
             _tasks = new List<Task>();
         }
@@ -33,9 +33,9 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                                                        .SelectMany(@switch => _cache.GetEndpoints(BusName.Kafka, Finality.Consume, @switch)
                                                                                     .Select(topic => new KeyValuePair<Enum, string>(@switch, topic))))
                 {
-                    var kafkaTopicMessageConsumer = _serviceProvider.GetRequiredService<IKafkaTopicMessageConsumer>();
+                    var kafkaTopicEventConsumer = _serviceProvider.GetRequiredService<IKafkaTopicEventConsumer>();
 
-                    _tasks.Add(Task.Factory.StartNew(() => kafkaTopicMessageConsumer.ConsumeUntilCancellationIsRequested(@switch, topic, cancellationToken), cancellationToken));
+                    _tasks.Add(Task.Factory.StartNew(() => kafkaTopicEventConsumer.ConsumeUntilCancellationIsRequested(@switch, topic, cancellationToken), cancellationToken));
                 }
                 _started = true;
             }

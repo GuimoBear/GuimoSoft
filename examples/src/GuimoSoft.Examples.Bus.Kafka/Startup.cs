@@ -6,8 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using GuimoSoft.Bus.Kafka;
-using GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage;
-using GuimoSoft.Examples.Bus.Kafka.Messages;
+using GuimoSoft.Examples.Bus.Kafka.Handlers.HelloEvent;
+using GuimoSoft.Examples.Bus.Kafka.Events;
 using GuimoSoft.Examples.Bus.Kafka.Utils;
 using GuimoSoft.Examples.Bus.Kafka.Utils.Serializers;
 using GuimoSoft.Logger.AspNetCore;
@@ -33,7 +33,7 @@ namespace GuimoSoft.Examples.Bus.Kafka
 
             services.AddApiLogger();
 
-            var wrapper = services
+            services
                 .AddKafkaProducer(config =>
                 {
                     config
@@ -43,7 +43,9 @@ namespace GuimoSoft.Examples.Bus.Kafka
                             options.Acks = Confluent.Kafka.Acks.All;
                         })
                         .WithDefaultSerializer(EncryptedJsonSerializer.Instance)
-                        .Produce().FromType<HelloMessage>().ToEndpoint(HelloMessage.TOPIC_NAME);
+                        .Publish()
+                            .OfType<HelloEvent>()
+                            .ToEndpoint(HelloEvent.TOPIC_NAME);
                 })
                 .AddKafkaConsumer(config => 
                 {
@@ -54,7 +56,10 @@ namespace GuimoSoft.Examples.Bus.Kafka
                             options.GroupId = Environment.GetEnvironmentVariable("KAFKA_CONSUMER_GROUP_ID");
                         })
                         .WithDefaultSerializer(EncryptedJsonSerializer.Instance)
-                        .Consume().OfType<HelloMessage>().WithMiddleware<HelloMessageMiddleware>().FromEndpoint(HelloMessage.TOPIC_NAME);
+                        .Listen()
+                            .OfType<HelloEvent>()
+                            .WithMiddleware<HelloEventMiddleware>()
+                            .FromEndpoint(HelloEvent.TOPIC_NAME);
                 });
 
             services.AddControllers();

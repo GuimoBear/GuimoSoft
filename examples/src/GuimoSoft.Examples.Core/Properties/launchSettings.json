@@ -19,7 +19,7 @@
     },
     "GuimoSoft.Examples.Core": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunEvents": "true",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
       "applicationUrl": "http://localhost:5000",

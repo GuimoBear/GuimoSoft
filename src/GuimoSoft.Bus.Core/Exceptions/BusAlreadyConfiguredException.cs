@@ -8,9 +8,9 @@ namespace GuimoSoft.Bus.Core.Exceptions
     public sealed class BusAlreadyConfiguredException : Exception
     {
         public BusAlreadyConfiguredException(BusName bus, Enum @switch)
-            : base(GetMessage(bus, @switch)) { }
+            : base(GeTEvent(bus, @switch)) { }
 
-        private static string GetMessage(BusName bus, Enum @switch)
+        private static string GeTEvent(BusName bus, Enum @switch)
         {
             if (ServerName.Default.Equals(@switch))
                 return $"O {bus} já foi configurado";

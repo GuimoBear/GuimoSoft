@@ -12,7 +12,7 @@ namespace GuimoSoft.Benchmark.Bus
 {
     public class Config : ManualConfig
     {
-        public const int Iterations = 1000;
+        public const int Iterations = 2000;
 
         public Config()
         {
@@ -25,7 +25,7 @@ namespace GuimoSoft.Benchmark.Bus
             var md = MemoryDiagnoser.Default;
             AddDiagnoser(md);
             AddColumn(new ImplementationColumn());
-            //AddColumn(TargetMethodColumn.Method);
+            AddColumn(TargetMethodColumn.Method);
             AddColumn(StatisticColumn.Mean);
             AddColumn(StatisticColumn.StdDev);
             AddColumn(StatisticColumn.Error);

@@ -2,12 +2,12 @@
 
 namespace GuimoSoft.Bus.Abstractions
 {
-    internal sealed class ConsumeContextAccessor<TMessage> : IConsumeContextAccessor<TMessage>
-        where TMessage: IMessage
+    internal sealed class ConsumeContextAccessor<TEvent> : IConsumeContextAccessor<TEvent>
+        where TEvent: IEvent
     {
         private readonly AsyncLocal<ConsumeContextHolder> _consumecontextCurrent = new AsyncLocal<ConsumeContextHolder>();
 
-        public ConsumeContext<TMessage> Context
+        public ConsumeContext<TEvent> Context
         {
             get
             {
@@ -26,7 +26,7 @@ namespace GuimoSoft.Bus.Abstractions
 
         private class ConsumeContextHolder
         {
-            public ConsumeContext<TMessage> Context;
+            public ConsumeContext<TEvent> Context;
         }
     }
 }

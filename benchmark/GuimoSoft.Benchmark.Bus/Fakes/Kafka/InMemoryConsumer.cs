@@ -62,7 +62,7 @@ namespace GuimoSoft.Benchmark.Bus.Fakes.Kafka
                     Message = new Message<string, byte[]>
                     {
                         Key = response.topic,
-                        Value = response.message
+                        Value = response.@event
                     }
                 };
             }
@@ -80,7 +80,7 @@ namespace GuimoSoft.Benchmark.Bus.Fakes.Kafka
                     Message = new Message<string, byte[]>
                     {
                         Key = response.topic,
-                        Value = response.message
+                        Value = response.@event
                     }
                 };
             }
@@ -98,7 +98,7 @@ namespace GuimoSoft.Benchmark.Bus.Fakes.Kafka
                     Message = new Message<string, byte[]>
                     {
                         Key = response.topic,
-                        Value = response.message
+                        Value = response.@event
                     }
                 };
             }

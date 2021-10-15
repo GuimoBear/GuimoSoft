@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class FakeMessageHandler : INotificationHandler<FakeMessage>
+    public class FakeEventHandler : INotificationHandler<FakeEvent>
     {
-        public Task Handle(FakeMessage notification, CancellationToken cancellationToken)
+        public Task Handle(FakeEvent notification, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

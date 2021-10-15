@@ -12,7 +12,7 @@ namespace GuimoSoft.Notifications.Interfaces
         TErrorCode ErrorCode { get; }
         IEnumerable<Notification> Notifications { get; }
 
-        void AddNotification(string field, string message, object value = null);
+        void AddNotification(string field, string @event, object value = null);
         void AddNotification(Notification notification);
         void AddNotifications(IEnumerable<Notification> notifications);
         void AssociateErrorCode(TErrorCode errorCode);

@@ -16,10 +16,10 @@ namespace GuimoSoft.Cryptography.Tests
 {
     public class EncryptedJsonHttpContentTests
     {
-        private const string longMessage = @"Lorem ipsum dolor sit amet, id nisl delicata scriptorem est, ex duo feugait mentitum, ad quo tempor luptatum. Ferri admodum intellegebat pri et, et eos nusquam eligendi moderatius, et vim nisl posse commodo. Ei pri phaedrum laboramus expetendis, ei sed error verear aperiri. Ullum suavitate imperdiet no ius, eam in epicurei mediocrem, ea per veri mutat aliquando. Nisl sumo fuisset ex vix, pri ad meis principes constituto.
+        private const string longEvent = @"Lorem ipsum dolor sit amet, id nisl delicata scriptorem est, ex duo feugait mentitum, ad quo tempor luptatum. Ferri admodum intellegebat pri et, et eos nusquam eligendi moderatius, et vim nisl posse commodo. Ei pri phaedrum laboramus expetendis, ei sed error verear aperiri. Ullum suavitate imperdiet no ius, eam in epicurei mediocrem, ea per veri mutat aliquando. Nisl sumo fuisset ex vix, pri ad meis principes constituto.
 Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has putent dissentias ne. An pertinacia suscipiantur nam. Dicunt antiopam molestiae in duo, mel meliore omnesque et. Nam choro gloriatur ea, impedit dolores menandri nam et. Meis dignissim concludaturque vis ne, vix ut omnium elaboraret, mei debet iracundia ut.";
 
-        private const string fakeEncryptedMessage = "fake message";
+        private const string fakeEncryptedEvent = "fake event";
 
         [Fact]
         public async Task EncryptedJsonContentFacts()
@@ -27,10 +27,10 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
             var identifier = Guid.NewGuid();
             var dict = new Dictionary<string, object>
             {
-                { "Text", longMessage }
+                { "Text", longEvent }
             };
             var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dict));
-            var expectedBytes = Encoding.UTF8.GetBytes(fakeEncryptedMessage);
+            var expectedBytes = Encoding.UTF8.GetBytes(fakeEncryptedEvent);
 
             var moqCrypterService = new Mock<ICrypterService>();
             moqCrypterService.Setup(x => x.Encrypt(identifier, bytes))
@@ -69,7 +69,7 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
             var encodedString = Encoding.UTF8.GetString(outputStream.ToArray());
 
             encodedString
-                .Should().Be(fakeEncryptedMessage);
+                .Should().Be(fakeEncryptedEvent);
         }
     }
 }

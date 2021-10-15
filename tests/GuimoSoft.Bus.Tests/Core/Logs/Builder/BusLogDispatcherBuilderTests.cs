@@ -32,20 +32,20 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
         }
 
         [Fact]
-        public void PublishAnLogWithoutMessageObjectFacts()
+        public void PublishAnLogWithouTEventObjectFacts()
         {
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var expectedLogMessage = new BusLogMessage(ServerName.Default)
+                var expectedLogEvent = new BusLogEvent(ServerName.Default)
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Consume,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Information
                 };
-                expectedLogMessage.Data.Add("key-1", "value-1");
+                expectedLogEvent.Data.Add("key-1", "value-1");
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -55,37 +55,37 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Consume)
                     .WhileListening().TheEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogMessage>(actual => IsEqual(expectedLogMessage, actual)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
                 moqMediator
                     .Verify(x => x.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
             }
         }
 
         [Fact]
-        public void PublishAnLogWithMessageObjectFacts()
+        public void PublishAnLogWithEventObjectFacts()
         {
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var expectedLogMessage = new BusLogMessage(FakeServerName.FakeHost1)
+                var expectedLogEvent = new BusLogEvent(FakeServerName.FakeHost1)
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Produce,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Information
                 };
-                expectedLogMessage.Data.Add("key-1", "value-1");
+                expectedLogEvent.Data.Add("key-1", "value-1");
 
-                var fakeMessage = new FakeMessage("", "");
+                var fakeEvent = new FakeEvent("", "");
 
-                var expectedTypedLogMessage = new BusTypedLogMessage<FakeMessage>(expectedLogMessage, fakeMessage);
+                var expectedTypedLogEvent = new BusTypedLogEvent<FakeEvent>(expectedLogEvent, fakeEvent);
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -93,41 +93,41 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Produce)
-                    .AfterReceived().TheObject(fakeMessage).FromEndpoint("test")
+                    .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogMessage>(actual => IsEqual(expectedLogMessage, actual)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogMessage, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
             }
         }
 
         [Fact]
-        public void PublishAnLogWithMessageObjectAndTypedHandlerFacts()
+        public void PublishAnLogWithEventObjectAndTypedHandlerFacts()
         {
             lock (Utils.Lock)
             {
                 var sc = new ServiceCollection();
-                sc.RegisterMediatorFromNewAssemblies(new List<Assembly> { typeof(FakeMessage).Assembly });
+                sc.RegisterMediatorFromNewAssemblies(new List<Assembly> { typeof(FakeEvent).Assembly });
 
-                var expectedLogMessage = new BusLogMessage(FakeServerName.FakeHost1)
+                var expectedLogEvent = new BusLogEvent(FakeServerName.FakeHost1)
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Produce,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Information
                 };
-                expectedLogMessage.Data.Add("key-1", "value-1");
+                expectedLogEvent.Data.Add("key-1", "value-1");
 
-                var fakeMessage = new FakeMessage("", "");
+                var fakeEvent = new FakeEvent("", "");
 
-                var expectedTypedLogMessage = new BusTypedLogMessage<FakeMessage>(expectedLogMessage, fakeMessage);
+                var expectedTypedLogEvent = new BusTypedLogEvent<FakeEvent>(expectedLogEvent, fakeEvent);
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -135,39 +135,39 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Produce)
-                    .AfterReceived().TheObject(fakeMessage).FromEndpoint("test")
+                    .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogMessage>(actual => IsEqual(expectedLogMessage, actual)), It.IsAny<CancellationToken>()), Times.Never);
+                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Never);
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogMessage, obj)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogEvent, obj)), It.IsAny<CancellationToken>()), Times.Once);
 
                 Utils.ResetarSingletons();
             }
         }
 
         [Fact]
-        public void PublishAnLogWithNullMessageObjectFacts()
+        public void PublishAnLogWithNullEventObjectFacts()
         {
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var expectedLogMessage = new BusLogMessage(ServerName.Default)
+                var expectedLogEvent = new BusLogEvent(ServerName.Default)
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Consume,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Information
                 };
-                expectedLogMessage.Data.Add("key-1", "value-1");
+                expectedLogEvent.Data.Add("key-1", "value-1");
 
-                var expectedTypedLogMessage = new BusTypedLogMessage<FakeMessage>(expectedLogMessage, null);
+                var expectedTypedLogEvent = new BusTypedLogEvent<FakeEvent>(expectedLogEvent, null);
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -175,35 +175,35 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Consume)
-                    .AfterReceived().TheObject(null).FromEndpoint("test")
+                    .AfterReceived().TheEvent(null).FromEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogMessage>(actual => IsEqual(expectedLogMessage, actual)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogMessage, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
             }
         }
 
         [Fact]
-        public void PublishAnExceptionWithoutMessageObjectFacts()
+        public void PublishAnExceptionWithouTEventObjectFacts()
         {
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var expectedExceptionMessage = new BusExceptionMessage(ServerName.Default, new Exception(""))
+                var expectedExceptionEvent = new BusExceptionEvent(ServerName.Default, new Exception(""))
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Produce,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Error
                 };
-                expectedExceptionMessage.Data.Add("key-1", "value-1");
+                expectedExceptionEvent.Data.Add("key-1", "value-1");
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -211,7 +211,7 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Produce)
                     .WhileListening().TheEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish();
@@ -221,31 +221,31 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
                 sut.AnException(new Exception(""));
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionMessage>(actual => IsEqual(expectedExceptionMessage, actual)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
                 moqMediator
                     .Verify(x => x.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
             }
         }
 
         [Fact]
-        public void PublishAnExceptionWithMessageObjectFacts()
+        public void PublishAnExceptionWithEventObjectFacts()
         {
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var expectedExceptionMessage = new BusExceptionMessage(FakeServerName.FakeHost1, new Exception(""))
+                var expectedExceptionEvent = new BusExceptionEvent(FakeServerName.FakeHost1, new Exception(""))
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Consume,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Error
                 };
-                expectedExceptionMessage.Data.Add("key-1", "value-1");
+                expectedExceptionEvent.Data.Add("key-1", "value-1");
 
-                var fakeMessage = new FakeMessage("", "");
+                var fakeEvent = new FakeEvent("", "");
 
-                var expectedTypedExceptionMessage = new BusTypedExceptionMessage<FakeMessage>(expectedExceptionMessage, fakeMessage);
+                var expectedTypedExceptionEvent = new BusTypedExceptionEvent<FakeEvent>(expectedExceptionEvent, fakeEvent);
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -253,41 +253,41 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Consume)
-                    .AfterReceived().TheObject(fakeMessage).FromEndpoint("test")
+                    .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish().AnException(new Exception(""));
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionMessage>(actual => IsEqual(expectedExceptionMessage, actual)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionMessage, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
             }
         }
 
         [Fact]
-        public void PublishAnExceptionWithMessageObjectAndTypedHandlerFacts()
+        public void PublishAnExceptionWithEventObjectAndTypedHandlerFacts()
         {
             lock (Utils.Lock)
             {
                 var sc = new ServiceCollection();
-                sc.RegisterMediatorFromNewAssemblies(new List<Assembly> { typeof(FakeMessage).Assembly });
+                sc.RegisterMediatorFromNewAssemblies(new List<Assembly> { typeof(FakeEvent).Assembly });
 
-                var expectedExceptionMessage = new BusExceptionMessage(FakeServerName.FakeHost1, new Exception(""))
+                var expectedExceptionEvent = new BusExceptionEvent(FakeServerName.FakeHost1, new Exception(""))
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Consume,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Error
                 };
-                expectedExceptionMessage.Data.Add("key-1", "value-1");
+                expectedExceptionEvent.Data.Add("key-1", "value-1");
 
-                var fakeMessage = new FakeMessage("", "");
+                var fakeEvent = new FakeEvent("", "");
 
-                var expectedTypedExceptionMessage = new BusTypedExceptionMessage<FakeMessage>(expectedExceptionMessage, fakeMessage);
+                var expectedTypedExceptionEvent = new BusTypedExceptionEvent<FakeEvent>(expectedExceptionEvent, fakeEvent);
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -295,38 +295,38 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Consume)
-                    .AfterReceived().TheObject(fakeMessage).FromEndpoint("test")
+                    .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish().AnException(new Exception(""));
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionMessage>(actual => IsEqual(expectedExceptionMessage, actual)), It.IsAny<CancellationToken>()), Times.Never);
+                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Never);
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionMessage, obj)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionEvent, obj)), It.IsAny<CancellationToken>()), Times.Once);
                 Utils.ResetarSingletons();
             }
         }
 
         [Fact]
-        public void PublishAnExceptionWithNullMessageObjectFacts()
+        public void PublishAnExceptionWithNullEventObjectFacts()
         {
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var expectedExceptionMessage = new BusExceptionMessage(ServerName.Default, new Exception(""))
+                var expectedExceptionEvent = new BusExceptionEvent(ServerName.Default, new Exception(""))
                 {
                     Bus = BusName.Kafka,
                     Finality = Finality.Produce,
                     Endpoint = "test",
-                    Message = "test message",
+                    Message = "test event",
                     Level = BusLogLevel.Error
                 };
-                expectedExceptionMessage.Data.Add("key-1", "value-1");
+                expectedExceptionEvent.Data.Add("key-1", "value-1");
 
-                var expectedTypedExceptionMessage = new BusTypedExceptionMessage<FakeMessage>(expectedExceptionMessage, null);
+                var expectedTypedExceptionEvent = new BusTypedExceptionEvent<FakeEvent>(expectedExceptionEvent, null);
 
                 var moqMediator = new Mock<IMediator>();
 
@@ -334,30 +334,30 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Produce)
-                    .AfterReceived().TheObject(null).FromEndpoint("test")
+                    .AfterReceived().TheEvent(null).FromEndpoint("test")
                     .Write()
-                        .Message("test message")
+                        .Message("test event")
                         .AndKey("key-1").FromValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish().AnException(new Exception(""));
 
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionMessage>(actual => IsEqual(expectedExceptionMessage, actual)), It.IsAny<CancellationToken>()), Times.Once);
+                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
                 moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionMessage, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
             }
         }
 
-        private static bool IsEqual(BusLogMessage expected, object actual)
+        private static bool IsEqual(BusLogEvent expected, object actual)
             => expected.IsDeepEqual(actual);
 
-        private static bool IsEqual(BusTypedLogMessage<FakeMessage> expected, object actual)
+        private static bool IsEqual(BusTypedLogEvent<FakeEvent> expected, object actual)
             => expected.IsDeepEqual(actual);
 
-        private static bool IsEqual(BusTypedExceptionMessage<FakeMessage> expected, object actual)
+        private static bool IsEqual(BusTypedExceptionEvent<FakeEvent> expected, object actual)
             => expected.IsDeepEqual(actual);
 
-        private static bool IsEqual(BusExceptionMessage expected, object actual)
+        private static bool IsEqual(BusExceptionEvent expected, object actual)
             => expected.IsDeepEqual(actual);
     }
 }

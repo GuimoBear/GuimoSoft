@@ -25,7 +25,7 @@ namespace GuimoSoft.Bus.Kafka.Consumer
 
             var consumerBuilder = new ConsumerBuilder<string, byte[]>(consumerConfig);
 
-            consumerBuilder.SetLogHandler((_, kafkaLogMessage) => LogMessage(@switch, Finality.Consume, kafkaLogMessage));
+            consumerBuilder.SetLogHandler((_, kafkaLogEvent) => LogEvent(@switch, Finality.Consume, kafkaLogEvent));
             consumerBuilder.SetErrorHandler((_, kafkaError) => LogException(@switch, Finality.Consume, kafkaError));
 
             return consumerBuilder.Build();

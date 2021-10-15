@@ -42,8 +42,8 @@ services
         switcher
             .When(ServerName.Host1)
                 .Consume()
-                    .OfType<HelloMessage>()
-                    .FromEndpoint(HelloMessage.TOPIC_NAME)
+                    .OfType<HelloEvent>()
+                    .FromEndpoint(HelloEvent.TOPIC_NAME)
                 .FromServer(options =>
                 {
                     options.BootstrapServers = "localhost:9093";
@@ -53,10 +53,10 @@ services
         switcher
             .When(ServerName.Host2)
                 .Consume()
-                    .OfType<HelloMessage>()
-                    .WithSerializer(HelloMessageSerializer.Instance) // Serializador opcional
-                    .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Transient) // Middleware optional
-                    .FromEndpoint(HelloMessage.TOPIC_NAME)
+                    .OfType<HelloEvent>()
+                    .WithSerializer(HelloEventSerializer.Instance) // Serializador opcional
+                    .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Transient) // Middleware optional
+                    .FromEndpoint(HelloEvent.TOPIC_NAME)
                 .FromServer(options =>
                 {
                     options.BootstrapServers = "google.com:9093";
@@ -72,8 +72,8 @@ services
         switcher
             .When(ServerName.Host1)
                 .Produce()
-                    .FromType<HelloMessage>()
-                    .ToEndpoint(HelloMessage.TOPIC_NAME)
+                    .FromType<HelloEvent>()
+                    .ToEndpoint(HelloEvent.TOPIC_NAME)
                 .ToServer(options =>
                 {
                     options.BootstrapServers = "localhost:9093";
@@ -82,8 +82,8 @@ services
         switcher
             .When(ServerName.Host2)
                 .Produce()
-                    .FromType<HelloMessage>()
-                    .ToEndpoint(HelloMessage.TOPIC_NAME)
+                    .FromType<HelloEvent>()
+                    .ToEndpoint(HelloEvent.TOPIC_NAME)
                 .ToServer(options =>
                 {
                     options.BootstrapServers = "google.com:9093";

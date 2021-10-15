@@ -5,18 +5,18 @@ using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    internal class FakeMessageMiddlewareWithFuncOnConstructor : IMessageMiddleware<FakeMessage>
+    internal class FakeEventMiddlewareWithFuncOnConstructor : IEventMiddleware<FakeEvent>
     {
-        private readonly Func<ConsumeContext<FakeMessage>, Task> _func;
+        private readonly Func<ConsumeContext<FakeEvent>, Task> _func;
 
-        public FakeMessageMiddlewareWithFuncOnConstructor(Func<ConsumeContext<FakeMessage>, Task> func)
+        public FakeEventMiddlewareWithFuncOnConstructor(Func<ConsumeContext<FakeEvent>, Task> func)
         {
             _func = func;
         }
 
-        public async Task InvokeAsync(ConsumeContext<FakeMessage> message, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<FakeEvent> @event, Func<Task> next)
         {
-            await _func(message);
+            await _func(@event);
             await next();
         }
     }

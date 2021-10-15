@@ -14,18 +14,18 @@ namespace GuimoSoft.Bus.Core.Internal
         public static readonly object _lock = new();
 
         private static BusSerializerManager _lazyBusSerializerManagerSingleton { get; set; } = default;
-        private static MessageMiddlewareManager _lazyMessageMiddlewareManagerSingleton { get; set; } = default;
-        private static MessageTypeCache _lazyMessageTypeCacheSingleton { get; set; } = default;
-        private static ProducerManager _lazyProducerManagerSingleton { get; set; } = default;
+        private static EventMiddlewareManager _lazyEventMiddlewareManagerSingleton { get; set; } = default;
+        private static EventTypeCache _lazyEventTypeCacheSingleton { get; set; } = default;
+        private static DispatcherManager _lazyDispatcherManagerSingleton { get; set; } = default;
         private static ConcurrentDictionary<Type, object> _busOptionsDictionariesSingleton { get; } = new ();
 
         private static List<Assembly> _assemblyCollection { get; } = new ();
 
         private static List<Assembly> _registeredAssemblyCollection { get; } = new ();
 
-        private static List<Type> _busTypedExceptionMessageContainingAnHandler { get; } = new ();
+        private static List<Type> _busTypedExceptionEventContainingAnHandler { get; } = new ();
 
-        private static List<Type> _busTypedLogMessageContainingAnHandler { get; } = new ();
+        private static List<Type> _busTypedLogEventContainingAnHandler { get; } = new ();
 
         public static ICollection<Assembly> GetAssemblies()
             => _assemblyCollection;
@@ -33,11 +33,11 @@ namespace GuimoSoft.Bus.Core.Internal
         public static ICollection<Assembly> GetRegisteredAssemblies()
             => _registeredAssemblyCollection;
 
-        public static ICollection<Type> GetBusTypedExceptionMessageContainingAnHandlerCollection()
-            => _busTypedExceptionMessageContainingAnHandler;
+        public static ICollection<Type> GetBusTypedExceptionEventContainingAnHandlerCollection()
+            => _busTypedExceptionEventContainingAnHandler;
 
-        public static ICollection<Type> GetBusTypedLogMessageContainingAnHandlerCollection()
-            => _busTypedLogMessageContainingAnHandler;
+        public static ICollection<Type> GetBusTypedLogEventContainingAnHandlerCollection()
+            => _busTypedLogEventContainingAnHandler;
 
         public static BusSerializerManager TryRegisterAndGetBusSerializerManager(IServiceCollection services)
         {
@@ -52,45 +52,45 @@ namespace GuimoSoft.Bus.Core.Internal
             }
         }
 
-        public static MessageMiddlewareManager TryRegisterAndGetMessageMiddlewareManager(IServiceCollection services)
+        public static EventMiddlewareManager TryRegisterAndGeTEventMiddlewareManager(IServiceCollection services)
         {
             lock (_lock)
             {
-                if (_lazyMessageMiddlewareManagerSingleton is null)
-                    _lazyMessageMiddlewareManagerSingleton = new MessageMiddlewareManager(services);
+                if (_lazyEventMiddlewareManagerSingleton is null)
+                    _lazyEventMiddlewareManagerSingleton = new EventMiddlewareManager(services);
 
-                services.TryAddSingleton<IMessageMiddlewareManager>(_lazyMessageMiddlewareManagerSingleton);
-                services.TryAddSingleton(prov => prov.GetService(typeof(IMessageMiddlewareManager)) as IMessageMiddlewareExecutorProvider);
-                services.TryAddSingleton(prov => prov.GetService(typeof(IMessageMiddlewareManager)) as IMessageMiddlewareRegister);
+                services.TryAddSingleton<IEventMiddlewareManager>(_lazyEventMiddlewareManagerSingleton);
+                services.TryAddSingleton(prov => prov.GetService(typeof(IEventMiddlewareManager)) as IEventMiddlewareExecutorProvider);
+                services.TryAddSingleton(prov => prov.GetService(typeof(IEventMiddlewareManager)) as IEventMiddlewareRegister);
 
-                return _lazyMessageMiddlewareManagerSingleton;
+                return _lazyEventMiddlewareManagerSingleton;
             }
         }
 
-        public static MessageTypeCache TryRegisterAndGetMessageTypeCache(IServiceCollection services)
+        public static EventTypeCache TryRegisterAndGetEventTypeCache(IServiceCollection services)
         {
             lock (_lock)
             {
-                if (_lazyMessageTypeCacheSingleton is null)
-                    _lazyMessageTypeCacheSingleton = new MessageTypeCache();
+                if (_lazyEventTypeCacheSingleton is null)
+                    _lazyEventTypeCacheSingleton = new EventTypeCache();
 
-                services.TryAddSingleton<IMessageTypeCache>(_lazyMessageTypeCacheSingleton);
+                services.TryAddSingleton<IEventTypeCache>(_lazyEventTypeCacheSingleton);
 
-                return _lazyMessageTypeCacheSingleton;
+                return _lazyEventTypeCacheSingleton;
             }
         }
 
-        public static ProducerManager TryRegisterAndGetProducerManager(IServiceCollection services)
+        public static DispatcherManager TryRegisterAndGetDispatcherManager(IServiceCollection services)
         {
             lock (_lock)
             {
-                if (_lazyProducerManagerSingleton is null)
-                    _lazyProducerManagerSingleton = new ProducerManager(services);
+                if (_lazyDispatcherManagerSingleton is null)
+                    _lazyDispatcherManagerSingleton = new DispatcherManager(services);
 
-                services.TryAddSingleton<IMessageProducer, MessageProducer>();
-                services.TryAddSingleton<IProducerManager>(_lazyProducerManagerSingleton);
+                services.TryAddSingleton<IEventBus, EventBus>();
+                services.TryAddSingleton<IDispatcherManager>(_lazyDispatcherManagerSingleton);
 
-                return _lazyProducerManagerSingleton;
+                return _lazyDispatcherManagerSingleton;
             }
         }
 

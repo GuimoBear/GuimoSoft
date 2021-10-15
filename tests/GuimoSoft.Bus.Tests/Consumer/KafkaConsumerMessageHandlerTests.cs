@@ -3,26 +3,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using GuimoSoft.Bus.Kafka.Consumer;
 using Xunit;
+using System;
+using FluentAssertions;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {
-    public class KafkaConsumerMessageHandlerTests
+    public class KafkaConsumerEventHandlerTests
     {
         [Fact]
-        public async Task KafkaConsumerMessageHandlerFacts()
+        public void Given_InvalidParameter_When_Construct_Then_ThrowArgumentNullException()
         {
-            var moqKafkaMessageConsumerManager = new Mock<IKafkaMessageConsumerManager>();
+            Assert.Throws<ArgumentNullException>(() => new KafkaConsumerEventHandler(null));
+        }
 
-            var sut = new KafkaConsumerMessageHandler(moqKafkaMessageConsumerManager.Object);
+        [Fact]
+        public async Task When_StartAsync_Then_StartConsumersHasCalled()
+        {
+            var moqKafkaEventConsumerManager = new Mock<IKafkaEventConsumerManager>();
+            using var cts = new CancellationTokenSource();
+
+            using var sut = new KafkaConsumerEventHandler(moqKafkaEventConsumerManager.Object);
+
+            await sut.StartAsync(cts.Token);
+            await Task.Delay(50);
+
+            moqKafkaEventConsumerManager
+                .Verify(x => x.StartConsumers(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void When_StopAsync_Then_StartConsumersHasCalled()
+        {
+            using var sut = new KafkaConsumerEventHandler(Mock.Of<IKafkaEventConsumerManager>());
 
             using var cts = new CancellationTokenSource();
 
-            await sut.StartAsync(cts.Token);
-            await Task.Delay(500);
-            await sut.StopAsync(cts.Token);
-
-            moqKafkaMessageConsumerManager
-                .Verify(x => x.StartConsumers(It.IsAny<CancellationToken>()), Times.Once);
+            sut.StopAsync(cts.Token)
+                .Should().BeSameAs(Task.CompletedTask);
         }
     }
 }

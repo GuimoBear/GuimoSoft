@@ -160,16 +160,16 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_RastreioComMensagemPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Warning";
+            const string errorEvent = "Warning";
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_TRACE_STRING);
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Rastreio(errorMessage);
+            apiLogger.Rastreio(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -182,7 +182,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Once
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Rastreio(errorMessage);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Rastreio(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -199,12 +199,12 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_RastreioExpandoPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
-            var errorException = new Exception(errorMessage);
+            const string errorEvent = "Ocorreu um erro";
+            var errorException = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd("key-0", "teste");
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_TRACE_STRING);
 
@@ -212,7 +212,7 @@ namespace GuimoSoft.Logger.Tests
 
             var dicionarioDeLog = apiLogger.CriarDicionarioDeLog();
 
-            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             dicionarioDeLog.TryAdd("key-0", "teste");
 
             apiLogger.Rastreio(dicionarioDeLog);
@@ -229,9 +229,9 @@ namespace GuimoSoft.Logger.Tests
                 );
 
             apiLogger.ComPropriedade(string.Empty, string.Empty)
-                .ComPropriedade(Constants.KEY_MESSAGE, errorMessage)
+                .ComPropriedade(Constants.KEY_MESSAGE, errorEvent)
                 .ComPropriedade("key-0", "teste")
-                .Rastreio(errorMessage);
+                .Rastreio(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -351,16 +351,16 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_DepuracaoComMensagemPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Warning";
+            const string errorEvent = "Warning";
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_DEBUG_STRING);
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Depuracao(errorMessage);
+            apiLogger.Depuracao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -373,7 +373,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Once
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Depuracao(errorMessage);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Depuracao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -390,12 +390,12 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_DepuracaoExpandoPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
-            var errorException = new Exception(errorMessage);
+            const string errorEvent = "Ocorreu um erro";
+            var errorException = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd("key-0", "teste");
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_DEBUG_STRING);
 
@@ -403,7 +403,7 @@ namespace GuimoSoft.Logger.Tests
 
             var dicionarioDeLog = apiLogger.CriarDicionarioDeLog();
 
-            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             dicionarioDeLog.TryAdd("key-0", "teste");
 
             apiLogger.Depuracao(dicionarioDeLog);
@@ -420,9 +420,9 @@ namespace GuimoSoft.Logger.Tests
                 );
 
             apiLogger.ComPropriedade(string.Empty, string.Empty)
-                .ComPropriedade(Constants.KEY_MESSAGE, errorMessage)
+                .ComPropriedade(Constants.KEY_MESSAGE, errorEvent)
                 .ComPropriedade("key-0", "teste")
-                .Depuracao(errorMessage);
+                .Depuracao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -542,16 +542,16 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_InformacaoComMensagemPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Warning";
+            const string errorEvent = "Warning";
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_INFORMATION_STRING);
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Informacao(errorMessage);
+            apiLogger.Informacao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -564,7 +564,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Once
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Informacao(errorMessage);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Informacao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -581,12 +581,12 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_InformacaoExpandoPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
-            var errorException = new Exception(errorMessage);
+            const string errorEvent = "Ocorreu um erro";
+            var errorException = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd("key-0", "teste");
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_INFORMATION_STRING);
 
@@ -594,7 +594,7 @@ namespace GuimoSoft.Logger.Tests
 
             var dicionarioDeLog = apiLogger.CriarDicionarioDeLog();
 
-            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             dicionarioDeLog.TryAdd("key-0", "teste");
 
             apiLogger.Informacao(dicionarioDeLog);
@@ -611,9 +611,9 @@ namespace GuimoSoft.Logger.Tests
                 );
 
             apiLogger.ComPropriedade(string.Empty, string.Empty)
-                .ComPropriedade(Constants.KEY_MESSAGE, errorMessage)
+                .ComPropriedade(Constants.KEY_MESSAGE, errorEvent)
                 .ComPropriedade("key-0", "teste")
-                .Informacao(errorMessage);
+                .Informacao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -733,16 +733,16 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_WarningComMensagemPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Warning";
+            const string errorEvent = "Warning";
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_WARNING_STRING);
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Atencao(errorMessage);
+            apiLogger.Atencao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -755,7 +755,7 @@ namespace GuimoSoft.Logger.Tests
                 Times.Once
                 );
 
-            apiLogger.ComPropriedade(string.Empty, string.Empty).Atencao(errorMessage);
+            apiLogger.ComPropriedade(string.Empty, string.Empty).Atencao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -772,12 +772,12 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_WarningExpandoPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
-            var errorException = new Exception(errorMessage);
+            const string errorEvent = "Ocorreu um erro";
+            var errorException = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd("key-0", "teste");
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_WARNING_STRING);
 
@@ -786,7 +786,7 @@ namespace GuimoSoft.Logger.Tests
 
             var dicionarioDeLog = apiLogger.CriarDicionarioDeLog();
 
-            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            dicionarioDeLog.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             dicionarioDeLog.TryAdd("key-0", "teste");
             dicionarioDeLog.TryAdd("key-0", "teste");
 
@@ -804,9 +804,9 @@ namespace GuimoSoft.Logger.Tests
                 );
 
             apiLogger.ComPropriedade(string.Empty, string.Empty)
-                .ComPropriedade(Constants.KEY_MESSAGE, errorMessage)
+                .ComPropriedade(Constants.KEY_MESSAGE, errorEvent)
                 .ComPropriedade("key-0", "teste")
-                .Atencao(errorMessage);
+                .Atencao(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1039,16 +1039,16 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_ErroComMensagemPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Error";
+            const string errorEvent = "Error";
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_ERROR_STRING);
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Erro(errorMessage);
+            apiLogger.Erro(errorEvent);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1063,7 +1063,7 @@ namespace GuimoSoft.Logger.Tests
 
             apiLogger
                 .ComPropriedade(string.Empty, string.Empty)
-                .Erro(errorMessage)
+                .Erro(errorEvent)
                 .Should().BeTrue();
 
             loggerMock.Verify(
@@ -1081,8 +1081,8 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_ErroExceptionPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
-            var exception = new Exception(errorMessage);
+            const string errorEvent = "Ocorreu um erro";
+            var exception = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
@@ -1124,12 +1124,12 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_ErroComMensagemEExceptionPreenchida_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
-            var exception = new Exception(errorMessage);
+            const string errorEvent = "Ocorreu um erro";
+            var exception = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_ERROR_MESSAGE, exception.Message);
             expectedExpando.TryAdd(Constants.KEY_ERROR_TYPE, exception.GetType().Name);
             expectedExpando.TryAdd(Constants.KEY_STACK_TRACE, exception.StackTrace);
@@ -1137,7 +1137,7 @@ namespace GuimoSoft.Logger.Tests
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Erro(errorMessage, exception);
+            apiLogger.Erro(errorEvent, exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1152,7 +1152,7 @@ namespace GuimoSoft.Logger.Tests
 
             apiLogger
                 .ComPropriedade(string.Empty, string.Empty)
-                .Erro(errorMessage, exception)
+                .Erro(errorEvent, exception)
                 .Should().BeTrue();
 
             loggerMock.Verify(
@@ -1170,17 +1170,17 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_ErroComMensagemPreenchidaEExceptionNula_Entao_EscreveLog()
         {
-            const string errorMessage = "Ocorreu um erro";
+            const string errorEvent = "Ocorreu um erro";
             Exception exception = null;
             (var loggerMock, var apiLogger) = Createinstance();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
-            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorMessage);
+            expectedExpando.TryAdd(Constants.KEY_MESSAGE, errorEvent);
             expectedExpando.TryAdd(Constants.KEY_SEVERITY, Constants.SEVERIDADE_ERROR_STRING);
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Erro(errorMessage, exception);
+            apiLogger.Erro(errorEvent, exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1195,7 +1195,7 @@ namespace GuimoSoft.Logger.Tests
 
             apiLogger
                 .ComPropriedade(string.Empty, string.Empty)
-                .Erro(errorMessage, exception)
+                .Erro(errorEvent, exception)
                 .Should().BeTrue();
 
             loggerMock.Verify(
@@ -1213,8 +1213,8 @@ namespace GuimoSoft.Logger.Tests
         [Fact]
         public void Se_ErroComExceptionPreenchidaEMensagemNula_Entao_EscreveLog()
         {
-            const string errorMessage = null;
-            var exception = new Exception(errorMessage);
+            const string errorEvent = null;
+            var exception = new Exception(errorEvent);
             (var loggerMock, var apiLogger) = CreateinstanceWithoutContext();
 
             var expectedExpando = apiLogger.CriarDicionarioDeLog();
@@ -1225,7 +1225,7 @@ namespace GuimoSoft.Logger.Tests
 
             var expected = JsonConvert.SerializeObject(expectedExpando, SERIALIZER_SETTINGS);
 
-            apiLogger.Erro(errorMessage, exception);
+            apiLogger.Erro(errorEvent, exception);
 
             loggerMock.Verify(
                 l => l.Log(
@@ -1240,7 +1240,7 @@ namespace GuimoSoft.Logger.Tests
 
             apiLogger
                 .ComPropriedade(string.Empty, string.Empty)
-                .Erro(errorMessage, exception)
+                .Erro(errorEvent, exception)
                 .Should().BeTrue();
 
             loggerMock.Verify(

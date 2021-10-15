@@ -14,7 +14,7 @@ namespace GuimoSoft.Core.Tests
         {
             var expectedNotification = new Notification("teste", "teste", "test");
 
-            var sut = new Notification(expectedNotification.Field, expectedNotification.Message, expectedNotification.Value);
+            var sut = new Notification(expectedNotification.Field, expectedNotification.Event, expectedNotification.Value);
 
             sut
                 .Should().BeEquivalentTo(expectedNotification);
@@ -41,7 +41,7 @@ namespace GuimoSoft.Core.Tests
             sut.ErrorCode
                 .Should().Be(FakeErrorCode.FakeErrorCode1);
 
-            sut.Message
+            sut.Event
                 .Should().Be(FakeErrorCode.FakeErrorCode1.GetAttributeOfType<DescriptionAttribute>().Description);
 
             sut.Notifications
@@ -52,7 +52,7 @@ namespace GuimoSoft.Core.Tests
             sut.ErrorCode
                 .Should().Be(FakeErrorCode.FakeErrorCode2);
 
-            sut.Message
+            sut.Event
                 .Should().Be(FakeErrorCode.FakeErrorCode2.ToString());
 
             sut.Notifications
@@ -63,7 +63,7 @@ namespace GuimoSoft.Core.Tests
             sut.ErrorCode
                 .Should().Be(FakeErrorCode.FakeErrorCode3);
 
-            sut.Message
+            sut.Event
                 .Should().Be(FakeErrorCode.FakeErrorCode3.GetAttributeOfType<DescriptionAttribute>().Description);
 
             sut.Notifications
@@ -74,7 +74,7 @@ namespace GuimoSoft.Core.Tests
             sut.ErrorCode
                 .Should().Be(FakeErrorCode.FakeErrorCode1);
 
-            sut.Message
+            sut.Event
                 .Should().Be(FakeErrorCode.FakeErrorCode1.GetAttributeOfType<DescriptionAttribute>().Description);
 
             sut.Notifications

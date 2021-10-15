@@ -4,15 +4,15 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Benchmark.Bus.Handlers.Benchmark
 {
-    public class BenchmarkMessage : IMessage
+    public class BenchmarkEvent : IEvent
     {
-        public const string TOPIC_NAME = "benchmark-message-topic";
+        public const string TOPIC_NAME = "benchmark-event-topic";
 
         [JsonPropertyName(nameof(Id))]
         public Guid Id { get; private set; }
 
         [JsonConstructor]
-        public BenchmarkMessage(Guid id)
+        public BenchmarkEvent(Guid id)
         {
             Id = id;
         }

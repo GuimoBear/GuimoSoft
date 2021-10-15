@@ -18,9 +18,9 @@ namespace GuimoSoft.Notifications
 
         public IEnumerable<Notification> Notifications => _notifications;
 
-        public void AddNotification(string field, string message, object value = null)
+        public void AddNotification(string field, string @event, object value = null)
         {
-            _notifications.Add(new Notification(field, message, value));
+            _notifications.Add(new Notification(field, @event, value));
         }
 
         public void AddNotification(Notification notification)

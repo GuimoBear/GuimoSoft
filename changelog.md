@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Criação de __**interruptores**__, usados para trabalhar com mais de um servidor por bus.
 - Passagem do CancellationToken de lifetime da aplicação para a Pipeline e para o Mediator.
 - Criação do ConsumeInformations contendo informações do Bus, do __**interruptor**__ e do __**endpoint**__, passado dentro do ConsumeContext.
-- Implementação dos eventos `BusExceptionMessage` e `BusTypedExceptionMessage<TMessage>` para a captura, utilizando o `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR), de exceções ocorridas no Bus, para saber mais [**clique aqui**](docs/bus/monitoramento/monitoramento.md) ou [**aqui**](docs/bus/monitoramento/excecoes.md).
-- Implementação dos eventos `BusLogMessage` e `BusTypedLogMessage<TMessage>` para a captura, utilizando o `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR), de logs enviados pelo Bus, para saber mais [**clique aqui**](docs/bus/monitoramento/monitoramento.md) ou [**aqui**](docs/bus/monitoramento/logs.md).
+- Implementação dos eventos `BusExceptionEvent` e `BusTypedExceptionEvent<TEvent>` para a captura, utilizando o `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR), de exceções ocorridas no Bus, para saber mais [**clique aqui**](docs/bus/monitoramento/monitoramento.md) ou [**aqui**](docs/bus/monitoramento/excecoes.md).
+- Implementação dos eventos `BusLogEvent` e `BusTypedLogEvent<TEvent>` para a captura, utilizando o `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR), de logs enviados pelo Bus, para saber mais [**clique aqui**](docs/bus/monitoramento/monitoramento.md) ou [**aqui**](docs/bus/monitoramento/logs.md).
 - Bypass para registrar novos assemblies no **MediatR**.
 
 ### Modificado

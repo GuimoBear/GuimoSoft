@@ -1,52 +1,51 @@
 ﻿using Sigil;
 using System;
 using System.Collections.Concurrent;
-using System.Reflection;
 
 namespace GuimoSoft.Bus.Core.Logs
 {
     internal static class DelegateCache
     {
-        private static readonly ConcurrentDictionary<Type, TypedLogMessageFactory> _typedBusLogMessageFactories = new();
-        private static readonly ConcurrentDictionary<Type, TypedExceptionMessageFactory> _typedBusExceptionMessageFactories = new();
+        private static readonly ConcurrentDictionary<Type, TypedLogEventFactory> _typedBusLogEventFactories = new();
+        private static readonly ConcurrentDictionary<Type, TypedExceptionEventFactory> _typedBusExceptionEventFactories = new();
 
-        public static TypedLogMessageFactory GetOrAddBusLogMessageFactory(Type messageType)
-            => _typedBusLogMessageFactories.GetOrAdd(messageType, CreateBusLogMessageFactory);
+        public static TypedLogEventFactory GetOrAddBusLogEventFactory(Type eventType)
+            => _typedBusLogEventFactories.GetOrAdd(eventType, CreateBusLogEventFactory);
 
-        public static TypedExceptionMessageFactory GetOrAddBusExceptionMessageFactory(Type messageType)
-            => _typedBusExceptionMessageFactories.GetOrAdd(messageType, CreateBusExceptionMessageFactory);
+        public static TypedExceptionEventFactory GetOrAddBusExceptionEventFactory(Type eventType)
+            => _typedBusExceptionEventFactories.GetOrAdd(eventType, CreateBusExceptionEventFactory);
 
-        private static TypedLogMessageFactory CreateBusLogMessageFactory(Type messageType)
+        private static TypedLogEventFactory CreateBusLogEventFactory(Type eventType)
         {
-            var logMessageConstructor = typeof(BusTypedLogMessage<>).MakeGenericType(messageType)
-                .GetConstructor(new Type[] { typeof(BusLogMessage), messageType });
+            var logEventConstructor = typeof(BusTypedLogEvent<>).MakeGenericType(eventType)
+                .GetConstructor(new Type[] { typeof(BusLogEvent), eventType });
 
-            return Emit<TypedLogMessageFactory>
-                .NewDynamicMethod($"{messageType.Name}LogMessage_Ctor")
+            return Emit<TypedLogEventFactory>
+                .NewDynamicMethod($"{eventType.Name}LogEvent_Ctor")
                 .LoadArgument(0)
                 .LoadArgument(1)
-                .CastClass(messageType)
-                .NewObject(logMessageConstructor)
+                .CastClass(eventType)
+                .NewObject(logEventConstructor)
                 .Return()
                 .CreateDelegate();
         }
 
-        private static TypedExceptionMessageFactory CreateBusExceptionMessageFactory(Type messageType)
+        private static TypedExceptionEventFactory CreateBusExceptionEventFactory(Type eventType)
         {
-            var logMessageConstructor = typeof(BusTypedExceptionMessage<>).MakeGenericType(messageType)
-                .GetConstructor(new Type[] { typeof(BusExceptionMessage), messageType });
+            var logEventConstructor = typeof(BusTypedExceptionEvent<>).MakeGenericType(eventType)
+                .GetConstructor(new Type[] { typeof(BusExceptionEvent), eventType });
 
-            return Emit<TypedExceptionMessageFactory>
-                .NewDynamicMethod($"{messageType.Name}ExceptionMessage_Ctor")
+            return Emit<TypedExceptionEventFactory>
+                .NewDynamicMethod($"{eventType.Name}ExceptionEvent_Ctor")
                 .LoadArgument(0)
                 .LoadArgument(1)
-                .CastClass(messageType)
-                .NewObject(logMessageConstructor)
+                .CastClass(eventType)
+                .NewObject(logEventConstructor)
                 .Return()
                 .CreateDelegate();
         }
     }
 
-    internal delegate object TypedLogMessageFactory(BusLogMessage logMessage, object messageObject);
-    internal delegate object TypedExceptionMessageFactory(BusExceptionMessage exceptionMessage, object messageObject);
+    internal delegate object TypedLogEventFactory(BusLogEvent logEvent, object eventObject);
+    internal delegate object TypedExceptionEventFactory(BusExceptionEvent exceptionEvent, object eventObject);
 }

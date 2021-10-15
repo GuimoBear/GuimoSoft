@@ -5,8 +5,8 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Core.Logs
 {
-    public class BusTypedLogMessage<TMessage> : INotification
-        where TMessage : IMessage
+    public class BusTypedExceptionEvent<TEvent> : INotification
+        where TEvent : IEvent
     {
         public BusName Bus { get; }
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
@@ -14,21 +14,23 @@ namespace GuimoSoft.Bus.Core.Logs
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         public Finality Finality { get; }
         public string Endpoint { get; }
-        public TMessage MessageObject { get; }
+        public TEvent Event { get; }
         public string Message { get; }
         public BusLogLevel Level { get; }
         public IDictionary<string, object> Data { get; } = new Dictionary<string, object>();
+        public Exception Exception { get; }
 
-        public BusTypedLogMessage(BusLogMessage logMessage, TMessage messageObject)
+        public BusTypedExceptionEvent(BusExceptionEvent exceptionEvent, TEvent @event)
         {
-            Bus = logMessage.Bus;
-            Switch = logMessage.Switch;
-            Finality = logMessage.Finality;
-            Endpoint = logMessage.Endpoint;
-            MessageObject = messageObject;
-            Message = logMessage.Message;
-            Level = logMessage.Level;
-            foreach (var (key, value) in logMessage.Data)
+            Bus = exceptionEvent.Bus;
+            Switch = exceptionEvent.Switch;
+            Finality = exceptionEvent.Finality;
+            Endpoint = exceptionEvent.Endpoint;
+            Event = @event;
+            Message = exceptionEvent.Message;
+            Level = exceptionEvent.Level;
+            Exception = exceptionEvent.Exception;
+            foreach (var (key, value) in exceptionEvent.Data)
                 Data.Add(key, value);
         }
     }

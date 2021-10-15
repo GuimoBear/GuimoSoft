@@ -28,12 +28,12 @@ namespace GuimoSoft.Benchmark.Bus
 
             Services = services.BuildServiceProvider(true);
 
-            Producer = Services.GetRequiredService<IMessageProducer>();
+            Producer = Services.GetRequiredService<IEventBus>();
             var consumerBuilder = Services.GetRequiredService<IKafkaConsumerBuilder>();
 
             Consumer = consumerBuilder.Build(ServerName.Default);
 
-            Consumer.Subscribe(BenchmarkMessage.TOPIC_NAME);
+            Consumer.Subscribe(BenchmarkEvent.TOPIC_NAME);
 
             return Task.CompletedTask;
         }
@@ -47,14 +47,14 @@ namespace GuimoSoft.Benchmark.Bus
             return Task.CompletedTask;
         }
 
-        [Benchmark(Description = "produce and consume message")]
+        [Benchmark(Description = "produce and consume event")]
         public override async Task ProduceAndConsume()
         {
             await Produce();
             var result = Consumer.Consume(CancellationTokenSource.Token);
-            var message = JsonMessageSerializer.Instance.Deserialize(typeof(BenchmarkMessage), result.Message.Value) as BenchmarkMessage;
+            var @event = JsonEventSerializer.Instance.Deserialize(typeof(BenchmarkEvent), result.Message.Value) as BenchmarkEvent;
             var mediator = Services.GetRequiredService<IMediator>();
-            await mediator.Publish(message);
+            await mediator.Publish(@event);
             WaitId();
         }
     }

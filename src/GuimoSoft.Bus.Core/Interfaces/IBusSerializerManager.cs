@@ -6,6 +6,6 @@ namespace GuimoSoft.Bus.Core.Interfaces
 {
     public interface IBusSerializerManager
     {
-        IDefaultSerializer GetSerializer(BusName busName, Finality finality, Enum @switch, Type messageType);
+        IDefaultSerializer GetSerializer(BusName busName, Finality finality, Enum @switch, Type eventType);
     }
 }

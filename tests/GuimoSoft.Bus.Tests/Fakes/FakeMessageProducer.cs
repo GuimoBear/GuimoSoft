@@ -7,11 +7,11 @@ using GuimoSoft.Bus.Core.Interfaces;
 namespace GuimoSoft.Bus.Tests.Fakes
 {
 
-    internal class FakeMessageProducer : IBusMessageProducer
+    internal class FakeEventProducer : IBusEventDispatcher
     {
-        internal static readonly FakeMessageProducer Instance = new();
+        internal static readonly FakeEventProducer Instance = new();
 
-        public Task ProduceAsync<TMessage>(string key, TMessage message, Enum @switch, string endpoint, CancellationToken cancellationToken = default) where TMessage : IMessage
+        public Task Dispatch<TEvent>(string key, TEvent @event, Enum @switch, string endpoint, CancellationToken cancellationToken = default) where TEvent : IEvent
         {
             throw new NotImplementedException();
         }

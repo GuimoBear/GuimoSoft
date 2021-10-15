@@ -14,24 +14,24 @@ Utilizando middleware, é possível:
 
 ## Implementando um middleware
 
-Para a criação de um middleware, é necessário implementarmos a interface `IMessageMiddleware<TMessage>`:
+Para a criação de um middleware, é necessário implementarmos a interface `IEventMiddleware<TEvent>`:
 
 ```csharp
-public class HelloMessageMiddleware : IMessageMiddleware<HelloMessage>
+public class HelloEventMiddleware : IEventMiddleware<HelloEvent>
 {
-    private readonly ILogger<HelloMessageMiddleware> _logger;
+    private readonly ILogger<HelloEventMiddleware> _logger;
 
-    public HelloMessageMiddleware(ILogger<HelloMessageMiddleware> logger)
+    public HelloEventMiddleware(ILogger<HelloEventMiddleware> logger)
     {
         _logger = logger;
     }
 
-    public async Task InvokeAsync(ConsumeContext<HelloMessage> context, Func<Task> next)
+    public async Task InvokeAsync(ConsumeContext<HelloEvent> context, Func<Task> next)
     {
         //Código executado antes dos pipelines subjacentes e do handler
-        _logger.Debug($"Middleware {nameof(HelloMessageMiddleware)} iniciado");
+        _logger.Debug($"Middleware {nameof(HelloEventMiddleware)} iniciado");
         await next();
-        _logger.Debug($"Middleware {nameof(HelloMessageMiddleware)} finalizado");
+        _logger.Debug($"Middleware {nameof(HelloEventMiddleware)} finalizado");
         //Código executado após os pipelines subjacentes e do handler
     }
 }
@@ -48,16 +48,16 @@ O registro dos middlewares é feito junto ao registro das mensagens.
 
 ```csharp
 .Consume()
-    .OfType<HelloMessage>()
+    .OfType<HelloEvent>()
     // Middleware criado sempre que é requisitado
-    .WithMiddleware<FirstHelloMessageMiddleware>(ServiceLifetime.Transient)
+    .WithMiddleware<FirstHelloEventMiddleware>(ServiceLifetime.Transient)
     // Middleware criado usando um método favctory uma vez durante o escopo da requisição
-    .WithMiddleware(prov => new SecondHelloMessageMiddleware(), ServiceLifetime.Scoped) 
+    .WithMiddleware(prov => new SecondHelloEventMiddleware(), ServiceLifetime.Scoped) 
     // Middleweare criado uma vez no lifetime da aplicação.
-    .WithMiddleware<ThirdHelloMessageMiddleware>(ServiceLifetime.Singleton)
+    .WithMiddleware<ThirdHelloEventMiddleware>(ServiceLifetime.Singleton)
     // Middleware criado como Singleton(assim como o anterior)
-    .WithMiddleware<FourthHelloMessageMiddleware>() 
-    .FromEndpoint(HelloMessage.TOPIC_NAME)
+    .WithMiddleware<FourthHelloEventMiddleware>() 
+    .FromEndpoint(HelloEvent.TOPIC_NAME)
 ```
 
 > 1. Assim como os middlewares do Asp.NET Core, a ordem de registro de um middleware afeta a ordem de sua execução, não se atentar nesta ordem pode ocasionar quebras no fluxo de execução.
@@ -78,10 +78,10 @@ public enum ServerName
 switcher
     .When(ServerName.Host1)
         .Consume()
-            .OfType<HelloMessage>()
-            .WithMiddleware<FirstHelloMessageMiddleware>(ServiceLifetime.Transient)
-            .WithMiddleware(prov => new SecondHelloMessageMiddleware(), ServiceLifetime.Scoped) 
-            .FromEndpoint(HelloMessage.TOPIC_NAME)
+            .OfType<HelloEvent>()
+            .WithMiddleware<FirstHelloEventMiddleware>(ServiceLifetime.Transient)
+            .WithMiddleware(prov => new SecondHelloEventMiddleware(), ServiceLifetime.Scoped) 
+            .FromEndpoint(HelloEvent.TOPIC_NAME)
         .FromServer(options =>
         {
             options.BootstrapServers = "localhost:9093";
@@ -91,10 +91,10 @@ switcher
 switcher
     .When(ServerName.Host2)
         .Consume()
-            .OfType<HelloMessage>()
-            .WithMiddleware<ThirdHelloMessageMiddleware>(ServiceLifetime.Singleton)
-            .WithMiddleware<FourthHelloMessageMiddleware>() 
-            .FromEndpoint(HelloMessage.TOPIC_NAME)
+            .OfType<HelloEvent>()
+            .WithMiddleware<ThirdHelloEventMiddleware>(ServiceLifetime.Singleton)
+            .WithMiddleware<FourthHelloEventMiddleware>() 
+            .FromEndpoint(HelloEvent.TOPIC_NAME)
         .FromServer(options =>
         {
             options.BootstrapServers = "google.com:9093";
@@ -102,5 +102,5 @@ switcher
         });
 ```
 
-- As mensagens recebidas no `ServerName.Host1` executarão apenas os middlewares `FirstHelloMessageMiddleware` e `SecondHelloMessageMiddleware`, necessariamente nesta ordem.
-- As mensagens recebidas no `ServerName.Host2` executarão apenas os middlewares `ThirdHelloMessageMiddleware` e `FourthHelloMessageMiddleware`, necessariamente nesta ordem.
+- As mensagens recebidas no `ServerName.Host1` executarão apenas os middlewares `FirstHelloEventMiddleware` e `SecondHelloEventMiddleware`, necessariamente nesta ordem.
+- As mensagens recebidas no `ServerName.Host2` executarão apenas os middlewares `ThirdHelloEventMiddleware` e `FourthHelloEventMiddleware`, necessariamente nesta ordem.

@@ -10,14 +10,14 @@ namespace GuimoSoft.Bus.Core.Internal
 {
     internal class BusSerializerManager : IBusSerializerManager
     {
-        private readonly IDictionary<(BusName, Finality, Enum), MessageSerializerManager> _serializerDictionary;
+        private readonly IDictionary<(BusName, Finality, Enum), EventSerializerManager> _serializerDictionary;
 
         public BusSerializerManager()
         {
-            _serializerDictionary = new ConcurrentDictionary<(BusName, Finality, Enum), MessageSerializerManager>();
+            _serializerDictionary = new ConcurrentDictionary<(BusName, Finality, Enum), EventSerializerManager>();
         }
 
-        public void AddTypedSerializer<TMessage>(BusName busName, Finality finality, Enum @switch, TypedSerializer<TMessage> serializer) where TMessage : IMessage
+        public void AddTypedSerializer<TEvent>(BusName busName, Finality finality, Enum @switch, TypedSerializer<TEvent> serializer) where TEvent : IEvent
         {
             GetOrAdd(busName, finality, @switch).AddTypedSerializer(serializer);
         }
@@ -27,18 +27,18 @@ namespace GuimoSoft.Bus.Core.Internal
             GetOrAdd(busName, finality, @switch).SetDefaultSerializer(defaultSerializer);
         }
 
-        public IDefaultSerializer GetSerializer(BusName busName, Finality finality, Enum @switch, Type messageType)
+        public IDefaultSerializer GetSerializer(BusName busName, Finality finality, Enum @switch, Type eventType)
         {
             if (!_serializerDictionary.TryGetValue((busName, finality, @switch), out var serializerManager))
-                return MessageSerializerManager.Instance.GetSerializer(messageType);
-            return serializerManager.GetSerializer(messageType);
+                return EventSerializerManager.Instance.GetSerializer(eventType);
+            return serializerManager.GetSerializer(eventType);
         }
 
-        public MessageSerializerManager GetOrAdd(BusName busName, Finality finality, Enum @switch)
+        public EventSerializerManager GetOrAdd(BusName busName, Finality finality, Enum @switch)
         {
             if (!_serializerDictionary.TryGetValue((busName, finality, @switch), out var serializerManager))
             {
-                serializerManager = new MessageSerializerManager();
+                serializerManager = new EventSerializerManager();
                 _serializerDictionary.TryAdd((busName, finality, @switch), serializerManager);
             }
             return serializerManager;

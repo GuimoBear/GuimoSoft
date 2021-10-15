@@ -9,7 +9,7 @@ using GuimoSoft.Bus.Core.Interfaces;
 
 namespace GuimoSoft.Bus.Kafka.Producer
 {
-    internal sealed class KafkaMessageProducer : IBusMessageProducer, IDisposable
+    internal sealed class KafkaEventProducer : IBusEventDispatcher, IDisposable
     {
         private readonly object _lock = new();
 
@@ -17,7 +17,7 @@ namespace GuimoSoft.Bus.Kafka.Producer
         private readonly IBusSerializerManager _busSerializerManager;
         private readonly IDictionary<Enum, IProducer<string, byte[]>> _cachedProducers;
 
-        public KafkaMessageProducer(IKafkaProducerBuilder kafkaProducerBuilder, IBusSerializerManager busSerializerManager)
+        public KafkaEventProducer(IKafkaProducerBuilder kafkaProducerBuilder, IBusSerializerManager busSerializerManager)
         {
             _kafkaProducerBuilder = kafkaProducerBuilder ?? throw new ArgumentNullException(nameof(kafkaProducerBuilder));
             _busSerializerManager = busSerializerManager ?? throw new ArgumentNullException(nameof(busSerializerManager));
@@ -30,34 +30,34 @@ namespace GuimoSoft.Bus.Kafka.Producer
                 producer.Dispose();
         }
 
-        public async Task ProduceAsync<TMessage>(string key, TMessage message, Enum @switch, string endpoint, CancellationToken cancellationToken = default) where TMessage : IMessage
+        public async Task Dispatch<TEvent>(string key, TEvent @event, Enum @switch, string endpoint, CancellationToken cancellationToken = default) where TEvent : IEvent
         {
-            ValidateParameters(key, message, endpoint);
-            var serializer = _busSerializerManager.GetSerializer(BusName.Kafka, Finality.Produce, @switch, typeof(TMessage));
-            var serializedMessage = serializer.Serialize(message);
+            ValidateParameters(key, @event, endpoint);
+            var serializer = _busSerializerManager.GetSerializer(BusName.Kafka, Finality.Produce, @switch, typeof(TEvent));
+            var serializedEvent = serializer.Serialize(@event);
 
-            var messageType = message.GetType().AssemblyQualifiedName;
-            var producedMessage = new Message<string, byte[]>
+            var eventType = @event.GetType().AssemblyQualifiedName;
+            var producedEvent = new Message<string, byte[]>
             {
                 Key = key,
-                Value = serializedMessage,
+                Value = serializedEvent,
                 Headers = new Headers
                 {
-                    {"message-type", Encoding.UTF8.GetBytes(messageType)}
+                    {"event-type", Encoding.UTF8.GetBytes(eventType)}
                 }
             };
 
-            await GetProducer(@switch).ProduceAsync(endpoint, producedMessage, cancellationToken);
+            await GetProducer(@switch).ProduceAsync(endpoint, producedEvent, cancellationToken);
         }
 
-        private static void ValidateParameters<TMessage>(string key, TMessage message, string endpoint) where TMessage : IMessage
+        private static void ValidateParameters<TEvent>(string key, TEvent @event, string endpoint) where TEvent : IEvent
         {
             if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("� necess�rio informar uma chave para enviar a mensagem", nameof(key));
-            if (message is null)
-                throw new ArgumentNullException(nameof(message));
+                throw new ArgumentException("� necessário informar uma chave para enviar a mensagem", nameof(key));
+            if (@event is null)
+                throw new ArgumentNullException(nameof(@event));
             if (string.IsNullOrWhiteSpace(endpoint))
-                throw new ArgumentException("� necess�rio informar um endpoint para enviar a mensagem", nameof(endpoint));
+                throw new ArgumentException("� necessário informar um endpoint para enviar a mensagem", nameof(endpoint));
         }
 
         private IProducer<string, byte[]> GetProducer(Enum @switch)

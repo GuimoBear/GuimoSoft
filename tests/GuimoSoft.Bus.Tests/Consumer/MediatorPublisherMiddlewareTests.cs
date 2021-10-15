@@ -22,10 +22,10 @@ namespace GuimoSoft.Bus.Tests.Consumer
         {
             var services = new ServiceCollection();
             var serviceProvider = services.BuildServiceProvider();
-            var message = new FakeMessage("test", "");
-            var context = new ConsumeContext<FakeMessage>(message, serviceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None);
+            var @event = new FakeEvent("test", "");
+            var context = new ConsumeContext<FakeEvent>(@event, serviceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None);
 
-            var sut = new MediatorPublisherMiddleware<FakeMessage>();
+            var sut = new MediatorPublisherMiddleware<FakeEvent>();
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => sut.InvokeAsync(context, () => Task.CompletedTask));
         }
@@ -35,23 +35,23 @@ namespace GuimoSoft.Bus.Tests.Consumer
         {
             var services = new ServiceCollection();
 
-            var message = new FakeMessage("test", "");
+            var @event = new FakeEvent("test", "");
 
             var moqMediatr = new Mock<IMediator>();
 
             services.AddSingleton(moqMediatr.Object);
 
             var serviceProvider = services.BuildServiceProvider();
-            var context = new ConsumeContext<FakeMessage>(message, serviceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None);
+            var context = new ConsumeContext<FakeEvent>(@event, serviceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None);
 
-            var sut = new MediatorPublisherMiddleware<FakeMessage>();
+            var sut = new MediatorPublisherMiddleware<FakeEvent>();
 
             await sut.InvokeAsync(context, () => Task.CompletedTask);
 
-            moqMediatr.Verify(x => x.Publish(message, It.IsAny<CancellationToken>()), Times.Once);
+            moqMediatr.Verify(x => x.Publish(@event, It.IsAny<CancellationToken>()), Times.Once);
 
-            context.GetMessage()
-                .Should().BeEquivalentTo(message);
+            context.GeTEvent()
+                .Should().BeEquivalentTo(@event);
         }
     }
 }

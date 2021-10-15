@@ -14,18 +14,18 @@ using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
-    internal class KafkaTopicMessageConsumer : IKafkaTopicMessageConsumer
+    internal class KafkaTopicEventConsumer : IKafkaTopicEventConsumer
     {
         private readonly IKafkaConsumerBuilder _kafkaConsumerBuilder;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IMessageTypeCache _cache;
-        private readonly IMessageMiddlewareExecutorProvider _middlewareManager;
+        private readonly IEventTypeCache _cache;
+        private readonly IEventMiddlewareExecutorProvider _middlewareManager;
         private readonly IBusSerializerManager _busSerializerManager;
         private readonly IBusLogDispatcher _log;
 
-        private IEnumerable<MessageTypeResolver> _messageTypeResolvers;
+        private IEnumerable<EventTypeResolver> _eventTypeResolvers;
 
-        public KafkaTopicMessageConsumer(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IMessageTypeCache cache, IMessageMiddlewareExecutorProvider middlewareManager, IBusSerializerManager busSerializerManager, IBusLogDispatcher log)
+        public KafkaTopicEventConsumer(IKafkaConsumerBuilder kafkaConsumerBuilder, IServiceProvider serviceProvider, IEventTypeCache cache, IEventMiddlewareExecutorProvider middlewareManager, IBusSerializerManager busSerializerManager, IBusLogDispatcher log)
         {
             _kafkaConsumerBuilder = kafkaConsumerBuilder ?? throw new ArgumentNullException(nameof(kafkaConsumerBuilder));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
@@ -51,7 +51,7 @@ namespace GuimoSoft.Bus.Kafka.Consumer
                 try
                 {
                     var consumeResult = consumer.Consume(cancellationToken);
-                    ProcessMessage(@switch, ref topic, consumeResult, cancellationToken);
+                    ProcessEvent(@switch, ref topic, consumeResult, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -68,72 +68,72 @@ namespace GuimoSoft.Bus.Kafka.Consumer
 
         private void InitializeCachedObjects(Enum @switch, string topic)
         {
-            var messageTypes = _cache.Get(BusName.Kafka, Finality.Consume, @switch, topic);
-            var messageTypeResolvers = new List<MessageTypeResolver>();
-            foreach (var messageType in messageTypes)
+            var eventTypes = _cache.Get(BusName.Kafka, Finality.Consume, @switch, topic);
+            var eventTypeResolvers = new List<EventTypeResolver>();
+            foreach (var eventType in eventTypes)
             {
-                var serializer = _busSerializerManager.GetSerializer(BusName.Kafka, Finality.Consume, @switch, messageType);
-                var pipeline = _middlewareManager.GetPipeline(BusName.Kafka, @switch, messageType);
-                messageTypeResolvers.Add(new(messageType, serializer, pipeline));
+                var serializer = _busSerializerManager.GetSerializer(BusName.Kafka, Finality.Consume, @switch, eventType);
+                var pipeline = _middlewareManager.GetPipeline(BusName.Kafka, @switch, eventType);
+                eventTypeResolvers.Add(new(eventType, serializer, pipeline));
             }
-            _messageTypeResolvers = messageTypeResolvers;
+            _eventTypeResolvers = eventTypeResolvers;
         }
 
-        private void ProcessMessage(Enum @switch, ref string topic, ConsumeResult<string, byte[]> consumeResult, CancellationToken cancellationToken)
+        private void ProcessEvent(Enum @switch, ref string topic, ConsumeResult<string, byte[]> consumeResult, CancellationToken cancellationToken)
         {
-            foreach (var messageTypeResolver in _messageTypeResolvers)
-                ProcessMessageType(@switch, topic, consumeResult, messageTypeResolver, cancellationToken);
+            foreach (var eventTypeResolver in _eventTypeResolvers)
+                ProcessEventType(@switch, topic, consumeResult, eventTypeResolver, cancellationToken);
         }
 
-        private void ProcessMessageType(Enum @switch, string topic, ConsumeResult<string, byte[]> consumeResult, MessageTypeResolver messageTypeResolver, CancellationToken cancellationToken)
+        private void ProcessEventType(Enum @switch, string topic, ConsumeResult<string, byte[]> consumeResult, EventTypeResolver eventTypeResolver, CancellationToken cancellationToken)
         {
             try
             {
-                if (!TryDeserialize(messageTypeResolver, consumeResult.Message.Value, out var deserializedMessage))
+                if (!TryDeserialize(eventTypeResolver, consumeResult.Message.Value, out var deserializedEvent))
                 {
                     _log
                         .FromBus(BusName.Kafka).AndSwitch(@switch).AndFinality(Finality.Consume)
-                        .AfterReceived().TheObject(messageTypeResolver.MessageType, deserializedMessage).FromEndpoint(topic)
-                        .Write().Message($"Houve um erro ao deserializar a mensagem do tipo {messageTypeResolver.MessageType.Name} após receber uma mensagem do tópico {topic}")
+                        .AfterReceived().TheEvent(eventTypeResolver.EventType, deserializedEvent).FromEndpoint(topic)
+                        .Write().Message($"Houve um erro ao deserializar a mensagem do tipo {eventTypeResolver.EventType.Name} após receber uma mensagem do tópico {topic}")
                         .With(BusLogLevel.Error)
                         .Publish().AnLog(cancellationToken);
                     return;
                 }
 
-                ExecutePipeline(@switch, topic, consumeResult.Message.Headers, messageTypeResolver, deserializedMessage, cancellationToken);
+                ExecutePipeline(@switch, topic, consumeResult.Message.Headers, eventTypeResolver, deserializedEvent, cancellationToken);
             }
             catch (Exception ex)
             {
                 _log
                     .FromBus(BusName.Kafka).AndSwitch(@switch).AndFinality(Finality.Consume)
                     .WhileListening().TheEndpoint(topic)
-                    .Write().Message($"Houve um erro ao deserializar a mensagem do tipo {messageTypeResolver.MessageType.Name} após receber uma mensagem do tópico {topic}")
+                    .Write().Message($"Houve um erro ao deserializar a mensagem do tipo {eventTypeResolver.EventType.Name} após receber uma mensagem do tópico {topic}")
                     .With(BusLogLevel.Error)
                     .Publish().AnException(ex, cancellationToken);
             }
         }
 
-        private static bool TryDeserialize(MessageTypeResolver messageTypeResolver, byte[] content, out object deserializedMessage)
+        private static bool TryDeserialize(EventTypeResolver eventTypeResolver, byte[] content, out object deserializedEvent)
         {
-            deserializedMessage = messageTypeResolver.Serializer.Deserialize(messageTypeResolver.MessageType, content);
-            return deserializedMessage is not null;
+            deserializedEvent = eventTypeResolver.Serializer.Deserialize(eventTypeResolver.EventType, content);
+            return deserializedEvent is not null;
         }
 
-        private void ExecutePipeline(Enum @switch, string topic, Headers headers, MessageTypeResolver messageTypeResolver, object deserializedMessage, CancellationToken cancellationToken)
+        private void ExecutePipeline(Enum @switch, string topic, Headers headers, EventTypeResolver eventTypeResolver, object deserializedEvent, CancellationToken cancellationToken)
         {
             try
             {
                 using var scope = _serviceProvider.CreateScope();
                 var informations = GetInformations(@switch, ref topic, headers);
 
-                messageTypeResolver.Pipeline.Execute(deserializedMessage, scope.ServiceProvider, informations, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+                eventTypeResolver.Pipeline.Execute(deserializedEvent, scope.ServiceProvider, informations, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
                 _log
                     .FromBus(BusName.Kafka).AndSwitch(@switch).AndFinality(Finality.Consume)
-                    .AfterReceived().TheObject(deserializedMessage).FromEndpoint(topic)
-                    .Write().Message($"Houve um erro ao executar a pipeline do tipo {messageTypeResolver.MessageType.Name} após receber uma mensagem do tópico {topic}")
+                    .AfterReceived().TheEvent(deserializedEvent).FromEndpoint(topic)
+                    .Write().Message($"Houve um erro ao executar a pipeline do tipo {eventTypeResolver.EventType.Name} após receber uma mensagem do tópico {topic}")
                     .With(ex is OperationCanceledException ? BusLogLevel.Warning : BusLogLevel.Error)
                     .Publish().AnException(ex, cancellationToken);
             }
@@ -142,21 +142,23 @@ namespace GuimoSoft.Bus.Kafka.Consumer
         private static ConsumeInformations GetInformations(Enum @switch, ref string topic, Headers headers)
         {
             var informations = new ConsumeInformations(BusName.Kafka, @switch, topic);
-            headers?.Select(header => new KeyValuePair<string, string>(header.Key, Encoding.UTF8.GetString(header.GetValueBytes())))
-                    .ToList()
-                    .ForEach(header => informations.AddHeader(header.Key, header.Value));
+            if (headers is not null)
+            {
+                foreach (var header in headers)
+                    informations.AddHeader(header.Key, Encoding.UTF8.GetString(header.GetValueBytes()));
+            }
             return informations;
         }
 
-        private class MessageTypeResolver
+        private class EventTypeResolver
         {
-            public Type MessageType { get; }
+            public Type EventType { get; }
             public IDefaultSerializer Serializer { get; }
             public Pipeline Pipeline { get; }
 
-            public MessageTypeResolver(Type messageType, IDefaultSerializer serializer, Pipeline pipeline)
+            public EventTypeResolver(Type eventType, IDefaultSerializer serializer, Pipeline pipeline)
             {
-                MessageType = messageType;
+                EventType = eventType;
                 Serializer = serializer;
                 Pipeline = pipeline;
             }

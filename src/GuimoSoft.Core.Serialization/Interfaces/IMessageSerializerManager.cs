@@ -2,8 +2,8 @@
 
 namespace GuimoSoft.Core.Serialization.Interfaces
 {
-    internal interface IMessageSerializerManager
+    internal interface IEventSerializerManager
     {
-        IDefaultSerializer GetSerializer(Type messageType);
+        IDefaultSerializer GetSerializer(Type eventType);
     }
 }

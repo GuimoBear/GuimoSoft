@@ -12,15 +12,15 @@ namespace GuimoSoft.Bus.Tests.Fakes
 
         private FakeDefaultSerializer() { }
 
-        public byte[] Serialize(object message)
+        public byte[] Serialize(object @event)
         {
-            return JsonSerializer.SerializeToUtf8Bytes(message);
+            return JsonSerializer.SerializeToUtf8Bytes(@event);
         }
 
-        public object Deserialize(Type messageType, byte[] content)
+        public object Deserialize(Type eventType, byte[] content)
         {
             var stringContent = Encoding.UTF8.GetString(content);
-            return JsonSerializer.Deserialize(stringContent, messageType);
+            return JsonSerializer.Deserialize(stringContent, eventType);
         }
     }
 }

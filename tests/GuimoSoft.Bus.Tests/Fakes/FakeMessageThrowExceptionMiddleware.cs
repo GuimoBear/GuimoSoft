@@ -5,9 +5,9 @@ using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class FakeMessageThrowExceptionMiddleware : IMessageMiddleware<FakeMessage>
+    public class FakeEventThrowExceptionMiddleware : IEventMiddleware<FakeEvent>
     {
-        public Task InvokeAsync(ConsumeContext<FakeMessage> message, Func<Task> next)
+        public Task InvokeAsync(ConsumeContext<FakeEvent> @event, Func<Task> next)
         {
             throw new Exception();
         }

@@ -17,7 +17,7 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void ConstructorShouldThrowIfAnyParameterIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new ProducerManager(null));
+            Assert.Throws<ArgumentNullException>(() => new DispatcherManager(null));
         }
 
         [Fact]
@@ -27,22 +27,22 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
             services.AddSingleton(Mock.Of<IKafkaProducerBuilder>());
             services.AddSingleton(Mock.Of<IBusSerializerManager>());
 
-            var sut = new ProducerManager(services);
+            var sut = new DispatcherManager(services);
 
-            sut.Add<KafkaMessageProducer>(BusName.Kafka);
+            sut.Add<KafkaEventProducer>(BusName.Kafka);
 
             services
-                .FirstOrDefault(sd => sd.ServiceType == typeof(KafkaMessageProducer))
+                .FirstOrDefault(sd => sd.ServiceType == typeof(KafkaEventProducer))
                 .Should().NotBeNull();
 
-            sut.Add<FakeMessageProducer>(BusName.Kafka);
+            sut.Add<FakeEventProducer>(BusName.Kafka);
 
             services
-                .FirstOrDefault(sd => sd.ServiceType == typeof(KafkaMessageProducer))
+                .FirstOrDefault(sd => sd.ServiceType == typeof(KafkaEventProducer))
                 .Should().NotBeNull();
 
             services
-                .FirstOrDefault(sd => sd.ServiceType == typeof(FakeMessageProducer))
+                .FirstOrDefault(sd => sd.ServiceType == typeof(FakeEventProducer))
                 .Should().BeNull();
         }
 
@@ -51,21 +51,21 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         {
             var services = new ServiceCollection();
 
-            var sut = new ProducerManager(services);
+            var sut = new DispatcherManager(services);
 
-            Assert.Throws<InvalidOperationException>(() => sut.GetProducer(BusName.Kafka, Mock.Of<IServiceProvider>()));
+            Assert.Throws<InvalidOperationException>(() => sut.GetDispatcher(BusName.Kafka, Mock.Of<IServiceProvider>()));
 
-            sut.Add<FakeMessageProducer>(BusName.Kafka);
+            sut.Add<FakeEventProducer>(BusName.Kafka);
 
             var moqServiceProvider = new Mock<IServiceProvider>();
             moqServiceProvider
-                .Setup(x => x.GetService(typeof(FakeMessageProducer)))
-                .Returns(FakeMessageProducer.Instance);
+                .Setup(x => x.GetService(typeof(FakeEventProducer)))
+                .Returns(FakeEventProducer.Instance);
 
-            var producer = sut.GetProducer(BusName.Kafka, moqServiceProvider.Object);
+            var producer = sut.GetDispatcher(BusName.Kafka, moqServiceProvider.Object);
 
             producer
-                .Should().BeSameAs(FakeMessageProducer.Instance);
+                .Should().BeSameAs(FakeEventProducer.Instance);
         }
 
     }

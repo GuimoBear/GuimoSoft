@@ -10,7 +10,7 @@ namespace GuimoSoft.Benchmark.Bus
     public abstract class BenchmarkBase
     {
         protected ServiceProvider Services { get; set; }
-        protected IMessageProducer Producer { get; set; }
+        protected IEventBus Producer { get; set; }
 
         private Guid _currentId;
 
@@ -23,7 +23,7 @@ namespace GuimoSoft.Benchmark.Bus
         public abstract Task ProduceAndConsume();
 
         protected async Task Produce()
-            => await Producer.ProduceAsync(BenchmarkMessage.TOPIC_NAME, new BenchmarkMessage(_currentId = Guid.NewGuid()));
+            => await Producer.Publish(BenchmarkEvent.TOPIC_NAME, new BenchmarkEvent(_currentId = Guid.NewGuid()));
 
         protected void WaitId()
         {

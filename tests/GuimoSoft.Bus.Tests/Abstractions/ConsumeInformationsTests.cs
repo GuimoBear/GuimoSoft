@@ -7,6 +7,15 @@ namespace GuimoSoft.Bus.Tests.Abstractions
 {
     public class ConsumeInformationsTests
     {
+        [Fact]
+        public void ConstructorFacts()
+        {
+            var sut = new ConsumeInformations(BusName.Kafka, ServerName.Default, "");
+
+            sut.Headers
+                .Should().BeEmpty();
+        }
+
         [Theory]
         [InlineData(null, "value")]
         [InlineData("", "value")]
@@ -14,7 +23,7 @@ namespace GuimoSoft.Bus.Tests.Abstractions
         [InlineData("key", null)]
         [InlineData("key", "")]
         [InlineData("key", " ")]
-        public void AddHeadersWithInvalidDataShouldThrowArgumentException(string key, string value)
+        public void Given_AnInvalidKeysAndValues_When_AddHeader_Then_ThrowArgumentException(string key, string value)
         {
             var sut = new ConsumeInformations(BusName.Kafka, ServerName.Default, "");
 
@@ -22,17 +31,17 @@ namespace GuimoSoft.Bus.Tests.Abstractions
         }
 
         [Fact]
-        public void AddHeaderFacts()
+        public void Given_AnValidKeyAndValue_When_AddHeader_Then_HeaderAddedSuccessfully()
         {
             var sut = new ConsumeInformations(BusName.Kafka, ServerName.Default, "");
-
-            sut.Headers
-                .Should().BeEmpty();
 
             sut.AddHeader("key", "value");
 
             sut.Headers
-                .Should().NotBeEmpty();
+                .Should().HaveCount(1);
+
+            sut.Headers["key"]
+                .Should().Be("value");
         }
     }
 }

@@ -5,9 +5,9 @@ using GuimoSoft.Bus.Core.Logs;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class BusExceptionMessageHandler : INotificationHandler<BusExceptionMessage>
+    public class BusExceptionEventHandler : INotificationHandler<BusExceptionEvent>
     {
-        public Task Handle(BusExceptionMessage notification, CancellationToken cancellationToken)
+        public Task Handle(BusExceptionEvent notification, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

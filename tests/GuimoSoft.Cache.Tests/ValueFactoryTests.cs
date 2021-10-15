@@ -24,11 +24,11 @@ namespace GuimoSoft.Cache.Tests
 
             var actual = ValueFactory.Instance.Resilient(policy);
 
-            var message = new FakeValue("prop", 5);
+            var @event = new FakeValue("prop", 5);
 
-            var value = actual.Produce(() => message);
+            var value = actual.Produce(() => @event);
 
-            ReferenceEquals(message, value)
+            ReferenceEquals(@event, value)
                 .Should().BeTrue();
         }
     }

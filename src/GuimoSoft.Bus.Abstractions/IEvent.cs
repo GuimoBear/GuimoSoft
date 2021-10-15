@@ -2,7 +2,7 @@ using MediatR;
 
 namespace GuimoSoft.Bus.Abstractions
 {
-    public interface IMessage : INotification
+    public interface IEvent : INotification
     {
     }
 }

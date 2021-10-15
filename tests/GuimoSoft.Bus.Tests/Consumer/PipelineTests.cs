@@ -17,7 +17,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
             = new List<object[]>
             {
                 new object[] { new List<Type>(), typeof(PipelineTests) },
-                new object[] { new List<Type> { typeof(FakePipelineMessageMiddlewareOne), typeof(FakePipelineMessageMiddlewareTwo), typeof(FakePipelineMessageMiddlewareThree), typeof(FakeMessageMiddleware) }, typeof(FakePipelineMessage) },
+                new object[] { new List<Type> { typeof(FakePipelineEventMiddlewareOne), typeof(FakePipelineEventMiddlewareTwo), typeof(FakePipelineEventMiddlewareThree), typeof(FakeEventMiddleware) }, typeof(FakePipelineEvent) },
             };
 
         private static readonly IReadOnlyDictionary<string, string> EMPTY_HEADER = new Dictionary<string, string>();
@@ -28,17 +28,17 @@ namespace GuimoSoft.Bus.Tests.Consumer
         public PipelineTests()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<FakePipelineMessageMiddlewareOne>();
-            serviceCollection.AddSingleton<FakePipelineMessageMiddlewareTwo>();
-            serviceCollection.AddSingleton<FakePipelineMessageMiddlewareThree>();
+            serviceCollection.AddSingleton<FakePipelineEventMiddlewareOne>();
+            serviceCollection.AddSingleton<FakePipelineEventMiddlewareTwo>();
+            serviceCollection.AddSingleton<FakePipelineEventMiddlewareThree>();
             services = serviceCollection.BuildServiceProvider();
             var middlewareTypes = new List<Type>
             {
-                typeof(FakePipelineMessageMiddlewareOne),
-                typeof(FakePipelineMessageMiddlewareTwo),
-                typeof(FakePipelineMessageMiddlewareThree)
+                typeof(FakePipelineEventMiddlewareOne),
+                typeof(FakePipelineEventMiddlewareTwo),
+                typeof(FakePipelineEventMiddlewareThree)
             };
-            pipeline = new Pipeline(middlewareTypes, typeof(FakePipelineMessage));
+            pipeline = new Pipeline(middlewareTypes, typeof(FakePipelineEvent));
         }
 
         [Fact]
@@ -49,17 +49,17 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
         [Theory]
         [MemberData(nameof(ConstructorInvalidData))]
-        public void ConstructorWithInvalidParametersShouldBeThrowArgumentException(IReadOnlyList<Type> middlewareTypes, Type messageType)
+        public void ConstructorWithInvalidParametersShouldBeThrowArgumentException(IReadOnlyList<Type> middlewareTypes, Type eventType)
         {
-            Assert.Throws<ArgumentException>(() => new Pipeline(middlewareTypes, messageType));
+            Assert.Throws<ArgumentException>(() => new Pipeline(middlewareTypes, eventType));
         }
 
         [Fact]
         public async Task ExecuteShouldBeExecutedWithoutExceptions()
         {
-            var message = new FakePipelineMessage();
+            var @event = new FakePipelineEvent();
             using var scope = services.CreateScope();
-            var context = await pipeline.Execute(message, scope.ServiceProvider, new ConsumeInformations(BusName.Kafka, FakeServerName.FakeHost2, "e"), CancellationToken.None) as ConsumeContext<FakePipelineMessage>;
+            var context = await pipeline.Execute(@event, scope.ServiceProvider, new ConsumeInformations(BusName.Kafka, FakeServerName.FakeHost2, "e"), CancellationToken.None) as ConsumeContext<FakePipelineEvent>;
 
             context
                 .Should().NotBeNull();
@@ -67,42 +67,42 @@ namespace GuimoSoft.Bus.Tests.Consumer
             context.Items
                 .Should().NotBeNull().And.HaveCount(3);
 
-            context.Items.Should().ContainKey(FakePipelineMessageMiddlewareOne.Name);
-            context.Items.Should().ContainKey(FakePipelineMessageMiddlewareTwo.Name);
-            context.Items.Should().ContainKey(FakePipelineMessageMiddlewareThree.Name);
+            context.Items.Should().ContainKey(FakePipelineEventMiddlewareOne.Name);
+            context.Items.Should().ContainKey(FakePipelineEventMiddlewareTwo.Name);
+            context.Items.Should().ContainKey(FakePipelineEventMiddlewareThree.Name);
 
-            context.Message
+            context.Event
                 .Should().NotBeNull();
 
-            context.Message.MiddlewareNames
+            context.Event.MiddlewareNames
                 .Should().NotBeNull().And.HaveCount(3);
 
-            context.Message.MiddlewareNames[0]
-                .Should().Be(FakePipelineMessageMiddlewareOne.Name);
+            context.Event.MiddlewareNames[0]
+                .Should().Be(FakePipelineEventMiddlewareOne.Name);
 
-            context.Message.MiddlewareNames[1]
-                .Should().Be(FakePipelineMessageMiddlewareTwo.Name);
-            context.Message.MiddlewareNames[2]
-                .Should().Be(FakePipelineMessageMiddlewareThree.Name);
+            context.Event.MiddlewareNames[1]
+                .Should().Be(FakePipelineEventMiddlewareTwo.Name);
+            context.Event.MiddlewareNames[2]
+                .Should().Be(FakePipelineEventMiddlewareThree.Name);
         }
 
 
         [Fact]
         public async Task ExecuteWithExecutionStopInMiddlewareTwoShouldBeExecutedWithoutExceptions()
         {
-            var message = new FakePipelineMessage(FakePipelineMessageMiddlewareTwo.Name);
+            var @event = new FakePipelineEvent(FakePipelineEventMiddlewareTwo.Name);
             using var scope = services.CreateScope();
 
-            var context = await pipeline.Execute(message, scope.ServiceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None) as ConsumeContext<FakePipelineMessage>;
+            var context = await pipeline.Execute(@event, scope.ServiceProvider, new ConsumeInformations(BusName.Kafka, ServerName.Default, "e"), CancellationToken.None) as ConsumeContext<FakePipelineEvent>;
 
-            message
+            @event
                 .MiddlewareNames.Should().NotBeNull().And.HaveCount(2);
 
-            message.MiddlewareNames[0]
-                .Should().Be(FakePipelineMessageMiddlewareOne.Name);
+            @event.MiddlewareNames[0]
+                .Should().Be(FakePipelineEventMiddlewareOne.Name);
 
-            message.MiddlewareNames[1]
-                .Should().Be(FakePipelineMessageMiddlewareTwo.Name);
+            @event.MiddlewareNames[1]
+                .Should().Be(FakePipelineEventMiddlewareTwo.Name);
         }
     }
 }

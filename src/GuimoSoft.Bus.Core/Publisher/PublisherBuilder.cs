@@ -8,31 +8,31 @@ using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Core.Utils;
 using GuimoSoft.Core.Serialization.Interfaces;
 
-namespace GuimoSoft.Bus.Core.Producer
+namespace GuimoSoft.Bus.Core.Publisher
 {
-    public sealed class ProducerBuilder<TOptions>
+    public sealed class PublisherBuilder<TOptions>
         where TOptions : class, new()
     {
         private readonly BusName _busName;
         private readonly Enum _switch;
         private readonly ICollection<Assembly> _assemblies;
         private readonly BusSerializerManager _busSerializerManager;
-        private readonly MessageTypeCache _messageTypesCache;
+        private readonly EventTypeCache _eventTypesCache;
         private readonly BusOptionsDictionary<TOptions> _optionsDictionary;
 
-        internal ProducerBuilder(BusName busName, Enum @switch, ICollection<Assembly> assemblies, IServiceCollection services)
+        internal PublisherBuilder(BusName busName, Enum @switch, ICollection<Assembly> assemblies, IServiceCollection services)
         {
             _busName = busName;
             _switch = @switch;
             _assemblies = assemblies;
 
             _busSerializerManager = Singletons.TryRegisterAndGetBusSerializerManager(services);
-            _messageTypesCache = Singletons.TryRegisterAndGetMessageTypeCache(services);
+            _eventTypesCache = Singletons.TryRegisterAndGetEventTypeCache(services);
             _optionsDictionary = Singletons.TryRegisterAndGetBusOptionsDictionary<TOptions>(services);
             ValidateBusOptions();
         }
 
-        public ProducerBuilder<TOptions> ToServer(Action<TOptions> configure)
+        public PublisherBuilder<TOptions> ToServer(Action<TOptions> configure)
         {
             var config = new TOptions();
             configure(config);
@@ -40,14 +40,14 @@ namespace GuimoSoft.Bus.Core.Producer
             return this;
         }
 
-        public ProducerBuilder<TOptions> WithDefaultSerializer(IDefaultSerializer defaultSerializer)
+        public PublisherBuilder<TOptions> WithDefaultSerializer(IDefaultSerializer defaultSerializer)
         {
             _busSerializerManager.SetDefaultSerializer(_busName, Finality.Produce, _switch, defaultSerializer);
 
             return this;
         }
 
-        public ProducerBuilder<TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        public PublisherBuilder<TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
         {
             if (assemblies is not null)
                 foreach (var assembly in assemblies)
@@ -56,8 +56,8 @@ namespace GuimoSoft.Bus.Core.Producer
             return this;
         }
 
-        public EndpointProducerBuilder<TOptions> Produce()
-            => new EndpointProducerBuilder<TOptions>(this, _busName, _switch, _busSerializerManager, _messageTypesCache, _assemblies);
+        public EndpointPublisherBuilder<TOptions> Publish()
+            => new EndpointPublisherBuilder<TOptions>(this, _busName, _switch, _busSerializerManager, _eventTypesCache, _assemblies);
 
         internal void ValidateAfterConfigured()
         {

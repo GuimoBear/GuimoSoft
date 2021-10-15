@@ -17,14 +17,14 @@ Neste pacote residem as abstrações necessárias para integração do domínio 
 ### Existem quatro interfaces principais que estão nesta LIB
 
 ```csharp
-public interface IMessage : INotification
+public interface IEvent : INotification
 ```
 
 Esta interface deve ser implementada em todas as mensagens que serão transitadas pelo Bus, seja para seu consumo ou para a sua produção, é apenas uma assinatura, não existe nada a ser implementado.
 
 ```csharp
-public interface IMessageMiddleware<TType> 
-    where TType : IMessage
+public interface IEventMiddleware<TType> 
+    where TType : IEvent
 ```
 
 Esta interface contém o contrato do que é um middleware na pipeline de consumo de uma mensagem no Bus, mais a frente mostraremos como registrá-la e como ordená-la dentro desta pipeline.
@@ -37,8 +37,8 @@ public interface INotificationHandler<in TNotification>
 Esta interface equivale a última etapa da pipeline, será chamada quando o Bus identificar um evendo e nenhum middleware pare o fluxo de execução da pipeline.
 
 ```csharp
-public interface IConsumeContextAccessor<TMessage> 
-    where TMessage : IMessage
+public interface IConsumeContextAccessor<TEvent> 
+    where TEvent : IEvent
 ```
 
 Esta interface possibilita a passagem do ConsumeContext para o NotificationHandler, caso exista a necessidade de utilizar o contexto, injete esta dependência onde queira utilizar.
@@ -63,13 +63,13 @@ Nesta classe existem as seguintes propriedades:
 Existe também o contexto que será passado para o middleware
 
 ```csharp
-public sealed class ConsumeContext<TMessage> : ConsumeContextBase 
-    where TMessage : IMessage
+public sealed class ConsumeContext<TEvent> : ConsumeContextBase 
+    where TEvent : IEvent
 ```
 
 Nesta classe existem as seguintes propriedades:
 
-- `TMessage Message`: A mensagem do tipo consumido.
+- `TEvent Event`: A mensagem do tipo consumido.
 - `IServiceProvider Services`: O serviçe provider para que seja utilizado para capturar as dependências.
 - `ConsumeInformations`: As informações de consumo da mensagem.
 - `CancellationToken CancellationToken`: O cancellation token do tempo de vida da aplicação, este só terá seu cancelamento requisitado quando a aplicação for finalizada, é importante que este cancellation token seja utilizado em tarefas que possam ser longas, como requests HTTP, acesso a bancos de dados, etc.
@@ -113,9 +113,9 @@ services
         configurer
             .WithDefaultSerializer(CustomDefaultSerializer.Instance) // (OPCIONAL) Serializador padrão
             .Produce()
-                .FromType<HelloMessage>()
-                .WithSerializer(HelloMessageSerializer.Instance) // (OPCIONAL) Serializador por tipo
-                .ToEndpoint(HelloMessage.TOPIC_NAME)
+                .FromType<HelloEvent>()
+                .WithSerializer(HelloEventSerializer.Instance) // (OPCIONAL) Serializador por tipo
+                .ToEndpoint(HelloEvent.TOPIC_NAME)
             .ToServer(options =>
             {
                 options.BootstrapServers = "localhost:9093";
@@ -131,16 +131,16 @@ services
 > 4. **Caso exista a necessidade de produzir mensagens para diferentes servidores, veja [_como implementar interruptores_](switches.md)**
 > 5. **Caso queira entender como funcionam os serializadores e como implementá-los, veja [_Como criar serializadores_](serializadores.md)**
 
-**2.** Utilizar o `IMessageProducer` para produzir a mensagem
+**2.** Utilizar o `IEventProducer` para produzir a mensagem
 
 Exemplo:
 
 ```csharp
-private readonly IMessageProducer _producer;
+private readonly IEventProducer _producer;
 
 [...]
 
-await _producer.ProduceAsync(Guid.NewGuid().ToString(), new HelloMessage(name));
+await _producer.ProduceAsync(Guid.NewGuid().ToString(), new HelloEvent(name));
 ```
 
 ### Utilizado o consumidor
@@ -158,10 +158,10 @@ services
         configurer
             .WithDefaultSerializer(CustomDefaultSerializer.Instance) // (OPCIONAL) Serializador padrão
             .Consume()
-                .OfType<HelloMessage>()
-                .WithSerializer(HelloMessageSerializer.Instance) // (OPCIONAL) Serializador por tipo
-                .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Transient) // (OPCIONAL) Middleware
-                .FromEndpoint(HelloMessage.TOPIC_NAME)
+                .OfType<HelloEvent>()
+                .WithSerializer(HelloEventSerializer.Instance) // (OPCIONAL) Serializador por tipo
+                .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Transient) // (OPCIONAL) Middleware
+                .FromEndpoint(HelloEvent.TOPIC_NAME)
             .FromServer(options =>
             {
                 options.BootstrapServers = "google.com:9093";

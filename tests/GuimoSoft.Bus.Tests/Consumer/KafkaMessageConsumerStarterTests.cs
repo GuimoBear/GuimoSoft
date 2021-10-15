@@ -12,36 +12,36 @@ using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {
-    public class KafkaMessageConsumerStarterTests
+    public class KafkaEventConsumerStarterTests
     {
         [Fact]
-        public void StartConsumersShouldStartSingleConsumerPerMessage()
+        public void StartConsumersShouldStartSingleConsumerPerEvent()
         {
-            var mockMessageTypeCache = new Mock<IMessageTypeCache>();
-            mockMessageTypeCache
+            var mockeventTypeCache = new Mock<IEventTypeCache>();
+            mockeventTypeCache
                 .Setup(x => x.GetSwitchers(BusName.Kafka, Finality.Consume))
                 .Returns(new List<Enum> { ServerName.Default });
-            mockMessageTypeCache
+            mockeventTypeCache
                 .Setup(x => x.GetEndpoints(BusName.Kafka, Finality.Consume, ServerName.Default))
-                .Returns(new List<string> { FakeMessage.TOPIC_NAME, OtherFakeMessage.TOPIC_NAME, AnotherFakeMessage.TOPIC_NAME });
+                .Returns(new List<string> { FakeEvent.TOPIC_NAME, OtherFakeEvent.TOPIC_NAME, AnotherFakeEvent.TOPIC_NAME });
 
-            var mockKafkaMessageConsumer = new Mock<IKafkaTopicMessageConsumer>();
+            var mockKafkaEventConsumer = new Mock<IKafkaTopicEventConsumer>();
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(mockKafkaMessageConsumer.Object);
-            serviceCollection.AddSingleton(s => mockMessageTypeCache.Object);
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<FakeMessage>>());
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<OtherFakeMessage>>());
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<AnotherFakeMessage>>());
+            serviceCollection.AddSingleton(mockKafkaEventConsumer.Object);
+            serviceCollection.AddSingleton(s => mockeventTypeCache.Object);
+            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<FakeEvent>>());
+            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<OtherFakeEvent>>());
+            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<AnotherFakeEvent>>());
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var sut = new KafkaMessageConsumerManager(serviceProvider);
+            var sut = new KafkaEventConsumerManager(serviceProvider);
             sut.StartConsumers(CancellationToken.None);
 
-            mockKafkaMessageConsumer.Verify(x => x.ConsumeUntilCancellationIsRequested(It.IsAny<Enum>(), FakeMessage.TOPIC_NAME, It.IsAny<CancellationToken>()),
+            mockKafkaEventConsumer.Verify(x => x.ConsumeUntilCancellationIsRequested(It.IsAny<Enum>(), FakeEvent.TOPIC_NAME, It.IsAny<CancellationToken>()),
                 Times.Once);
-            mockKafkaMessageConsumer.Verify(x => x.ConsumeUntilCancellationIsRequested(It.IsAny<Enum>(), OtherFakeMessage.TOPIC_NAME, It.IsAny<CancellationToken>()),
+            mockKafkaEventConsumer.Verify(x => x.ConsumeUntilCancellationIsRequested(It.IsAny<Enum>(), OtherFakeEvent.TOPIC_NAME, It.IsAny<CancellationToken>()),
                 Times.Once);
-            mockKafkaMessageConsumer.Verify(x => x.ConsumeUntilCancellationIsRequested(It.IsAny<Enum>(), AnotherFakeMessage.TOPIC_NAME, It.IsAny<CancellationToken>()),
+            mockKafkaEventConsumer.Verify(x => x.ConsumeUntilCancellationIsRequested(It.IsAny<Enum>(), AnotherFakeEvent.TOPIC_NAME, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
     }

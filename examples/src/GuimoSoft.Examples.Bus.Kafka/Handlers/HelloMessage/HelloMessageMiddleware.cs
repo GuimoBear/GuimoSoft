@@ -4,26 +4,26 @@ using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Logger;
 
-namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
+namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloEvent
 {
-    public class HelloMessageMiddleware : IMessageMiddleware<Messages.HelloMessage>
+    public class HelloEventMiddleware : IEventMiddleware<Events.HelloEvent>
     {
-        private readonly IApiLogger<HelloMessageMiddleware> _logger;
+        private readonly IApiLogger<HelloEventMiddleware> _logger;
 
-        public HelloMessageMiddleware(IApiLogger<HelloMessageMiddleware> logger)
+        public HelloEventMiddleware(IApiLogger<HelloEventMiddleware> logger)
         {
             _logger = logger;
         }
 
-        public async Task InvokeAsync(ConsumeContext<Messages.HelloMessage> context, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<Events.HelloEvent> context, Func<Task> next)
         {
             await Task.Delay(TimeSpan.FromSeconds(2));
             _logger
-                .ComPropriedade("name", context.Message.Name)
+                .ComPropriedade("name", context.Event.Name)
                 .ComPropriedade("timestamp", DateTime.Now)
                 .Informacao($"Middleware");
 
-            if (context.Message.ThrowException)
+            if (context.Event.ThrowException)
                 throw new ArgumentException(nameof(context));
 
             await next();

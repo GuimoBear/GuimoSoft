@@ -5,15 +5,15 @@ using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class FakePipelineMessageMiddlewareThree : IMessageMiddleware<FakePipelineMessage>
+    public class FakePipelineEventMiddlewareThree : IEventMiddleware<FakePipelineEvent>
     {
-        public const string Name = nameof(FakePipelineMessageMiddlewareThree);
+        public const string Name = nameof(FakePipelineEventMiddlewareThree);
 
-        public async Task InvokeAsync(ConsumeContext<FakePipelineMessage> context, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<FakePipelineEvent> context, Func<Task> next)
         {
-            context.Message.MiddlewareNames.Add(Name);
+            context.Event.MiddlewareNames.Add(Name);
             context.Items.Add(Name, true);
-            if (Name.Equals(context.Message.LastMiddlewareToRun))
+            if (Name.Equals(context.Event.LastMiddlewareToRun))
                 return;
             await next();
         }

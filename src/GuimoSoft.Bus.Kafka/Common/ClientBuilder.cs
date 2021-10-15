@@ -15,15 +15,15 @@ namespace GuimoSoft.Bus.Kafka.Common
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected void LogMessage(Enum @switch, Finality finality, LogMessage logMessage)
+        protected void LogEvent(Enum @switch, Finality finality, LogMessage logEvent)
         {
             _logger
                 .FromBus(BusName.Kafka).AndSwitch(@switch).AndFinality(finality)
                 .Write()
-                    .Message(logMessage.Message)
-                    .AndKey(nameof(logMessage.Name)).FromValue(logMessage.Name)
-                    .AndKey(nameof(logMessage.Facility)).FromValue(logMessage.Facility)
-                    .With((BusLogLevel)logMessage.LevelAs(LogLevelType.MicrosoftExtensionsLogging))
+                    .Message(logEvent.Message)
+                    .AndKey(nameof(logEvent.Name)).FromValue(logEvent.Name)
+                    .AndKey(nameof(logEvent.Facility)).FromValue(logEvent.Facility)
+                    .With((BusLogLevel)logEvent.LevelAs(LogLevelType.MicrosoftExtensionsLogging))
                 .Publish().AnLog()
                 .ConfigureAwait(false);
         }

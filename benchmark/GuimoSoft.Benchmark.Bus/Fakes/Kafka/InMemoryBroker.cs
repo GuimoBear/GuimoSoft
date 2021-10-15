@@ -19,18 +19,18 @@ namespace GuimoSoft.Benchmark.Bus.Fakes.Kafka
 
         private InMemoryBroker() { }
 
-        public void Enqueue(string topic, byte[] message)
+        public void Enqueue(string topic, byte[] @event)
         {
             if (string.IsNullOrEmpty(topic))
                 throw new ArgumentNullException(nameof(topic));
-            if (message is null)
-                throw new ArgumentNullException(nameof(message));
+            if (@event is null)
+                throw new ArgumentNullException(nameof(@event));
             if (queues.TryGetValue(topic, out var queue))
-                queue.Enqueue(message);
+                queue.Enqueue(@event);
             else
             {
                 queue = new();
-                queue.Enqueue(message);
+                queue.Enqueue(@event);
                 queues.TryAdd(topic, queue);
             }
         }
@@ -44,7 +44,7 @@ namespace GuimoSoft.Benchmark.Bus.Fakes.Kafka
             }
         }
 
-        public (string topic, byte[] message) Consume(IEnumerable<string> topics, TimeSpan timeout)
+        public (string topic, byte[] @event) Consume(IEnumerable<string> topics, TimeSpan timeout)
         {
             if (topics is null || topics.Count() == 0)
                 return default;
@@ -58,14 +58,14 @@ namespace GuimoSoft.Benchmark.Bus.Fakes.Kafka
             return default;
         }
 
-        public (string topic, byte[] message) Consume(IEnumerable<string> topics, int millisecondsTimeout)
+        public (string topic, byte[] @event) Consume(IEnumerable<string> topics, int millisecondsTimeout)
         {
             if (topics is null || topics.Count() == 0)
                 return default;
             return Consume(topics, TimeSpan.FromMilliseconds(millisecondsTimeout));
         }
 
-        public (string topic, byte[] message) Consume(IEnumerable<string> topics, CancellationToken cancellationToken)
+        public (string topic, byte[] @event) Consume(IEnumerable<string> topics, CancellationToken cancellationToken)
         {
             if (topics is null || topics.Count() == 0)
                 return default;

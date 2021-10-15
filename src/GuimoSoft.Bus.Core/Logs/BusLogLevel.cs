@@ -4,8 +4,8 @@
     {
         //
         // Summary:
-        //     Logs that contain the most detailed messages. These messages may contain sensitive
-        //     application data. These messages are disabled by default and should never be
+        //     Logs that contain the most detailed events. These events may contain sensitive
+        //     application data. These events are disabled by default and should never be
         //     enabled in a production environment.
         Trace = 0,
         //
@@ -21,7 +21,7 @@
         Information = 2,
         //
         // Summary:
-        //     Logs that highlight an abnormal or unexpected event in the application flow,
+        //     Logs that highlight an abnormal or unexpected @event in the application flow,
         //     but do not otherwise cause the application execution to stop.
         Warning = 3,
         //

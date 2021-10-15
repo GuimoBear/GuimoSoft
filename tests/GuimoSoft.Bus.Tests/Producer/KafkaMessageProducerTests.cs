@@ -12,14 +12,14 @@ using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Producer
 {
-    public class KafkaMessageProducerTests
+    public class KafkaEventProducerTests
     {
         [Fact]
         public void ConstructorShouldThrowIfAnyParameterIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new KafkaMessageProducer(null, null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaMessageProducer(Mock.Of<IKafkaProducerBuilder>(), null));
-            Assert.Throws<ArgumentNullException>(() => new KafkaMessageProducer(null, Mock.Of<IBusSerializerManager>()));
+            Assert.Throws<ArgumentNullException>(() => new KafkaEventProducer(null, null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaEventProducer(Mock.Of<IKafkaProducerBuilder>(), null));
+            Assert.Throws<ArgumentNullException>(() => new KafkaEventProducer(null, Mock.Of<IBusSerializerManager>()));
         }
 
         [Theory]
@@ -28,15 +28,15 @@ namespace GuimoSoft.Bus.Tests.Producer
         [InlineData("  ")]
         public async Task ProduceAsyncShouldBeThrowArgumentExceptionIfKeyIsNullEmptyOrWriteSpace(string key)
         {
-            var sut = new KafkaMessageProducer(Mock.Of<IKafkaProducerBuilder>(), Mock.Of<IBusSerializerManager>());
-            await Assert.ThrowsAsync<ArgumentException>(() => sut.ProduceAsync(key, new FakeMessage("", ""), ServerName.Default, FakeMessage.TOPIC_NAME, CancellationToken.None));
+            var sut = new KafkaEventProducer(Mock.Of<IKafkaProducerBuilder>(), Mock.Of<IBusSerializerManager>());
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.Dispatch(key, new FakeEvent("", ""), ServerName.Default, FakeEvent.TOPIC_NAME, CancellationToken.None));
         }
 
         [Fact]
-        public async Task ProduceAsyncShouldBeThrowArgumentNullExceptionIfMessageIsNull()
+        public async Task ProduceAsyncShouldBeThrowArgumentNullExceptionIfEventIsNull()
         {
-            var sut = new KafkaMessageProducer(Mock.Of<IKafkaProducerBuilder>(), Mock.Of<IBusSerializerManager>());
-            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.ProduceAsync<FakeMessage>(Guid.NewGuid().ToString(), null, ServerName.Default, FakeMessage.TOPIC_NAME, CancellationToken.None));
+            var sut = new KafkaEventProducer(Mock.Of<IKafkaProducerBuilder>(), Mock.Of<IBusSerializerManager>());
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.Dispatch<FakeEvent>(Guid.NewGuid().ToString(), null, ServerName.Default, FakeEvent.TOPIC_NAME, CancellationToken.None));
         }
 
         [Theory]
@@ -45,32 +45,32 @@ namespace GuimoSoft.Bus.Tests.Producer
         [InlineData("  ")]
         public async Task ProduceAsyncShouldBeThrowArgumentExceptionIfEndpointIsNullEmptyOrWriteSpace(string endpoint)
         {
-            var sut = new KafkaMessageProducer(Mock.Of<IKafkaProducerBuilder>(), Mock.Of<IBusSerializerManager>());
-            await Assert.ThrowsAsync<ArgumentException>(() => sut.ProduceAsync(Guid.NewGuid().ToString(), new FakeMessage("", ""), ServerName.Default, endpoint, CancellationToken.None));
+            var sut = new KafkaEventProducer(Mock.Of<IKafkaProducerBuilder>(), Mock.Of<IBusSerializerManager>());
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.Dispatch(Guid.NewGuid().ToString(), new FakeEvent("", ""), ServerName.Default, endpoint, CancellationToken.None));
         }
 
         [Fact]
-        public async Task ProduceAsyncShouldSerializeAndSendMessageToKafka()
+        public async Task ProduceAsyncShouldSerializeAndSendEventToKafka()
         {
-            var moqMessageProducerBuilder = new Mock<IKafkaProducerBuilder>();
+            var moqEventProducerBuilder = new Mock<IKafkaProducerBuilder>();
             var mockProducer = new Mock<IProducer<string, byte[]>>();
-            moqMessageProducerBuilder
+            moqEventProducerBuilder
                 .Setup(x => x.Build(It.IsAny<ServerName>()))
                 .Returns(mockProducer.Object);
 
             var moqSerializerManager = new Mock<IBusSerializerManager>();
             moqSerializerManager
-                .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent)))
+                .Returns(JsonEventSerializer.Instance);
 
-            var sut = new KafkaMessageProducer(moqMessageProducerBuilder.Object, moqSerializerManager.Object);
+            var sut = new KafkaEventProducer(moqEventProducerBuilder.Object, moqSerializerManager.Object);
 
-            await sut.ProduceAsync(Guid.NewGuid().ToString(), new FakeMessage("", ""), ServerName.Default, FakeMessage.TOPIC_NAME);
+            await sut.Dispatch(Guid.NewGuid().ToString(), new FakeEvent("", ""), ServerName.Default, FakeEvent.TOPIC_NAME);
 
             moqSerializerManager
-                .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage)), Times.Once);
+                .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent)), Times.Once);
 
-            moqMessageProducerBuilder
+            moqEventProducerBuilder
                 .Verify(x => x.Build(ServerName.Default), Times.Once);
 
             mockProducer
@@ -80,20 +80,20 @@ namespace GuimoSoft.Bus.Tests.Producer
         [Fact]
         public async Task DisposeShouldDisposeProducerIfProduceHasBeenCalled()
         {
-            var stubMessageProducerBuilder = new Mock<IKafkaProducerBuilder>();
+            var stubEventProducerBuilder = new Mock<IKafkaProducerBuilder>();
             var mockProducer = new Mock<IProducer<string, byte[]>>();
-            stubMessageProducerBuilder
+            stubEventProducerBuilder
                 .Setup(x => x.Build(It.IsAny<ServerName>()))
                 .Returns(mockProducer.Object);
-            var fakeMessage = new FakeMessage("some-key-id", "some-property-value");
+            var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
 
             var moqSerializerManager = new Mock<IBusSerializerManager>();
             moqSerializerManager
-                .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent)))
+                .Returns(JsonEventSerializer.Instance);
 
-            var sut = new KafkaMessageProducer(stubMessageProducerBuilder.Object, moqSerializerManager.Object);
-            await sut.ProduceAsync(Guid.NewGuid().ToString(), new FakeMessage("", ""), ServerName.Default, FakeMessage.TOPIC_NAME);
+            var sut = new KafkaEventProducer(stubEventProducerBuilder.Object, moqSerializerManager.Object);
+            await sut.Dispatch(Guid.NewGuid().ToString(), new FakeEvent("", ""), ServerName.Default, FakeEvent.TOPIC_NAME);
             sut.Dispose();
 
             mockProducer.Verify(x => x.Dispose());
@@ -102,22 +102,22 @@ namespace GuimoSoft.Bus.Tests.Producer
         [Fact]
         public void DisposeShouldNotDisposeProducerIfProduceHasNotBeenCalled()
         {
-            var stubMessageProducerBuilder = new Mock<IKafkaProducerBuilder>();
+            var stubEventProducerBuilder = new Mock<IKafkaProducerBuilder>();
             var mockProducer = new Mock<IProducer<string, byte[]>>();
-            stubMessageProducerBuilder
+            stubEventProducerBuilder
                 .Setup(x => x.Build(It.IsAny<ServerName>()))
                 .Returns(mockProducer.Object);
 
             var moqSerializerManager = new Mock<IBusSerializerManager>();
             moqSerializerManager
-                .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage)))
-                .Returns(JsonMessageSerializer.Instance);
+                .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent)))
+                .Returns(JsonEventSerializer.Instance);
 
-            var sut = new KafkaMessageProducer(stubMessageProducerBuilder.Object, moqSerializerManager.Object);
+            var sut = new KafkaEventProducer(stubEventProducerBuilder.Object, moqSerializerManager.Object);
             sut.Dispose();
 
             moqSerializerManager
-                .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage)), Times.Never);
+                .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent)), Times.Never);
 
             mockProducer.Verify(x => x.Dispose(), Times.Never);
         }

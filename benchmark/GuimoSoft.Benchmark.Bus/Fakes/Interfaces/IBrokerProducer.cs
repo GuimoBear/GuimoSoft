@@ -2,6 +2,6 @@
 {
     public interface IBrokerProducer
     {
-        void Enqueue(string topic, byte[] message);
+        void Enqueue(string topic, byte[] @event);
     }
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Examples.Bus.Kafka.Messages;
+using GuimoSoft.Examples.Bus.Kafka.Events;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Controllers
 {
@@ -10,18 +10,18 @@ namespace GuimoSoft.Examples.Bus.Kafka.Controllers
     [Route("[controller]")]
     public class HelloController : ControllerBase
     {
-        private readonly IMessageProducer _producer;
+        private readonly IEventBus _bus;
 
-        public HelloController(IMessageProducer producer)
+        public HelloController(IEventBus bus)
         {
-            _producer = producer;
+            _bus = bus;
         }
 
         [HttpGet]
         [Route("/{name}/{throwException}")]
         public async Task SayHello([FromRoute] string name, bool throwException)
         {
-            await _producer.ProduceAsync(Guid.NewGuid().ToString(), new HelloMessage(name, throwException));
+            await _bus.Publish(Guid.NewGuid().ToString(), new HelloEvent(name, throwException));
         }
     }
 }

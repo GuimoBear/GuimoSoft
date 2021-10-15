@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace GuimoSoft.Benchmark.Bus
 {
-    class Program
+    static class Program
     {
         static async Task Main(string[] args)
         {

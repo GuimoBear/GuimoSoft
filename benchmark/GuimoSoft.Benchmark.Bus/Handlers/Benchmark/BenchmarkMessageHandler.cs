@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions.Consumer;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GuimoSoft.Benchmark.Bus.Handlers.Benchmark
 {
-    public class BenchmarkMessageHandler : INotificationHandler<BenchmarkMessage>
+    public class BenchmarkEventHandler : IEventHandler<BenchmarkEvent>
     {
-        public Task Handle(BenchmarkMessage notification, CancellationToken cancellationToken)
+        public Task Handle(BenchmarkEvent @event, CancellationToken cancellationToken)
         {
-            BenchmarkContext.Add(notification.Id);
+            BenchmarkContext.Add(@event.Id);
             return Task.CompletedTask;
         }
     }

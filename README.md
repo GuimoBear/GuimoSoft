@@ -40,7 +40,7 @@ Atualmente esta solução contém:
 	GuimoSoft.Cache.Tests: Biblioteca de testes do projeto de Cache;
 	GuimoSoft.Cryptography.Tests: Biblioteca de testes do projeto de Cryptography;
 	GuimoSoft.Logger.Tests: Biblioteca de testes do projeto de Logger;
-	GuimoSoft.Bus.Tests: Biblioteca de testes do projeto de MessageBroker;
+	GuimoSoft.Bus.Tests: Biblioteca de testes do projeto de EventBroker;
 	GuimoSoft.Notifications.Tests: Biblioteca de testes do projeto de Notifications;
 	GuimoSoft.Core.Tests: Biblioteca de testes do projeto Core.
 

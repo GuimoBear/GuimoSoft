@@ -3,16 +3,16 @@ using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Core.Serialization
 {
-    public abstract class TypedSerializer<TMessage> : IDefaultSerializer
+    public abstract class TypedSerializer<TEvent> : IDefaultSerializer
     {
-        protected abstract byte[] Serialize(TMessage message);
+        protected abstract byte[] Serialize(TEvent @event);
 
-        protected abstract TMessage Deserialize(byte[] content);
+        protected abstract TEvent Deserialize(byte[] content);
 
-        public byte[] Serialize(object message)
-            => Serialize((TMessage)message);
+        public byte[] Serialize(object @event)
+            => Serialize((TEvent)@event);
 
-        public object Deserialize(Type messageType, byte[] content)
+        public object Deserialize(Type eventType, byte[] content)
             => Deserialize(content);
     }
 }

@@ -5,9 +5,9 @@ using System.Reflection;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Utils;
 
-namespace GuimoSoft.Bus.Core.Producer
+namespace GuimoSoft.Bus.Core.Listener
 {
-    public sealed class ProducerSwitcherBuilder<TSwitch, TOptions>
+    public sealed class ListenerSwitcherBuilder<TSwitch, TOptions>
         where TSwitch : struct, Enum
         where TOptions : class, new()
     {
@@ -15,9 +15,9 @@ namespace GuimoSoft.Bus.Core.Producer
         private readonly ICollection<Assembly> _assemblies;
         private readonly IServiceCollection _services;
 
-        private readonly List<ProducerBuilder<TOptions>> _builders;
+        private readonly List<ListenerBuilder<TOptions>> _builders;
 
-        internal ProducerSwitcherBuilder(BusName busName, ICollection<Assembly> assemblies, IServiceCollection services)
+        internal ListenerSwitcherBuilder(BusName busName, ICollection<Assembly> assemblies, IServiceCollection services)
         {
             _busName = busName;
             _assemblies = assemblies;
@@ -25,14 +25,14 @@ namespace GuimoSoft.Bus.Core.Producer
             _builders = new();
         }
 
-        public ProducerBuilder<TOptions> When(TSwitch @switch)
+        public ListenerBuilder<TOptions> When(TSwitch @switch)
         {
-            var builder = new ProducerBuilder<TOptions>(_busName, @switch, _assemblies, _services);
+            var builder = new ListenerBuilder<TOptions>(_busName, @switch, _assemblies, _services);
             _builders.Add(builder);
             return builder;
         }
 
-        public ProducerSwitcherBuilder<TSwitch, TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        public ListenerSwitcherBuilder<TSwitch, TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
         {
             if (assemblies is not null)
                 foreach (var assembly in assemblies)

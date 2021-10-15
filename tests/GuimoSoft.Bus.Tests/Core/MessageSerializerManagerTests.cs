@@ -6,12 +6,12 @@ using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core
 {
-    public class MessageSerializerManagerTests
+    public class EventSerializerManagerTests
     {
         [Fact]
         public void When_SetDefaultSerializerWithNullSerializer_Then_ThrowArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => MessageSerializerManager.Instance.SetDefaultSerializer(null));
+            Assert.Throws<ArgumentNullException>(() => EventSerializerManager.Instance.SetDefaultSerializer(null));
         }
 
         [Fact]
@@ -19,36 +19,36 @@ namespace GuimoSoft.Bus.Tests.Core
         {
             lock (Utils.Lock)
             { 
-                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
-                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+                EventSerializerManager.Instance.GetSerializer(typeof(FakeEvent))
+                    .Should().BeSameAs(JsonEventSerializer.Instance);
 
-                MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
-                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+                EventSerializerManager.Instance.GetSerializer(typeof(OtherFakeEvent))
+                    .Should().BeSameAs(JsonEventSerializer.Instance);
 
-                MessageSerializerManager.Instance.SetDefaultSerializer(FakeDefaultSerializer.Instance);
+                EventSerializerManager.Instance.SetDefaultSerializer(FakeDefaultSerializer.Instance);
 
-                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
+                EventSerializerManager.Instance.GetSerializer(typeof(FakeEvent))
                     .Should().BeSameAs(FakeDefaultSerializer.Instance);
 
-                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
+                EventSerializerManager.Instance.GetSerializer(typeof(FakeEvent))
                     .Should().BeSameAs(FakeDefaultSerializer.Instance);
 
-                MessageSerializerManager.Instance.SetDefaultSerializer(JsonMessageSerializer.Instance);
+                EventSerializerManager.Instance.SetDefaultSerializer(JsonEventSerializer.Instance);
 
-                MessageSerializerManager.Instance.GetSerializer(typeof(FakeMessage))
-                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+                EventSerializerManager.Instance.GetSerializer(typeof(FakeEvent))
+                    .Should().BeSameAs(JsonEventSerializer.Instance);
 
-                MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
-                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+                EventSerializerManager.Instance.GetSerializer(typeof(OtherFakeEvent))
+                    .Should().BeSameAs(JsonEventSerializer.Instance);
 
-                Utils.ResetarMessageSerializerManager();
+                Utils.ResetarEventSerializerManager();
             }
         }
 
         [Fact]
         public void When_AddTypedSerializerWithNullSerializer_Then_ThrowArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => MessageSerializerManager.Instance.AddTypedSerializer<FakeMessage>(null));
+            Assert.Throws<ArgumentNullException>(() => EventSerializerManager.Instance.AddTypedSerializer<FakeEvent>(null));
         }
 
         [Fact]
@@ -56,15 +56,15 @@ namespace GuimoSoft.Bus.Tests.Core
         {
             lock (Utils.Lock)
             {
-                MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
-                    .Should().BeSameAs(JsonMessageSerializer.Instance);
+                EventSerializerManager.Instance.GetSerializer(typeof(OtherFakeEvent))
+                    .Should().BeSameAs(JsonEventSerializer.Instance);
 
-               MessageSerializerManager.Instance.AddTypedSerializer(OtherFakeMessageSerializer.Instance);
+               EventSerializerManager.Instance.AddTypedSerializer(OtherFakeEventSerializer.Instance);
 
-               MessageSerializerManager.Instance.GetSerializer(typeof(OtherFakeMessage))
-                    .Should().BeSameAs(OtherFakeMessageSerializer.Instance);
+               EventSerializerManager.Instance.GetSerializer(typeof(OtherFakeEvent))
+                    .Should().BeSameAs(OtherFakeEventSerializer.Instance);
 
-                Utils.ResetarMessageSerializerManager();
+                Utils.ResetarEventSerializerManager();
             }
         }
     }

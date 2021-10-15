@@ -8,20 +8,20 @@ using GuimoSoft.Bus.Core.Interfaces;
 
 namespace GuimoSoft.Bus.Core.Internal
 {
-    internal class ProducerManager : IProducerManager
+    internal class DispatcherManager : IDispatcherManager
     {
         private readonly object _lock = new();
         private readonly IServiceCollection _services;
 
         private readonly ICollection<(BusName Bus, Type ProducerType)> _producerTypes;
 
-        public ProducerManager(IServiceCollection services)
+        public DispatcherManager(IServiceCollection services)
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
             _producerTypes = new List<(BusName Bus, Type ProducerType)>();
         }
 
-        public void Add<BusProducer>(BusName busName) where BusProducer : class, IBusMessageProducer
+        public void Add<BusProducer>(BusName busName) where BusProducer : class, IBusEventDispatcher
         {
             lock (_lock)
             {
@@ -35,10 +35,10 @@ namespace GuimoSoft.Bus.Core.Internal
             }
         }
 
-        public IBusMessageProducer GetProducer(BusName busName, IServiceProvider services)
+        public IBusEventDispatcher GetDispatcher(BusName busName, IServiceProvider services)
         {
             var producerType = _producerTypes.First(x => x.Bus == busName).ProducerType;
-            return services.GetRequiredService(producerType) as IBusMessageProducer;
+            return services.GetRequiredService(producerType) as IBusEventDispatcher;
         }
     }
 }

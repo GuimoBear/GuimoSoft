@@ -26,7 +26,7 @@
         "RSA_PASSWORD": "examples-core",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": "true",
+      "dotnetRunEvents": "true",
       "applicationUrl": "http://localhost:5000"
     }
   }

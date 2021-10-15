@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
-    public class KafkaConsumerMessageHandler : IHostedService
+    public sealed class KafkaConsumerEventHandler : IHostedService, IDisposable
     {
         private readonly Lazy<CancellationTokenSource> _lazyCts;
-        private readonly IKafkaMessageConsumerManager _manager;
+        private readonly IKafkaEventConsumerManager _manager;
 
         private Task _kafkaListenner = Task.CompletedTask;
 
-        public KafkaConsumerMessageHandler(IKafkaMessageConsumerManager manager)
+        public KafkaConsumerEventHandler(IKafkaEventConsumerManager manager)
         {
-            _manager = manager;
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _lazyCts = new Lazy<CancellationTokenSource>(() => new CancellationTokenSource());
         }
 
@@ -26,12 +26,17 @@ namespace GuimoSoft.Bus.Kafka.Consumer
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            if (_lazyCts.IsValueCreated)
+            Dispose();
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            if (_lazyCts.IsValueCreated && !_lazyCts.Value.IsCancellationRequested)
             {
                 _lazyCts.Value.Cancel();
-                _kafkaListenner.Wait(cancellationToken);
+                _kafkaListenner.Wait();
             }
-            return Task.CompletedTask;
         }
     }
 }

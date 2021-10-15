@@ -2,11 +2,11 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class SecondFakeMessage : IMessage
+    public class SecondFakeEvent : IEvent
     {
-        public const string TOPIC_NAME = "fake-message";
+        public const string TOPIC_NAME = "fake-event";
 
-        public SecondFakeMessage(string key, string someProperty)
+        public SecondFakeEvent(string key, string someProperty)
         {
             Key = key;
             SomeProperty = someProperty;
@@ -18,10 +18,10 @@ namespace GuimoSoft.Bus.Tests.Fakes
 
         public override bool Equals(object obj)
         {
-            if (obj is FakeMessage message)
+            if (obj is FakeEvent @event)
             {
-                return string.Equals(Key, message.Key) &&
-                       string.Equals(SomeProperty, message.SomeProperty);
+                return string.Equals(Key, @event.Key) &&
+                       string.Equals(SomeProperty, @event.SomeProperty);
             }
             return false;
         }

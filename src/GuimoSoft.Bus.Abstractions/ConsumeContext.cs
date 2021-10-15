@@ -18,21 +18,21 @@ namespace GuimoSoft.Bus.Abstractions
             CancellationToken = cancellationToken;
         }
 
-        public abstract object GetMessage();
+        public abstract object GeTEvent();
     }
 
-    public sealed class ConsumeContext<TMessage> : ConsumeContextBase
-        where TMessage : IMessage
+    public sealed class ConsumeContext<TEvent> : ConsumeContextBase
+        where TEvent : IEvent
     {
-        public TMessage Message { get; }
+        public TEvent Event { get; }
 
-        public ConsumeContext(TMessage message, IServiceProvider services, ConsumeInformations informations, CancellationToken cancellationToken)
+        public ConsumeContext(TEvent @event, IServiceProvider services, ConsumeInformations informations, CancellationToken cancellationToken)
             : base(services, informations, cancellationToken)
         {
-            Message = message;
+            Event = @event;
         }
 
-        public override object GetMessage()
-            => Message;
+        public override object GeTEvent()
+            => Event;
     }
 }

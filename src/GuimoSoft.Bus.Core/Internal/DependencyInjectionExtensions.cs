@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Abstractions;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GuimoSoft.Bus.Core.Internal
 {
@@ -19,42 +21,65 @@ namespace GuimoSoft.Bus.Core.Internal
                 if (unregisteredAssemblies.Count > 0)
                 {
                     services.AddMediatR(unregisteredAssemblies.ToArray());
-                    DiscoveryAndRegisterTypedExceptionMessageHandlers(unregisteredAssemblies);
-                    DiscoveryAndRegisterTypedLogMessageHandlers(unregisteredAssemblies);
+                    services.RegisterEventHandlers(unregisteredAssemblies);
+                    DiscoveryAndRegisterTypedExceptionEventHandlers(unregisteredAssemblies);
+                    DiscoveryAndRegisterTypedLogEventHandlers(unregisteredAssemblies);
                     unregisteredAssemblies.ForEach(registeredAssemblies.Add);
                 }
                 return services;
             }
         }
 
-        private static void DiscoveryAndRegisterTypedExceptionMessageHandlers(IEnumerable<Assembly> assemblies)
+        private static void DiscoveryAndRegisterTypedExceptionEventHandlers(IEnumerable<Assembly> assemblies)
         {
-            var registeredBusTypedExceptionMessages = GetTypesFromGenericNotificationHandlers(assemblies, typeof(BusTypedExceptionMessage<>));
-            var registeredExceptionHAndlerTypes = Singletons.GetBusTypedExceptionMessageContainingAnHandlerCollection();
+            var registeredBusTypedExceptionEvents = GetTypesFromGenericNotificationHandlers(assemblies, typeof(BusTypedExceptionEvent<>));
+            var registeredExceptionHAndlerTypes = Singletons.GetBusTypedExceptionEventContainingAnHandlerCollection();
 
-            registeredBusTypedExceptionMessages
-                .Where(messageType => !registeredExceptionHAndlerTypes.Contains(messageType))
+            registeredBusTypedExceptionEvents
+                .Where(eventType => !registeredExceptionHAndlerTypes.Contains(eventType))
                 .ToList()
-                .ForEach(messageType =>
+                .ForEach(eventType =>
                 {
-                    _ = DelegateCache.GetOrAddBusLogMessageFactory(messageType);
-                    registeredExceptionHAndlerTypes.Add(messageType);
+                    _ = DelegateCache.GetOrAddBusLogEventFactory(eventType);
+                    registeredExceptionHAndlerTypes.Add(eventType);
                 });
         }
 
-        private static void DiscoveryAndRegisterTypedLogMessageHandlers(IEnumerable<Assembly> assemblies)
+        private static void DiscoveryAndRegisterTypedLogEventHandlers(IEnumerable<Assembly> assemblies)
         {
-            var registeredBusTypedLogMessages = GetTypesFromGenericNotificationHandlers(assemblies, typeof(BusTypedLogMessage<>));
-            var registeredLogHAndlerTypes = Singletons.GetBusTypedLogMessageContainingAnHandlerCollection();
+            var registeredBusTypedLogEvents = GetTypesFromGenericNotificationHandlers(assemblies, typeof(BusTypedLogEvent<>));
+            var registeredLogHAndlerTypes = Singletons.GetBusTypedLogEventContainingAnHandlerCollection();
 
-            registeredBusTypedLogMessages
-                .Where(messageType => !registeredLogHAndlerTypes.Contains(messageType))
+            registeredBusTypedLogEvents
+                .Where(eventType => !registeredLogHAndlerTypes.Contains(eventType))
                 .ToList()
-                .ForEach(messageType =>
+                .ForEach(eventType =>
                 {
-                    _ = DelegateCache.GetOrAddBusLogMessageFactory(messageType);
-                    registeredLogHAndlerTypes.Add(messageType);
+                    _ = DelegateCache.GetOrAddBusLogEventFactory(eventType);
+                    registeredLogHAndlerTypes.Add(eventType);
                 });
+        }
+
+        private static void RegisterEventHandlers(this IServiceCollection services, IEnumerable<Assembly> assemblies)
+        {
+            foreach (var assembly in assemblies)
+                RegisterHandlersIntoAssembly(services, assembly);
+        }
+
+        private static void RegisterHandlersIntoAssembly(IServiceCollection services, Assembly assembly)
+        {
+            var events = GeteventTypesIntoAssembly(assembly);
+            foreach (var @event in events)
+            {
+                var eventDispatcherMiddlewareType = typeof(EventDispatcherMiddleware<>).MakeGenericType(@event);
+                if (!services.Any(sd => sd.ImplementationType == eventDispatcherMiddlewareType))
+                {
+                    var dispatcherInstance = Activator.CreateInstance(eventDispatcherMiddlewareType);
+                    foreach (var handlerType in (dispatcherInstance as EventDispatcherMiddlewareBase).HandlerTypes)
+                        services.TryAddTransient(handlerType);
+                    services.AddSingleton(eventDispatcherMiddlewareType, dispatcherInstance);
+                }
+            }
         }
 
         private static List<Type> GetTypesFromGenericNotificationHandlers(IEnumerable<Assembly> assemblies, Type genericNotificationTypeDefinition)
@@ -65,10 +90,17 @@ namespace GuimoSoft.Bus.Core.Internal
                 .Where(intr => intr.IsGenericType &&
                                intr.GetGenericTypeDefinition().Equals(typeof(INotificationHandler<>)))
                 .Select(handler => handler.GetGenericArguments()[0])
-                .Where(messageType => messageType.IsGenericType &&
-                                      messageType.GetGenericTypeDefinition().Equals(genericNotificationTypeDefinition))
-                .Select(messageType => messageType.GetGenericArguments()[0])
+                .Where(eventType => eventType.IsGenericType &&
+                                      eventType.GetGenericTypeDefinition().Equals(genericNotificationTypeDefinition))
+                .Select(eventType => eventType.GetGenericArguments()[0])
                 .ToList();
+        }
+
+        private static IEnumerable<Type> GeteventTypesIntoAssembly(Assembly assembly)
+        {
+            return assembly
+                .GetTypes()
+                .Where(type => type.GetInterfaces().Any(@int => @int.Equals(typeof(IEvent))));
         }
     }
 }

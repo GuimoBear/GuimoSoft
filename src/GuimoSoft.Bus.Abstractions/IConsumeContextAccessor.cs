@@ -1,7 +1,7 @@
 ﻿namespace GuimoSoft.Bus.Abstractions
 {
-    public interface IConsumeContextAccessor<TMessage> where TMessage : IMessage
+    public interface IConsumeContextAccessor<TEvent> where TEvent : IEvent
     {
-        ConsumeContext<TMessage> Context { get; set; }
+        ConsumeContext<TEvent> Context { get; set; }
     }
 }

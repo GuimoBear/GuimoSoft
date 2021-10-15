@@ -1,6 +1,6 @@
 ﻿namespace GuimoSoft.Bus.Core.Logs.Builder.Stages
 {
-    public interface IEndpointAfterMessageReceivedStage
+    public interface IEndpointAfterEventReceivedStage
     {
         IWriteStage FromEndpoint(string endpoint);
     }

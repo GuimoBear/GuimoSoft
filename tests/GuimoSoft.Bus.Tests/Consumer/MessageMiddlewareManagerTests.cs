@@ -11,44 +11,44 @@ using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {
-    public class MessageMiddlewareManagerTests
+    public class EventMiddlewareManagerTests
     {
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Se_RegistrarSemMetodoDeFabrica_Entao_TipoEhRegistradoNaCollection()
+        public void Dado_UmFakeEventMiddleware_Se_RegistrarSemMetodoDeFabrica_Entao_TipoEhRegistradoNaCollection()
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakeMessageMiddleware>()
+                prov.GetService<FakeEventMiddleware>()
                     .Should().NotBeNull();
             }
         }
 
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Se_RegistrarComMetodoDeFabrica_Entao_TipoEhRegistradoNaCollection()
+        public void Dado_UmFakeEventMiddleware_Se_RegistrarComMetodoDeFabrica_Entao_TipoEhRegistradoNaCollection()
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
 
             bool factoryMethodExecuted = false;
-            Func<IServiceProvider, FakeMessageMiddleware> factory =
+            Func<IServiceProvider, FakeEventMiddleware> factory =
                 prov =>
                 {
                     factoryMethodExecuted = true;
-                    return new FakeMessageMiddleware();
+                    return new FakeEventMiddleware();
                 };
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakeMessageMiddleware>()
+                prov.GetService<FakeEventMiddleware>()
                     .Should().NotBeNull();
 
                 factoryMethodExecuted
@@ -57,36 +57,36 @@ namespace GuimoSoft.Bus.Tests.Consumer
         }
 
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Se_RegistrarComMetodoDeFabricaDefault_Entao_TipoEhRegistradoNaCollection()
+        public void Dado_UmFakeEventMiddleware_Se_RegistrarComMetodoDeFabricaDefault_Entao_TipoEhRegistradoNaCollection()
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, default(Func<IServiceProvider, FakeMessageMiddleware>), ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, default(Func<IServiceProvider, FakeEventMiddleware>), ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakeMessageMiddleware>()
+                prov.GetService<FakeEventMiddleware>()
                     .Should().NotBeNull();
             }
         }
 
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Se_RegistrarSemMetodoDeFabricaETentarAdicionaloNovamente_Entao_EstouraExcecaoNaSegundaTentativa()
+        public void Dado_UmFakeEventMiddleware_Se_RegistrarSemMetodoDeFabricaETentarAdicionaloNovamente_Entao_EstouraExcecaoNaSegundaTentativa()
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
 
-            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton))
-                .Message.Should().Be($"Não foi possível registrar o middleware do tipo '{typeof(FakeMessageMiddleware).FullName}'");
+            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton))
+                .Message.Should().Be($"Não foi possível registrar o middleware do tipo '{typeof(FakeEventMiddleware).FullName}'");
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakeMessageMiddleware>()
+                prov.GetService<FakeEventMiddleware>()
                     .Should().NotBeNull();
             }
         }
@@ -96,74 +96,74 @@ namespace GuimoSoft.Bus.Tests.Consumer
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
 
-            serviceCollection.AddSingleton<IMessageMiddlewareExecutorProvider>(sut);
+            serviceCollection.AddSingleton<IEventMiddlewareExecutorProvider>(sut);
             serviceCollection.AddSingleton(typeof(IConsumeContextAccessor<>), typeof(ConsumeContextAccessor<>));
             serviceCollection.AddSingleton(typeof(ConsumeContextAccessorInitializerMiddleware<>));
 
-            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareOne>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
-            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareTwo>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
-            sut.Register<FakePipelineMessage, FakePipelineMessageMiddlewareThree>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakePipelineEvent, FakePipelineEventMiddlewareOne>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakePipelineEvent, FakePipelineEventMiddlewareTwo>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
+            sut.Register<FakePipelineEvent, FakePipelineEventMiddlewareThree>(BusName.Kafka, ServerName.Default, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakePipelineMessageMiddlewareOne>()
+                prov.GetService<FakePipelineEventMiddlewareOne>()
                     .Should().NotBeNull();
-                prov.GetService<FakePipelineMessageMiddlewareTwo>()
+                prov.GetService<FakePipelineEventMiddlewareTwo>()
                     .Should().NotBeNull();
-                prov.GetService<FakePipelineMessageMiddlewareThree>()
+                prov.GetService<FakePipelineEventMiddlewareThree>()
                     .Should().NotBeNull();
 
-                var executorProvider = prov.GetService<IMessageMiddlewareExecutorProvider>();
+                var executorProvider = prov.GetService<IEventMiddlewareExecutorProvider>();
 
                 executorProvider
                     .Should().NotBeNull();
 
-                var pipeline = executorProvider.GetPipeline(BusName.Kafka, ServerName.Default, typeof(FakePipelineMessage));
+                var pipeline = executorProvider.GetPipeline(BusName.Kafka, ServerName.Default, typeof(FakePipelineEvent));
 
                 pipeline
                     .Should().NotBeNull();
 
-                await pipeline.Execute(new FakePipelineMessage(FakePipelineMessageMiddlewareOne.Name), prov, new ConsumeInformations(BusName.Kafka, ServerName.Default, "a"), CancellationToken.None);
+                await pipeline.Execute(new FakePipelineEvent(FakePipelineEventMiddlewareOne.Name), prov, new ConsumeInformations(BusName.Kafka, ServerName.Default, "a"), CancellationToken.None);
             }
         }
 
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Quando_ForRegistradoMetodoDeFabricaESemFabrica_Entao_MetodoDeFabricaSeraRequisitadaApenasUmaVez()
+        public void Dado_UmFakeEventMiddleware_Quando_ForRegistradoMetodoDeFabricaESemFabrica_Entao_MetodoDeFabricaSeraRequisitadaApenasUmaVez()
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
             bool factoryMethodExecuted = false;
-            Func<IServiceProvider, FakeMessageMiddleware> factory =
+            Func<IServiceProvider, FakeEventMiddleware> factory =
                 prov =>
                 {
                     factoryMethodExecuted = true;
-                    return new FakeMessageMiddleware();
+                    return new FakeEventMiddleware();
                 };
 
             bool factoryTwoMethodExecuted = false;
-            Func<IServiceProvider, FakeMessageThrowExceptionMiddleware> factoryTwo =
+            Func<IServiceProvider, FakeEventThrowExceptionMiddleware> factoryTwo =
                 prov =>
                 {
                     factoryTwoMethodExecuted = true;
-                    return new FakeMessageThrowExceptionMiddleware();
+                    return new FakeEventThrowExceptionMiddleware();
                 };
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
 
-            sut.Register<FakeMessage, FakeMessageThrowExceptionMiddleware>(BusName.Kafka, ServerName.Default, factoryTwo, ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventThrowExceptionMiddleware>(BusName.Kafka, ServerName.Default, factoryTwo, ServiceLifetime.Singleton);
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakeMessageMiddleware>()
+                prov.GetService<FakeEventMiddleware>()
                     .Should().NotBeNull();
 
                 factoryMethodExecuted
                     .Should().BeTrue();
 
-                prov.GetService<FakeMessageThrowExceptionMiddleware>()
+                prov.GetService<FakeEventThrowExceptionMiddleware>()
                     .Should().NotBeNull();
 
                 factoryTwoMethodExecuted
@@ -172,35 +172,35 @@ namespace GuimoSoft.Bus.Tests.Consumer
         }
 
         [Fact]
-        public void Dado_UmFakeMessageMiddleware_Se_RegistrarComMetodoDeFabricaETentarAdicionaloNovamente_Entao_EstouraExcecaoNaSegundaTentativa()
+        public void Dado_UmFakeEventMiddleware_Se_RegistrarComMetodoDeFabricaETentarAdicionaloNovamente_Entao_EstouraExcecaoNaSegundaTentativa()
         {
             var serviceCollection = new ServiceCollection();
 
-            var sut = new MessageMiddlewareManager(serviceCollection);
+            var sut = new EventMiddlewareManager(serviceCollection);
             bool factoryMethodExecuted = false;
-            Func<IServiceProvider, FakeMessageMiddleware> factory =
+            Func<IServiceProvider, FakeEventMiddleware> factory =
                 prov =>
                 {
                     factoryMethodExecuted = true;
-                    return new FakeMessageMiddleware();
+                    return new FakeEventMiddleware();
                 };
 
             bool factoryTwoMethodExecuted = false;
-            Func<IServiceProvider, FakeMessageMiddleware> factoryTwo =
+            Func<IServiceProvider, FakeEventMiddleware> factoryTwo =
                 prov =>
                 {
                     factoryTwoMethodExecuted = true;
-                    return new FakeMessageMiddleware();
+                    return new FakeEventMiddleware();
                 };
 
-            sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
+            sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, factory, ServiceLifetime.Singleton);
 
-            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeMessage, FakeMessageMiddleware>(BusName.Kafka, ServerName.Default, factoryTwo, ServiceLifetime.Singleton))
-                .Message.Should().Be($"Não foi possível registrar o middleware do tipo '{typeof(FakeMessageMiddleware).FullName}'");
+            Assert.Throws<InvalidOperationException>(() => sut.Register<FakeEvent, FakeEventMiddleware>(BusName.Kafka, ServerName.Default, factoryTwo, ServiceLifetime.Singleton))
+                .Message.Should().Be($"Não foi possível registrar o middleware do tipo '{typeof(FakeEventMiddleware).FullName}'");
 
             using (var prov = serviceCollection.BuildServiceProvider())
             {
-                prov.GetService<FakeMessageMiddleware>()
+                prov.GetService<FakeEventMiddleware>()
                     .Should().NotBeNull();
 
                 factoryMethodExecuted

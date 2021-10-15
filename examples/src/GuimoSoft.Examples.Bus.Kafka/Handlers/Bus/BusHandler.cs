@@ -6,7 +6,7 @@ using GuimoSoft.Logger;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.Bus
 {
-    public class BusHandler : INotificationHandler<BusLogMessage>, INotificationHandler<BusExceptionMessage>
+    public class BusHandler : INotificationHandler<BusLogEvent>, INotificationHandler<BusExceptionEvent>
     {
         private readonly IApiLogger<BusHandler> _logger;
 
@@ -15,7 +15,7 @@ namespace GuimoSoft.Examples.Bus.Kafka.Handlers.Bus
             _logger = logger;
         }
 
-        public Task Handle(BusLogMessage notification, CancellationToken cancellationToken)
+        public Task Handle(BusLogEvent notification, CancellationToken cancellationToken)
         {
             var builder = _logger
                    .ComPropriedade(nameof(notification.Data), notification.Data)
@@ -43,7 +43,7 @@ namespace GuimoSoft.Examples.Bus.Kafka.Handlers.Bus
             return Task.CompletedTask;
         }
 
-        public Task Handle(BusExceptionMessage notification, CancellationToken cancellationToken)
+        public Task Handle(BusExceptionEvent notification, CancellationToken cancellationToken)
         {
             _logger
                 .ComPropriedade(nameof(notification.Data), notification.Data)

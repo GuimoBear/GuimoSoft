@@ -5,9 +5,9 @@ using System.Reflection;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Utils;
 
-namespace GuimoSoft.Bus.Core.Consumer
+namespace GuimoSoft.Bus.Core.Publisher
 {
-    public sealed class ConsumerSwitcherBuilder<TSwitch, TOptions>
+    public sealed class PublisherSwitcherBuilder<TSwitch, TOptions>
         where TSwitch : struct, Enum
         where TOptions : class, new()
     {
@@ -15,9 +15,9 @@ namespace GuimoSoft.Bus.Core.Consumer
         private readonly ICollection<Assembly> _assemblies;
         private readonly IServiceCollection _services;
 
-        private readonly List<ConsumerBuilder<TOptions>> _builders;
+        private readonly List<PublisherBuilder<TOptions>> _builders;
 
-        internal ConsumerSwitcherBuilder(BusName busName, ICollection<Assembly> assemblies, IServiceCollection services)
+        internal PublisherSwitcherBuilder(BusName busName, ICollection<Assembly> assemblies, IServiceCollection services)
         {
             _busName = busName;
             _assemblies = assemblies;
@@ -25,14 +25,14 @@ namespace GuimoSoft.Bus.Core.Consumer
             _builders = new();
         }
 
-        public ConsumerBuilder<TOptions> When(TSwitch @switch)
+        public PublisherBuilder<TOptions> When(TSwitch @switch)
         {
-            var builder = new ConsumerBuilder<TOptions>(_busName, @switch, _assemblies, _services);
+            var builder = new PublisherBuilder<TOptions>(_busName, @switch, _assemblies, _services);
             _builders.Add(builder);
             return builder;
         }
 
-        public ConsumerSwitcherBuilder<TSwitch, TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        public PublisherSwitcherBuilder<TSwitch, TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
         {
             if (assemblies is not null)
                 foreach (var assembly in assemblies)

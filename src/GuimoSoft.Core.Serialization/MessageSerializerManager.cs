@@ -5,12 +5,12 @@ using GuimoSoft.Core.Serialization.Interfaces;
 
 namespace GuimoSoft.Core.Serialization
 {
-    internal sealed class MessageSerializerManager : IMessageSerializerManager
+    internal sealed class EventSerializerManager : IEventSerializerManager
     {
-        internal static readonly MessageSerializerManager Instance
-            = new MessageSerializerManager();
+        internal static readonly EventSerializerManager Instance
+            = new EventSerializerManager();
 
-        private IDefaultSerializer _defaultSerializer = JsonMessageSerializer.Instance;
+        private IDefaultSerializer _defaultSerializer = JsonEventSerializer.Instance;
         private readonly IDictionary<Type, IDefaultSerializer> _typedSerializers
             = new ConcurrentDictionary<Type, IDefaultSerializer>();
 
@@ -19,16 +19,16 @@ namespace GuimoSoft.Core.Serialization
             _defaultSerializer = defaultSerializer ?? throw new ArgumentNullException(nameof(defaultSerializer));
         }
 
-        internal void AddTypedSerializer<TMessage>(TypedSerializer<TMessage> serializer)
+        internal void AddTypedSerializer<TEvent>(TypedSerializer<TEvent> serializer)
         {
             if (serializer is null)
                 throw new ArgumentNullException(nameof(serializer));
-            _typedSerializers[typeof(TMessage)] = serializer;
+            _typedSerializers[typeof(TEvent)] = serializer;
         }
 
-        public IDefaultSerializer GetSerializer(Type messageType)
+        public IDefaultSerializer GetSerializer(Type eventType)
         {
-            if (_typedSerializers.TryGetValue(messageType, out var serializer))
+            if (_typedSerializers.TryGetValue(eventType, out var serializer))
                 return serializer;
             return _defaultSerializer;
         }

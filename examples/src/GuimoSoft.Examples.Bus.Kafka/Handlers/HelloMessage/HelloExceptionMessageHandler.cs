@@ -4,18 +4,18 @@ using System.Threading.Tasks;
 using GuimoSoft.Bus.Core.Logs;
 using GuimoSoft.Logger;
 
-namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloMessage
+namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloEvent
 {
-    public class HelloExceptionMessageHandler : INotificationHandler<BusTypedExceptionMessage<Messages.HelloMessage>>
+    public class HelloExceptionEventHandler : INotificationHandler<BusTypedExceptionEvent<Events.HelloEvent>>
     {
-        private readonly IApiLogger<HelloExceptionMessageHandler> _logger;
+        private readonly IApiLogger<HelloExceptionEventHandler> _logger;
 
-        public HelloExceptionMessageHandler(IApiLogger<HelloExceptionMessageHandler> logger)
+        public HelloExceptionEventHandler(IApiLogger<HelloExceptionEventHandler> logger)
         {
             _logger = logger;
         }
 
-        public Task Handle(BusTypedExceptionMessage<Messages.HelloMessage> notification, CancellationToken cancellationToken)
+        public Task Handle(BusTypedExceptionEvent<Events.HelloEvent> notification, CancellationToken cancellationToken)
         {
             var builder = _logger
                    .ComPropriedade(nameof(notification.Bus), notification.Bus.ToString())

@@ -12,21 +12,21 @@ using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core.Internal
 {
-    public class MessageProducerTests
+    public class EventProducerTests
     {
         public static readonly IEnumerable<object[]> ConstructorInvalidData
             = new List<object[]>
             {
                 new object[] { null, null, null },
-                new object[] { Mock.Of<IProducerManager>(), null, null },
-                new object[] { Mock.Of<IProducerManager>(), Mock.Of<IMessageTypeCache>(), null },
+                new object[] { Mock.Of<IDispatcherManager>(), null, null },
+                new object[] { Mock.Of<IDispatcherManager>(), Mock.Of<IEventTypeCache>(), null },
             };
 
         [Theory]
         [MemberData(nameof(ConstructorInvalidData))]
-        internal void ConstructorShouldThrowIfAnyParameterIsNull(IProducerManager producerManager, IMessageTypeCache messageTypeCache, IServiceProvider services)
+        internal void ConstructorShouldThrowIfAnyParameterIsNull(IDispatcherManager producerManager, IEventTypeCache eventTypeCache, IServiceProvider services)
         {
-            Assert.Throws<ArgumentNullException>(() => new MessageProducer(producerManager, messageTypeCache, services));
+            Assert.Throws<ArgumentNullException>(() => new EventBus(producerManager, eventTypeCache, services));
         }
 
         [Theory]
@@ -35,48 +35,48 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [InlineData("  ")]
         public async Task ProduceAsyncShouldBeThrowArgumentExceptionIfKeyIsNullEmptyOrWriteSpace(string key)
         {
-            var sut = new MessageProducer(Mock.Of<IProducerManager>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IServiceProvider>());
-            await Assert.ThrowsAsync<ArgumentException>(() => sut.ProduceAsync(key, new FakeMessage("", ""), CancellationToken.None));
+            var sut = new EventBus(Mock.Of<IDispatcherManager>(), Mock.Of<IEventTypeCache>(), Mock.Of<IServiceProvider>());
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.Publish(key, new FakeEvent("", ""), CancellationToken.None));
         }
 
         [Fact]
-        public async Task ProduceAsyncShouldBeThrowArgumentNullExceptionIfMessageIsNull()
+        public async Task ProduceAsyncShouldBeThrowArgumentNullExceptionIfEventIsNull()
         {
-            var sut = new MessageProducer(Mock.Of<IProducerManager>(), Mock.Of<IMessageTypeCache>(), Mock.Of<IServiceProvider>());
-            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.ProduceAsync<FakeMessage>(Guid.NewGuid().ToString(), null, CancellationToken.None));
+            var sut = new EventBus(Mock.Of<IDispatcherManager>(), Mock.Of<IEventTypeCache>(), Mock.Of<IServiceProvider>());
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.Publish<FakeEvent>(Guid.NewGuid().ToString(), null, CancellationToken.None));
         }
 
         [Fact]
         public async Task ProduceAsyncShouldGetProduceInformationsGetProducesAndProduce()
         {
-            (BusName Bus, Enum Switch, string Endpoint) expectedPublishParameters = (BusName.Kafka, ServerName.Default, FakeMessage.TOPIC_NAME);
+            (BusName Bus, Enum Switch, string Endpoint) expectedPublishParameters = (BusName.Kafka, ServerName.Default, FakeEvent.TOPIC_NAME);
             var expectedKey = Guid.NewGuid().ToString();
-            var expectedMessage = new FakeMessage("test", "test");
+            var expectedEvent = new FakeEvent("test", "test");
 
-            var moqBusMessageProducer = new Mock<IBusMessageProducer>();
+            var moqBusEventProducer = new Mock<IBusEventDispatcher>();
 
-            var moqProducerManager = new Mock<IProducerManager>();
+            var moqProducerManager = new Mock<IDispatcherManager>();
             moqProducerManager
-                .Setup(x => x.GetProducer(BusName.Kafka, It.IsAny<IServiceProvider>()))
-                .Returns(() => moqBusMessageProducer.Object);
+                .Setup(x => x.GetDispatcher(BusName.Kafka, It.IsAny<IServiceProvider>()))
+                .Returns(() => moqBusEventProducer.Object);
 
-            var moqMessageTypeCache = new Mock<IMessageTypeCache>();
-            moqMessageTypeCache
+            var moqeventTypeCache = new Mock<IEventTypeCache>();
+            moqeventTypeCache
                 .Setup(x => x.Get(It.IsAny<Type>()))
                 .Returns(new List<(BusName BusName, Enum Switch, string Endpoint)> { expectedPublishParameters });
 
-            var sut = new MessageProducer(moqProducerManager.Object, moqMessageTypeCache.Object, Mock.Of<IServiceProvider>());
+            var sut = new EventBus(moqProducerManager.Object, moqeventTypeCache.Object, Mock.Of<IServiceProvider>());
 
-            await sut.ProduceAsync(expectedKey, expectedMessage, CancellationToken.None);
+            await sut.Publish(expectedKey, expectedEvent, CancellationToken.None);
 
-            moqMessageTypeCache
-                .Verify(x => x.Get(typeof(FakeMessage)), Times.Once);
+            moqeventTypeCache
+                .Verify(x => x.Get(typeof(FakeEvent)), Times.Once);
 
             moqProducerManager
-                .Verify(x => x.GetProducer(expectedPublishParameters.Bus, It.IsAny<IServiceProvider>()), Times.Once());
+                .Verify(x => x.GetDispatcher(expectedPublishParameters.Bus, It.IsAny<IServiceProvider>()), Times.Once());
 
-            moqBusMessageProducer
-                .Verify(x => x.ProduceAsync(expectedKey, expectedMessage, expectedPublishParameters.Switch, expectedPublishParameters.Endpoint, CancellationToken.None), Times.Once());
+            moqBusEventProducer
+                .Verify(x => x.Dispatch(expectedKey, expectedEvent, expectedPublishParameters.Switch, expectedPublishParameters.Endpoint, CancellationToken.None), Times.Once());
         }
     }
 }

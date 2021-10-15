@@ -30,92 +30,92 @@ namespace GuimoSoft.Bus.Tests
                     .AddKafkaConsumer(configurer =>
                     {
                         configurer
+                            .WithDefaultSerializer(FakeDefaultSerializer.Instance)
+                            .Listen()
+                                .OfType<FakeEvent>()
+                                .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                .FromEndpoint(FakeEvent.TOPIC_NAME)
+                            .Listen()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                            .Listen()
+                                .OfType<FakePipelineEvent>()
+                                .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Scoped)
+                                .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo(), ServiceLifetime.Singleton)
+                                .FromEndpoint(FakePipelineEvent.TOPIC_NAME)
                             .FromServer(options =>
                             {
                                 options.GroupId = "test";
                                 options.BootstrapServers = "localhost";
                             })
-                            .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                            .Consume()
-                                .OfType<FakeMessage>()
-                                .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                .FromEndpoint(FakeMessage.TOPIC_NAME)
-                            .Consume()
-                                .OfType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                            .Consume()
-                                .OfType<FakePipelineMessage>()
-                                .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Scoped)
-                                .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo(), ServiceLifetime.Singleton)
-                                .FromEndpoint(FakePipelineMessage.TOPIC_NAME)
                             .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
                     })
                     .AddKafkaProducer(configurer =>
                     {
                         configurer
+                            .WithDefaultSerializer(FakeDefaultSerializer.Instance)
+                            .Publish()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
+                            .Publish()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
                             .ToServer(options =>
                             {
                                 options.BootstrapServers = "localhost";
                                 options.Acks = Acks.All;
                             })
-                            .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                            .Produce()
-                                .FromType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
-                            .Produce()
-                                .FromType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
                             .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
                     });
 
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaMessageConsumerManager)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaEventConsumerManager)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IConsumeContextAccessor<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogDispatcher)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumeContextAccessorInitializerMiddleware<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(MediatorPublisherMiddleware<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaConsumerBuilder)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaTopicMessageConsumer)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ImplementationType == typeof(KafkaConsumerMessageHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaTopicEventConsumer)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ImplementationType == typeof(KafkaConsumerEventHandler)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusSerializerManager)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageMiddlewareExecutorProvider)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageMiddlewareRegister)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageTypeCache)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareExecutorProvider)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareRegister)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventTypeCache)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ConsumerConfig>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ProducerConfig>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IMediator)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaProducerBuilder)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageProducer)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventBus)).Should().NotBeNull();
 
-                var messageMiddlewareServiceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageMiddlewareManager));
+                var eventMiddlewareServiceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareManager));
 
-                messageMiddlewareServiceDescriptor
+                eventMiddlewareServiceDescriptor
                     .Should().NotBeNull();
 
-                var messageMiddleware = messageMiddlewareServiceDescriptor.ImplementationInstance as MessageMiddlewareManager;
+                var eventMiddleware = eventMiddlewareServiceDescriptor.ImplementationInstance as EventMiddlewareManager;
 
-                messageMiddleware
+                eventMiddleware
                     .Should().NotBeNull();
 
-                messageMiddleware
-                    .messageMiddlewareTypes
-                    .Should().ContainKey((BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeMessage)));
+                eventMiddleware
+                    .eventMiddlewareTypes
+                    .Should().ContainKey((BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeEvent)));
 
-                messageMiddleware
-                    .messageMiddlewareTypes[(BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeMessage))]
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeEvent))]
                     .Should().NotBeNullOrEmpty();
 
-                messageMiddleware
-                    .messageMiddlewareTypes[(BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeMessage))]
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeEvent))]
                     .First()
-                    .Should().Be(typeof(FakeMessageMiddleware));
+                    .Should().Be(typeof(FakeEventMiddleware));
 
                 var sp = services.BuildServiceProvider(true);
 
-                sp.GetRequiredService<IMessageProducer>();
-                sp.GetRequiredService<IKafkaTopicMessageConsumer>();
+                sp.GetRequiredService<IEventBus>();
+                sp.GetRequiredService<IKafkaTopicEventConsumer>();
             }
         }
 
@@ -141,19 +141,19 @@ namespace GuimoSoft.Bus.Tests
                                     options.BootstrapServers = "localhost";
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Consume()
-                                    .OfType<FakeMessage>()
-                                    .WithMiddleware(_ => new FakeMessageMiddleware())
-                                    .FromEndpoint(FakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<FakePipelineMessage>()
-                                    .WithMiddleware<FakePipelineMessageMiddlewareOne>()
-                                    .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo())
-                                    .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .Listen()
+                                    .OfType<FakeEvent>()
+                                    .WithMiddleware(_ => new FakeEventMiddleware())
+                                    .FromEndpoint(FakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<FakePipelineEvent>()
+                                    .WithMiddleware<FakePipelineEventMiddlewareOne>()
+                                    .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
 
                         switcher
                             .When(ServerName.Host2)
@@ -163,19 +163,19 @@ namespace GuimoSoft.Bus.Tests
                                     options.BootstrapServers = "localhost";
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Consume()
-                                    .OfType<FakeMessage>()
-                                    .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                    .FromEndpoint(FakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<FakePipelineMessage>()
-                                    .WithMiddleware<FakePipelineMessageMiddlewareOne>()
-                                    .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo())
-                                    .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .Listen()
+                                    .OfType<FakeEvent>()
+                                    .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                    .FromEndpoint(FakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<FakePipelineEvent>()
+                                    .WithMiddleware<FakePipelineEventMiddlewareOne>()
+                                    .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
 
                     })
                     .AddKafkaProducerSwitcher<ServerName>(switcher =>
@@ -191,13 +191,13 @@ namespace GuimoSoft.Bus.Tests
                                     options.Acks = Acks.All;
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Produce()
-                                    .FromType<FakeMessage>()
-                                    .ToEndpoint(FakeMessage.TOPIC_NAME)
-                                .Produce()
-                                    .FromType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .ToEndpoint(OtherFakeMessage.TOPIC_NAME);
+                                .Publish()
+                                    .OfType<FakeEvent>()
+                                    .ToEndpoint(FakeEvent.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .ToEndpoint(OtherFakeEvent.TOPIC_NAME);
 
                         switcher
                             .When(ServerName.Host2)
@@ -207,73 +207,73 @@ namespace GuimoSoft.Bus.Tests
                                     options.Acks = Acks.All;
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Produce()
-                                    .FromType<FakeMessage>()
-                                    .ToEndpoint(FakeMessage.TOPIC_NAME)
-                                .Produce()
-                                    .FromType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .ToEndpoint(OtherFakeMessage.TOPIC_NAME);
+                                .Publish()
+                                    .OfType<FakeEvent>()
+                                    .ToEndpoint(FakeEvent.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .ToEndpoint(OtherFakeEvent.TOPIC_NAME);
                     });
 
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaMessageConsumerManager)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaEventConsumerManager)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IConsumeContextAccessor<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogDispatcher)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumeContextAccessorInitializerMiddleware<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(MediatorPublisherMiddleware<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaConsumerBuilder)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaTopicMessageConsumer)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ImplementationType == typeof(KafkaConsumerMessageHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaTopicEventConsumer)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ImplementationType == typeof(KafkaConsumerEventHandler)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusSerializerManager)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageMiddlewareExecutorProvider)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageMiddlewareRegister)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageTypeCache)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareExecutorProvider)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareRegister)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventTypeCache)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ConsumerConfig>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ProducerConfig>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IMediator)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaProducerBuilder)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageProducer)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventBus)).Should().NotBeNull();
 
-                var messageMiddlewareServiceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(IMessageMiddlewareManager));
+                var eventMiddlewareServiceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareManager));
 
-                messageMiddlewareServiceDescriptor
+                eventMiddlewareServiceDescriptor
                     .Should().NotBeNull();
 
-                var messageMiddleware = messageMiddlewareServiceDescriptor.ImplementationInstance as MessageMiddlewareManager;
+                var eventMiddleware = eventMiddlewareServiceDescriptor.ImplementationInstance as EventMiddlewareManager;
 
-                messageMiddleware
+                eventMiddleware
                     .Should().NotBeNull();
 
-                messageMiddleware
-                    .messageMiddlewareTypes
-                    .Should().ContainKey((BusName.Kafka, ServerName.Host1, typeof(FakeMessage)));
+                eventMiddleware
+                    .eventMiddlewareTypes
+                    .Should().ContainKey((BusName.Kafka, ServerName.Host1, typeof(FakeEvent)));
 
-                messageMiddleware
-                    .messageMiddlewareTypes
-                    .Should().ContainKey((BusName.Kafka, ServerName.Host2, typeof(FakeMessage)));
+                eventMiddleware
+                    .eventMiddlewareTypes
+                    .Should().ContainKey((BusName.Kafka, ServerName.Host2, typeof(FakeEvent)));
 
-                messageMiddleware
-                    .messageMiddlewareTypes[(BusName.Kafka, ServerName.Host1, typeof(FakeMessage))]
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, ServerName.Host1, typeof(FakeEvent))]
                     .Should().NotBeNullOrEmpty();
 
-                messageMiddleware
-                    .messageMiddlewareTypes[(BusName.Kafka, ServerName.Host2, typeof(FakeMessage))]
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, ServerName.Host2, typeof(FakeEvent))]
                     .Should().NotBeNullOrEmpty();
 
-                messageMiddleware
-                    .messageMiddlewareTypes[(BusName.Kafka, ServerName.Host1, typeof(FakeMessage))]
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, ServerName.Host1, typeof(FakeEvent))]
                     .First()
-                    .Should().Be(typeof(FakeMessageMiddleware));
+                    .Should().Be(typeof(FakeEventMiddleware));
 
-                messageMiddleware
-                    .messageMiddlewareTypes[(BusName.Kafka, ServerName.Host2, typeof(FakeMessage))]
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, ServerName.Host2, typeof(FakeEvent))]
                     .First()
-                    .Should().Be(typeof(FakeMessageMiddleware));
+                    .Should().Be(typeof(FakeEventMiddleware));
 
                 var sp = services.BuildServiceProvider(true);
 
-                sp.GetRequiredService<IMessageProducer>();
-                sp.GetRequiredService<IKafkaTopicMessageConsumer>();
+                sp.GetRequiredService<IEventBus>();
+                sp.GetRequiredService<IKafkaTopicEventConsumer>();
             }
         }
 
@@ -291,19 +291,19 @@ namespace GuimoSoft.Bus.Tests
                     {
                         configurer
                             .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                            .Consume()
-                                .OfType<FakeMessage>()
-                                .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                .FromEndpoint(FakeMessage.TOPIC_NAME)
-                            .Consume()
-                                .OfType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                            .Consume()
-                                .OfType<FakePipelineMessage>()
-                                .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Scoped)
-                                .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo(), ServiceLifetime.Singleton)
-                                .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                            .Listen()
+                                .OfType<FakeEvent>()
+                                .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                .FromEndpoint(FakeEvent.TOPIC_NAME)
+                            .Listen()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                            .Listen()
+                                .OfType<FakePipelineEvent>()
+                                .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Scoped)
+                                .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo(), ServiceLifetime.Singleton)
+                                .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
                     });
                 });
                 Utils.ResetarSingletons();
@@ -320,36 +320,36 @@ namespace GuimoSoft.Bus.Tests
                                     options.BootstrapServers = "localhost";
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Consume()
-                                    .OfType<FakeMessage>()
-                                    .WithMiddleware(_ => new FakeMessageMiddleware())
-                                    .FromEndpoint(FakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<FakePipelineMessage>()
-                                    .WithMiddleware<FakePipelineMessageMiddlewareOne>()
-                                    .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo())
-                                    .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .Listen()
+                                    .OfType<FakeEvent>()
+                                    .WithMiddleware(_ => new FakeEventMiddleware())
+                                    .FromEndpoint(FakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<FakePipelineEvent>()
+                                    .WithMiddleware<FakePipelineEventMiddlewareOne>()
+                                    .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
 
                         switcher
                             .When(ServerName.Host2)
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Consume()
-                                    .OfType<FakeMessage>()
-                                    .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                    .FromEndpoint(FakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<FakePipelineMessage>()
-                                    .WithMiddleware<FakePipelineMessageMiddlewareOne>()
-                                    .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo())
-                                    .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .Listen()
+                                    .OfType<FakeEvent>()
+                                    .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                    .FromEndpoint(FakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<FakePipelineEvent>()
+                                    .WithMiddleware<FakePipelineEventMiddlewareOne>()
+                                    .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
                     });
                 });
                 Utils.ResetarSingletons();
@@ -370,14 +370,14 @@ namespace GuimoSoft.Bus.Tests
                     {
                         configurer
                             .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                            .Produce()
-                                .FromType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
-                            .Produce()
-                                .FromType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME);
+                            .Publish()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
+                            .Publish()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .ToEndpoint(OtherFakeEvent.TOPIC_NAME);
                     });
                 });
                 Utils.ResetarSingletons();
@@ -389,13 +389,13 @@ namespace GuimoSoft.Bus.Tests
                         switcher
                             .When(ServerName.Host1)
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Produce()
-                                    .FromType<FakeMessage>()
-                                    .ToEndpoint(FakeMessage.TOPIC_NAME)
-                                .Produce()
-                                    .FromType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .ToEndpoint(OtherFakeMessage.TOPIC_NAME);
+                                .Publish()
+                                    .OfType<FakeEvent>()
+                                    .ToEndpoint(FakeEvent.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .ToEndpoint(OtherFakeEvent.TOPIC_NAME);
 
                         switcher
                             .When(ServerName.Host2)
@@ -405,13 +405,13 @@ namespace GuimoSoft.Bus.Tests
                                     options.Acks = Acks.All;
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Produce()
-                                    .FromType<FakeMessage>()
-                                    .ToEndpoint(FakeMessage.TOPIC_NAME)
-                                .Produce()
-                                    .FromType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .ToEndpoint(OtherFakeMessage.TOPIC_NAME);
+                                .Publish()
+                                    .OfType<FakeEvent>()
+                                    .ToEndpoint(FakeEvent.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .ToEndpoint(OtherFakeEvent.TOPIC_NAME);
                     });
                 });
                 Utils.ResetarSingletons();
@@ -437,19 +437,19 @@ namespace GuimoSoft.Bus.Tests
                                 options.BootstrapServers = "localhost";
                             })
                             .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                            .Consume()
-                                .OfType<FakeMessage>()
-                                .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                .FromEndpoint(FakeMessage.TOPIC_NAME)
-                            .Consume()
-                                .OfType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                            .Consume()
-                                .OfType<FakePipelineMessage>()
-                                .WithMiddleware<FakePipelineMessageMiddlewareOne>(ServiceLifetime.Scoped)
-                                .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo(), ServiceLifetime.Singleton)
-                                .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                            .Listen()
+                                .OfType<FakeEvent>()
+                                .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                .FromEndpoint(FakeEvent.TOPIC_NAME)
+                            .Listen()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                            .Listen()
+                                .OfType<FakePipelineEvent>()
+                                .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Scoped)
+                                .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo(), ServiceLifetime.Singleton)
+                                .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
                     });
 
                     services.AddKafkaConsumer(configurer =>
@@ -476,19 +476,19 @@ namespace GuimoSoft.Bus.Tests
                                     options.BootstrapServers = "localhost";
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Consume()
-                                    .OfType<FakeMessage>()
-                                    .WithMiddleware(_ => new FakeMessageMiddleware())
-                                    .FromEndpoint(FakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<FakePipelineMessage>()
-                                    .WithMiddleware<FakePipelineMessageMiddlewareOne>()
-                                    .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo())
-                                    .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .Listen()
+                                    .OfType<FakeEvent>()
+                                    .WithMiddleware(_ => new FakeEventMiddleware())
+                                    .FromEndpoint(FakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<FakePipelineEvent>()
+                                    .WithMiddleware<FakePipelineEventMiddlewareOne>()
+                                    .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
 
                         switcher
                             .When(ServerName.Host2)
@@ -498,19 +498,19 @@ namespace GuimoSoft.Bus.Tests
                                     options.BootstrapServers = "localhost";
                                 })
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Consume()
-                                    .OfType<FakeMessage>()
-                                    .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                    .FromEndpoint(FakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .FromEndpoint(OtherFakeMessage.TOPIC_NAME)
-                                .Consume()
-                                    .OfType<FakePipelineMessage>()
-                                    .WithMiddleware<FakePipelineMessageMiddlewareOne>()
-                                    .WithMiddleware(_ => new FakePipelineMessageMiddlewareTwo())
-                                    .FromEndpoint(FakePipelineMessage.TOPIC_NAME);
+                                .Listen()
+                                    .OfType<FakeEvent>()
+                                    .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                    .FromEndpoint(FakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .FromEndpoint(OtherFakeEvent.TOPIC_NAME)
+                                .Listen()
+                                    .OfType<FakePipelineEvent>()
+                                    .WithMiddleware<FakePipelineEventMiddlewareOne>()
+                                    .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
                     });
 
                     services.AddKafkaConsumerSwitcher<ServerName>(switcher =>
@@ -537,10 +537,10 @@ namespace GuimoSoft.Bus.Tests
                 {
                     switcher
                         .When(ServerName.Host3)
-                            .Consume()
-                                .OfType<FakeMessage>()
-                                .WithMiddleware<FakeMessageMiddleware>(ServiceLifetime.Transient)
-                                .FromEndpoint(FakeMessage.TOPIC_NAME)
+                            .Listen()
+                                .OfType<FakeEvent>()
+                                .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                .FromEndpoint(FakeEvent.TOPIC_NAME)
                             .FromServer(options =>
                             {
                                 options.GroupId = "test";
@@ -566,14 +566,14 @@ namespace GuimoSoft.Bus.Tests
                     {
                         configurer
                             .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                            .Produce()
-                                .FromType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
-                            .Produce()
-                                .FromType<OtherFakeMessage>()
-                                .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
+                            .Publish()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
+                            .Publish()
+                                .OfType<OtherFakeEvent>()
+                                .WithSerializer(OtherFakeEventSerializer.Instance)
+                                .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
                             .ToServer(options =>
                             {
                                 options.BootstrapServers = "localhost";
@@ -600,13 +600,13 @@ namespace GuimoSoft.Bus.Tests
                         switcher
                             .When(ServerName.Host1)
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Produce()
-                                    .FromType<FakeMessage>()
-                                    .ToEndpoint(FakeMessage.TOPIC_NAME)
-                                .Produce()
-                                    .FromType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<FakeEvent>()
+                                    .ToEndpoint(FakeEvent.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
                                 .ToServer(options =>
                                 {
                                     options.BootstrapServers = "localhost";
@@ -616,13 +616,13 @@ namespace GuimoSoft.Bus.Tests
                         switcher
                             .When(ServerName.Host2)
                                 .WithDefaultSerializer(FakeDefaultSerializer.Instance)
-                                .Produce()
-                                    .FromType<FakeMessage>()
-                                    .ToEndpoint(FakeMessage.TOPIC_NAME)
-                                .Produce()
-                                    .FromType<OtherFakeMessage>()
-                                    .WithSerializer(OtherFakeMessageSerializer.Instance)
-                                    .ToEndpoint(OtherFakeMessage.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<FakeEvent>()
+                                    .ToEndpoint(FakeEvent.TOPIC_NAME)
+                                .Publish()
+                                    .OfType<OtherFakeEvent>()
+                                    .WithSerializer(OtherFakeEventSerializer.Instance)
+                                    .ToEndpoint(OtherFakeEvent.TOPIC_NAME)
                                 .ToServer(options =>
                                 {
                                     options.BootstrapServers = "localhost";
@@ -654,9 +654,9 @@ namespace GuimoSoft.Bus.Tests
                 {
                     switcher
                         .When(ServerName.Host3)
-                            .Produce()
-                                .FromType<FakeMessage>()
-                                .ToEndpoint(FakeMessage.TOPIC_NAME)
+                            .Publish()
+                                .OfType<FakeEvent>()
+                                .ToEndpoint(FakeEvent.TOPIC_NAME)
                             .ToServer(options =>
                             {
                                 options.BootstrapServers = "localhost";

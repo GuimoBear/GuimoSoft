@@ -5,7 +5,7 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Core.Logs
 {
-    public class BusLogMessage : INotification
+    public class BusExceptionEvent : INotification
     {
         public BusName Bus { get; internal init; }
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
@@ -17,10 +17,12 @@ namespace GuimoSoft.Bus.Core.Logs
         public string Message { get; internal init; }
         public BusLogLevel Level { get; internal init; }
         public IDictionary<string, object> Data { get; } = new Dictionary<string, object>();
+        public Exception Exception { get; internal init; }
 
-        public BusLogMessage(Enum @switch)
+        public BusExceptionEvent(Enum @switch, Exception exception)
         {
             Switch = ServerName.Default.Equals(@switch) ? null : @switch;
+            Exception = exception;
         }
     }
 }

@@ -4,19 +4,19 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Core.Interfaces
 {
-    internal interface IMessageTypeCache
+    internal interface IEventTypeCache
     {
         void Add(BusName busName, Finality finality, Enum @switch, Type type, string endpoint);
 
         IEnumerable<Enum> GetSwitchers(BusName busName, Finality finality);
         IEnumerable<string> GetEndpoints(BusName busName, Finality finality, Enum @switch);
 
-        IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, IMessage message);
+        IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, IEvent @event);
 
-        IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, Type messageType);
+        IEnumerable<string> Get(BusName busName, Finality finality, Enum @switch, Type eventType);
 
         IReadOnlyCollection<Type> Get(BusName busName, Finality finality, Enum @switch, string endpoint);
 
-        IEnumerable<(BusName BusName, Enum Switch, string Endpoint)> Get(Type messageType);
+        IEnumerable<(BusName BusName, Enum Switch, string Endpoint)> Get(Type eventType);
     }
 }

@@ -16,15 +16,15 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
             {
                 var sut = new BusSerializerManager();
 
-                sut.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakePipelineMessage))
-                    .Should().BeSameAs(MessageSerializerManager.Instance.GetSerializer(typeof(FakePipelineMessage)));
+                sut.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakePipelineEvent))
+                    .Should().BeSameAs(EventSerializerManager.Instance.GetSerializer(typeof(FakePipelineEvent)));
 
-                sut.AddTypedSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, FakePipelineMessageSerializer.Instance);
+                sut.AddTypedSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, FakePipelineEventSerializer.Instance);
 
-                sut.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakePipelineMessage))
-                    .Should().BeSameAs(FakePipelineMessageSerializer.Instance);
+                sut.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakePipelineEvent))
+                    .Should().BeSameAs(FakePipelineEventSerializer.Instance);
 
-                Utils.ResetarMessageSerializerManager();
+                Utils.ResetarEventSerializerManager();
             }
         }
     }

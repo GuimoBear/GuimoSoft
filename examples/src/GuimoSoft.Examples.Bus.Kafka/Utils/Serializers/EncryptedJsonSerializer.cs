@@ -26,18 +26,18 @@ namespace GuimoSoft.Examples.Bus.Kafka.Utils.Serializers
             _crypter = new CrypterService(_repository);
         }
 
-        public object Deserialize(Type messageType, byte[] content)
+        public object Deserialize(Type eventType, byte[] content)
         {
             using var ms = new MemoryStream(content);
             ms.Position = 0;
             var decryptedContent = _crypter.Decrypt(_defaultCertificateId, ms).GetAwaiter().GetResult();
-            return JsonSerializer.Deserialize(Encoding.UTF8.GetString(decryptedContent), messageType);
+            return JsonSerializer.Deserialize(Encoding.UTF8.GetString(decryptedContent), eventType);
         }
 
-        public byte[] Serialize(object message)
+        public byte[] Serialize(object @event)
         {
-            var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-            var encryptedContent = _crypter.Encrypt(_defaultCertificateId, messageBytes).GetAwaiter().GetResult();
+            var eventBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(@event));
+            var encryptedContent = _crypter.Encrypt(_defaultCertificateId, eventBytes).GetAwaiter().GetResult();
             return encryptedContent;
         }
     }

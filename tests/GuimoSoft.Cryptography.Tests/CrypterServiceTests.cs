@@ -18,7 +18,7 @@ namespace GuimoSoft.Cryptography.Tests
 {
     public class CrypterServiceTests
     {
-        private const string longMessage = @"Lorem ipsum dolor sit amet, id nisl delicata scriptorem est, ex duo feugait mentitum, ad quo tempor luptatum. Ferri admodum intellegebat pri et, et eos nusquam eligendi moderatius, et vim nisl posse commodo. Ei pri phaedrum laboramus expetendis, ei sed error verear aperiri. Ullum suavitate imperdiet no ius, eam in epicurei mediocrem, ea per veri mutat aliquando. Nisl sumo fuisset ex vix, pri ad meis principes constituto.
+        private const string longEvent = @"Lorem ipsum dolor sit amet, id nisl delicata scriptorem est, ex duo feugait mentitum, ad quo tempor luptatum. Ferri admodum intellegebat pri et, et eos nusquam eligendi moderatius, et vim nisl posse commodo. Ei pri phaedrum laboramus expetendis, ei sed error verear aperiri. Ullum suavitate imperdiet no ius, eam in epicurei mediocrem, ea per veri mutat aliquando. Nisl sumo fuisset ex vix, pri ad meis principes constituto.
 Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has putent dissentias ne. An pertinacia suscipiantur nam. Dicunt antiopam molestiae in duo, mel meliore omnesque et. Nam choro gloriatur ea, impedit dolores menandri nam et. Meis dignissim concludaturque vis ne, vix ut omnium elaboraret, mei debet iracundia ut.";
 
         public Guid Identifier { get; } = Guid.NewGuid();
@@ -77,12 +77,12 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
 
             var sut = new CrypterService(moqRepository.Object);
 
-            var encryptedContent = await sut.Encrypt(Identifier, Encoding.UTF8.GetBytes(longMessage));
+            var encryptedContent = await sut.Encrypt(Identifier, Encoding.UTF8.GetBytes(longEvent));
 
-            var decodedMessage = await GetDecodedMessage(encryptedContent);
+            var decodedEvent = await GetDecodedEvent(encryptedContent);
 
-            decodedMessage
-                .Should().Be(longMessage);
+            decodedEvent
+                .Should().Be(longEvent);
         }
 
         [Fact]
@@ -169,7 +169,7 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
 
             var sut = new CrypterService(moqRepository.Object);
 
-            var encodedContent = GetEncodedMessage(longMessage);
+            var encodedContent = GetEncodedEvent(longEvent);
 
             context.Request.Headers.Add(Constants.RSA_IDENTIFIER_HEADER, Identifier.ToString());
             var ms = new MemoryStream(encodedContent);
@@ -177,10 +177,10 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
             context.Request.Body = ms;
             var result = await sut.Decrypt(Identifier, context.Request.Body);
 
-            var message = Encoding.UTF8.GetString(result);
+            var @event = Encoding.UTF8.GetString(result);
 
-            message
-                .Should().Be(longMessage); 
+            @event
+                .Should().Be(longEvent); 
             
             ms = new MemoryStream(encodedContent);
             ms.Position = 0;
@@ -188,15 +188,15 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
 
             result = await sut.Decrypt(Identifier, context.Request.Body);
 
-            message = Encoding.UTF8.GetString(result);
+            @event = Encoding.UTF8.GetString(result);
 
-            message
-                .Should().Be(longMessage);
+            @event
+                .Should().Be(longEvent);
         }
 
-        private byte[] GetEncodedMessage(string message)
+        private byte[] GetEncodedEvent(string @event)
         {
-            var content = Encoding.UTF8.GetBytes(message);
+            var content = Encoding.UTF8.GetBytes(@event);
 
             using var ms = new MemoryStream(content);
             ms.Position = 0;
@@ -215,7 +215,7 @@ Etiam latine ut usu, vidit labitur ex vim, eum alii principes forensibus ex. Has
             return msOutput.ToArray();
         }
 
-        private async ValueTask<string> GetDecodedMessage(byte[] content)
+        private async ValueTask<string> GetDecodedEvent(byte[] content)
         {
             using var inputStream = new MemoryStream(content);
             using var outputStream = new MemoryStream(); 

@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using GuimoSoft.Bus.Abstractions;
 
-namespace GuimoSoft.Examples.Bus.Kafka.Messages
+namespace GuimoSoft.Examples.Bus.Kafka.Events
 {
-    public class HelloMessage : IMessage
+    public class HelloEvent : IEvent
     {
         public const string TOPIC_NAME = "topic-example";
 
@@ -14,7 +14,7 @@ namespace GuimoSoft.Examples.Bus.Kafka.Messages
         public bool ThrowException { get; private set; }
 
         [JsonConstructor]
-        public HelloMessage(string name, bool throwException)
+        public HelloEvent(string name, bool throwException)
         {
             Name = name;
             ThrowException = throwException;

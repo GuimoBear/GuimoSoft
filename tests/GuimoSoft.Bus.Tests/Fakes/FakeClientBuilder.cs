@@ -11,7 +11,7 @@ namespace GuimoSoft.Bus.Tests.Fakes
         }
 
         public void WriteLog()
-            => LogMessage(ServerName.Default, Finality.Consume, new Confluent.Kafka.LogMessage("_d_", Confluent.Kafka.SyslogLevel.Info, "test", "test"));
+            => LogEvent(ServerName.Default, Finality.Consume, new Confluent.Kafka.LogMessage("_d_", Confluent.Kafka.SyslogLevel.Info, "test", "test"));
 
         public void WriteException()
             => LogException(ServerName.Default, Finality.Consume, new Confluent.Kafka.Error(Confluent.Kafka.ErrorCode.BrokerNotAvailable, "test", true));

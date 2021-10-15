@@ -9,13 +9,13 @@ using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core.Internal
 {
-    public class MessageTypeCacheTests
+    public class eventTypeCacheTests
     {
         [Fact]
-        public void AddShouldBeThrowArgumentExceptionIfMessageNotImplementIMessage()
+        public void AddShouldBeThrowArgumentExceptionIfEventNotImplementIEvent()
         {
-            var sut = new MessageTypeCache();
-            Assert.Throws<ArgumentException>(() => sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(MessageTypeCacheTests), "test"));
+            var sut = new EventTypeCache();
+            Assert.Throws<ArgumentException>(() => sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(eventTypeCacheTests), "test"));
         }
 
         [Theory]
@@ -24,15 +24,15 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [InlineData("  ")]
         public void AddShouldBeThrowArgumentExceptionIfEndpointIsNullEmptyOrWritespace(string endpoint)
         {
-            var sut = new MessageTypeCache();
-            Assert.Throws<ArgumentException>(() => sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), endpoint));
+            var sut = new EventTypeCache();
+            Assert.Throws<ArgumentException>(() => sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), endpoint));
         }
 
         [Fact]
         public void AddWithNullSwitchFacts()
         {
-            var sut = new MessageTypeCache();
-            Assert.Throws<ArgumentNullException>(() => sut.Add(BusName.Kafka, Finality.Produce, null, typeof(FakeMessage), "test"));
+            var sut = new EventTypeCache();
+            Assert.Throws<ArgumentNullException>(() => sut.Add(BusName.Kafka, Finality.Produce, null, typeof(FakeEvent), "test"));
         }
 
         [Theory]
@@ -41,42 +41,42 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [InlineData("  ")]
         public void AddWithInvalidEndpointFacts(string endpoint)
         {
-            var sut = new MessageTypeCache();
-            Assert.Throws<ArgumentException>(() => sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), endpoint));
+            var sut = new EventTypeCache();
+            Assert.Throws<ArgumentException>(() => sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), endpoint));
         }
 
         [Fact]
         public void AddWithSameEndpointFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .ToList().Should().HaveCount(1);
         }
 
         [Fact]
         public void AddTwoDiferentEndpointsFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test 2");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test 2");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .ToList().Should().HaveCount(2);
         }
 
         [Fact]
         public void GetSwitchersWithNonExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
             Assert.Throws<InvalidOperationException>(() => sut.GetSwitchers(BusName.None, Finality.Produce));
             Assert.Throws<InvalidOperationException>(() => sut.GetSwitchers(BusName.Kafka, Finality.Consume));
@@ -85,9 +85,9 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void GetSwitchersWithExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
             sut.GetSwitchers(BusName.Kafka, Finality.Produce)
                 .ToList().Should().NotBeEmpty();
@@ -96,19 +96,19 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void GetEndpointsWithNullSwitchFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
             Assert.Throws<ArgumentNullException>(() => sut.GetEndpoints(BusName.Kafka, Finality.Produce, null));
         }
 
         [Fact]
         public void GetEndpointsWithNonExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
             Assert.Throws<ArgumentNullException>(() => sut.GetEndpoints(BusName.Kafka, Finality.Produce, null));
 
             Assert.Throws<KeyNotFoundException>(() => sut.GetEndpoints(BusName.Kafka, Finality.Produce, ServerName.Default));
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
             Assert.Throws<KeyNotFoundException>(() => sut.GetEndpoints(BusName.Kafka, Finality.Consume, ServerName.Default));
 
@@ -118,9 +118,9 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void GetEndpointsWithExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, ServerName.Default, typeof(FakeEvent), "test");
 
             sut.GetEndpoints(BusName.Kafka, Finality.Produce, ServerName.Default)
                 .ToList().Should().NotBeEmpty();
@@ -129,7 +129,7 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void GetByEndpointWithNullSwitchFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
             Assert.Throws<ArgumentNullException>(() => sut.Get(BusName.Kafka, Finality.Produce, null, "test"));
         }
@@ -140,7 +140,7 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [InlineData(" ")]
         public void GetByEndpointWithInvalidEndpointFacts(string endpoint)
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
             Assert.Throws<ArgumentException>(() => sut.Get(BusName.Kafka, Finality.Produce, ServerName.Default, endpoint));
         }
@@ -148,153 +148,153 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void GetByEndpointWithNonExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, FakeMessage.TOPIC_NAME)); 
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, FakeEvent.TOPIC_NAME)); 
             
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(AnotherFakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(AnotherFakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, FakeMessage.TOPIC_NAME));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, FakeEvent.TOPIC_NAME));
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, FakeMessage.TOPIC_NAME));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, FakeEvent.TOPIC_NAME));
         }
 
         [Fact]
         public void GetByEndpointWithExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeMessage), FakeMessage.TOPIC_NAME);
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeEvent), FakeEvent.TOPIC_NAME);
 
-            sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, FakeMessage.TOPIC_NAME)
+            sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, FakeEvent.TOPIC_NAME)
                 .ToList().Should().NotBeEmpty();
         }
 
         [Fact]
-        public void GetByMessageTypeNullFacts()
+        public void GetByeventTypeNullFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
             Assert.Throws<ArgumentNullException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, null as Type));
         }
 
         [Fact]
-        public void GetByMessageInstanceWithNonExistingData()
+        public void GetByEventInstanceWithNonExistingData()
         {
-            var fakeMessage = new FakeMessage("test", "test");
+            var fakeEvent = new FakeEvent("test", "test");
 
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            Assert.Throws<ArgumentNullException>(() => sut.Get(BusName.Kafka, Finality.Produce, null, fakeMessage));
+            Assert.Throws<ArgumentNullException>(() => sut.Get(BusName.Kafka, Finality.Produce, null, fakeEvent));
 
-            Assert.Throws<ArgumentNullException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, null as FakeMessage));
+            Assert.Throws<ArgumentNullException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, null as FakeEvent));
 
-            sut.Add(BusName.Kafka, Finality.Consume, FakeServerName.FakeHost1, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Consume, FakeServerName.FakeHost1, typeof(FakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, fakeMessage));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, fakeEvent));
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, fakeMessage));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, fakeEvent));
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(AnotherFakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(AnotherFakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, fakeMessage));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, fakeEvent));
         }
 
         [Fact]
-        public void GetByMessageInstanceFacts()
+        public void GetByEventInstanceFacts()
         {
-            var fakeMessage = new FakeMessage("test", "test");
+            var fakeEvent = new FakeEvent("test", "test");
 
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test");
 
-            sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, fakeMessage)
+            sut.Get(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, fakeEvent)
                 .ToList().Should().NotBeEmpty();
         }
 
         [Fact]
-        public void GetBymessageTypeWithNullTypeFacts()
+        public void GetByeventTypeWithNullTypeFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
             Assert.Throws<ArgumentNullException>(() => sut.Get(null));
         }
 
         [Fact]
-        public void GetBymessageTypeWithNonExistingDataFacts()
+        public void GetByeventTypeWithNonExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeMessage)));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeEvent)));
 
-            sut.Add(BusName.Kafka, Finality.Consume, FakeServerName.FakeHost1, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Consume, FakeServerName.FakeHost1, typeof(FakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeMessage)));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeEvent)));
         }
 
         [Fact]
-        public void GetBymessageTypeWithExistingDataFacts()
+        public void GetByeventTypeWithExistingDataFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new EventTypeCache();
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .Should().HaveCount(1);
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .Should().HaveCount(2);
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .ToList().Should().HaveCount(2);
         }
 
         [Fact]
-        public void MessageTypeItemEqualFacts()
+        public void eventTypeItemEqualFacts()
         {
-            new MessageTypeCache.MessageTypeItem(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test")
+            new EventTypeCache.EventTypeItem(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test")
                 .Equals(null)
                 .Should().BeFalse();
         }
         /*
         [Fact]
-        public void GetBymessageTypeFacts()
+        public void GetByeventTypeFacts()
         {
-            var sut = new MessageTypeCache();
+            var sut = new eventTypeCache();
 
             Assert.Throws<ArgumentNullException>(() => sut.Get(null));
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeMessage)));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeEvent)));
 
-            sut.Add(BusName.Kafka, Finality.Consume, FakeServerName.FakeHost1, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Consume, FakeServerName.FakeHost1, typeof(FakeEvent), "test");
 
-            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeMessage)));
+            Assert.Throws<KeyNotFoundException>(() => sut.Get(typeof(FakeEvent)));
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost1, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .Should().HaveCount(1);
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .Should().HaveCount(2);
 
-            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test");
+            sut.Add(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test");
 
-            sut.Get(typeof(FakeMessage))
+            sut.Get(typeof(FakeEvent))
                 .ToList().Should().HaveCount(2);
 
-            new MessageTypeCache.MessageTypeItem(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeMessage), "test")
+            new eventTypeCache.eventTypeItem(BusName.Kafka, Finality.Produce, FakeServerName.FakeHost2, typeof(FakeEvent), "test")
                 .Equals(null)
                 .Should().BeFalse();
         }

@@ -11,23 +11,23 @@ Porém, caso haja a necessidade de implementação de um serializador diferente,
 ### 1. Implementar a serialização padrão implementando a interface `IDefaultSerializer`
 
 ```csharp
-public sealed class JsonMessageSerializer : IDefaultSerializer
+public sealed class JsonEventSerializer : IDefaultSerializer
 {
     // Serializadores, para o Bus, sempre será singleton
-    public static readonly JsonMessageSerializer Instance = new();
+    public static readonly JsonEventSerializer Instance = new();
 
     // construtor privado para garantir que exista apenas uma instáncia deste serializador
-    private JsonMessageSerializer() { }
+    private JsonEventSerializer() { }
 
-    public byte[] Serialize(object message)
+    public byte[] Serialize(object @event)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(message);
+        return JsonSerializer.SerializeToUtf8Bytes(@event);
     }
 
-    public object Deserialize(Type messageType, byte[] content)
+    public object Deserialize(Type eventType, byte[] content)
     {
         var stringContent = Encoding.UTF8.GetString(content);
-        return JsonSerializer.Deserialize(stringContent, messageType);
+        return JsonSerializer.Deserialize(stringContent, eventType);
     }
 }
 ```
@@ -37,22 +37,22 @@ public sealed class JsonMessageSerializer : IDefaultSerializer
 ### 2. Implementar uma serialização para um tipo específico herdando da classe abstrata `TypedSerializer<TType>`
 
 ```csharp
-public class HelloMessageSerializer : TypedSerializer<HelloMessage>
+public class HelloEventSerializer : TypedSerializer<HelloEvent>
 {
     // Serializadores, para o Bus, sempre será singleton
-    public static HelloMessageSerializer Instance = new();
+    public static HelloEventSerializer Instance = new();
 
     // construtor privado para garantir que exista apenas uma instáncia deste serializador
-    private HelloMessageSerializer() { }
+    private HelloEventSerializer() { }
 
-    protected override HelloMessage Deserialize(byte[] content)
+    protected override HelloEvent Deserialize(byte[] content)
     {
-        return JsonSerializer.Deserialize<HelloMessage>(Encoding.UTF8.GetString(content));
+        return JsonSerializer.Deserialize<HelloEvent>(Encoding.UTF8.GetString(content));
     }
 
-    protected override byte[] Serialize(HelloMessage message)
+    protected override byte[] Serialize(HelloEvent @event)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(message);
+        return JsonSerializer.SerializeToUtf8Bytes(@event);
     }
 }
 ```
@@ -68,9 +68,9 @@ O registro dos serializadores é feito junto ao registro das mensagens.
 configurer
     .WithDefaultSerializer(CustomDefaultSerializer.Instance) // O registro de um serializador padrão
     .Consume()
-        .OfType<HelloMessage>()
-        .WithSerializer(HelloMessageSerializer.Instance) // O registro de um serializador para um tipo específico
-        .FromEndpoint(HelloMessage.TOPIC_NAME)
+        .OfType<HelloEvent>()
+        .WithSerializer(HelloEventSerializer.Instance) // O registro de um serializador para um tipo específico
+        .FromEndpoint(HelloEvent.TOPIC_NAME)
     .FromServer(options =>
     {
         options.BootstrapServers = "google.com:9093";
@@ -83,9 +83,9 @@ configurer
 configurer
     .WithDefaultSerializer(CustomDefaultSerializer.Instance) // O registro de um serializador padrão
     .Produce()
-        .OfType<HelloMessage>()
-        .WithSerializer(HelloMessageSerializer.Instance) // O registro de um serializador para um tipo específico
-        .ToEndpoint(HelloMessage.TOPIC_NAME)
+        .OfType<HelloEvent>()
+        .WithSerializer(HelloEventSerializer.Instance) // O registro de um serializador para um tipo específico
+        .ToEndpoint(HelloEvent.TOPIC_NAME)
     .ToServer(options =>
     {
         options.BootstrapServers = "localhost:9093";

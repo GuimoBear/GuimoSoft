@@ -13,8 +13,8 @@ namespace GuimoSoft.Core
     {
         [JsonPropertyName("code")]
         public TErrorCode ErrorCode { get; }
-        [JsonPropertyName("message")]
-        public string Message { get => GetMessageOrDefault(ErrorCode); }
+        [JsonPropertyName("event")]
+        public string Event { get => GeTEventOrDefault(ErrorCode); }
         [JsonPropertyName("fields")]
         public List<Notification> Notifications { get; private set; }
 
@@ -50,7 +50,7 @@ namespace GuimoSoft.Core
             return defaultEnumValue;
         }
 
-        private static string GetMessageOrDefault(TErrorCode errorCode)
+        private static string GeTEventOrDefault(TErrorCode errorCode)
         {
             var enumType = typeof(TErrorCode);
             var memberInfos = enumType.GetMember(errorCode.ToString());

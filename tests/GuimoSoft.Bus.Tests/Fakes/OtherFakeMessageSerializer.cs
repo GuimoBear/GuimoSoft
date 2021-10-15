@@ -4,21 +4,21 @@ using GuimoSoft.Core.Serialization;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class OtherFakeMessageSerializer : TypedSerializer<OtherFakeMessage>
+    public class OtherFakeEventSerializer : TypedSerializer<OtherFakeEvent>
     {
-        public static TypedSerializer<OtherFakeMessage> Instance
-            = new OtherFakeMessageSerializer();
+        public static TypedSerializer<OtherFakeEvent> Instance
+            = new OtherFakeEventSerializer();
 
-        private OtherFakeMessageSerializer() { }
+        private OtherFakeEventSerializer() { }
 
-        protected override OtherFakeMessage Deserialize(byte[] content)
+        protected override OtherFakeEvent Deserialize(byte[] content)
         {
-            return JsonSerializer.Deserialize<OtherFakeMessage>(Encoding.UTF8.GetString(content));
+            return JsonSerializer.Deserialize<OtherFakeEvent>(Encoding.UTF8.GetString(content));
         }
 
-        protected override byte[] Serialize(OtherFakeMessage message)
+        protected override byte[] Serialize(OtherFakeEvent @event)
         {
-            return JsonSerializer.SerializeToUtf8Bytes(message);
+            return JsonSerializer.SerializeToUtf8Bytes(@event);
         }
     }
 }

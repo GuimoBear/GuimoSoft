@@ -45,11 +45,11 @@ namespace GuimoSoft.Cryptography.Tests
 
             var content = sut.CreateRequestContent(expected);
 
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
-            responseMessage.Content = content;
-            responseMessage.Headers.Add(Constants.RSA_IDENTIFIER_HEADER, certId.ToString());
+            var responseEvent = new HttpResponseMessage(HttpStatusCode.OK);
+            responseEvent.Content = content;
+            responseEvent.Headers.Add(Constants.RSA_IDENTIFIER_HEADER, certId.ToString());
 
-            var actual = await sut.GetResponseObject<FakeRequest>(responseMessage);
+            var actual = await sut.GetResponseObject<FakeRequest>(responseEvent);
 
             actual
                 .Should().BeEquivalentTo(expected);
@@ -76,14 +76,14 @@ namespace GuimoSoft.Cryptography.Tests
 
             var content = sut.CreateRequestContent(expected);
 
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
-            responseMessage.Content = content;
+            var responseEvent = new HttpResponseMessage(HttpStatusCode.OK);
+            responseEvent.Content = content;
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => sut.GetResponseObject<FakeRequest>(responseMessage));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => sut.GetResponseObject<FakeRequest>(responseEvent));
 
-            responseMessage.Headers.Add(Constants.RSA_IDENTIFIER_HEADER, certId.ToString().Substring(0, 15));
+            responseEvent.Headers.Add(Constants.RSA_IDENTIFIER_HEADER, certId.ToString().Substring(0, 15));
 
-            await Assert.ThrowsAsync<RsaIdentifierNotInformedException>(() => sut.GetResponseObject<FakeRequest>(responseMessage));
+            await Assert.ThrowsAsync<RsaIdentifierNotInformedException>(() => sut.GetResponseObject<FakeRequest>(responseEvent));
         }
     }
 }

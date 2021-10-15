@@ -14,7 +14,7 @@ namespace GuimoSoft.Benchmark.Bus
     [Description("Consuming using all Bus features")]
     public class BusBenchmark : BenchmarkBase
     {
-        private IKafkaMessageConsumerManager ConsumerManager { get; set; }
+        private IKafkaEventConsumerManager ConsumerManager { get; set; }
         private Task consumerTask;
 
         [GlobalSetup]
@@ -24,16 +24,16 @@ namespace GuimoSoft.Benchmark.Bus
             services
                 .AddKafkaConsumer(configs =>
                     configs
-                        .Consume()
-                            .OfType<BenchmarkMessage>()
-                            .FromEndpoint(BenchmarkMessage.TOPIC_NAME)
+                        .Listen()
+                            .OfType<BenchmarkEvent>()
+                            .FromEndpoint(BenchmarkEvent.TOPIC_NAME)
                         .FromServer(options => { }))
                 .InjectInMemoryKafka();
 
             Services = services.BuildServiceProvider(true);
 
-            Producer = Services.GetRequiredService<IMessageProducer>();
-            ConsumerManager = Services.GetRequiredService<IKafkaMessageConsumerManager>();
+            Producer = Services.GetRequiredService<IEventBus>();
+            ConsumerManager = Services.GetRequiredService<IKafkaEventConsumerManager>();
             consumerTask = Task.Factory.StartNew(() => ConsumerManager.StartConsumers(CancellationTokenSource.Token));
             await Task.Delay(10);
         }
@@ -47,10 +47,13 @@ namespace GuimoSoft.Benchmark.Bus
                 await consumerTask;
                 Services.Dispose();
             }
-            catch {}
+            catch 
+            {
+                // Ignored exception
+            }
         }
 
-        [Benchmark(Description = "produce and consume message")]
+        [Benchmark(Description = "produce and consume event")]
         public override async Task ProduceAndConsume()
         {
             await Produce();

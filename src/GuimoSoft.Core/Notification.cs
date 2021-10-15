@@ -6,15 +6,15 @@ namespace GuimoSoft.Core
     {
         [JsonPropertyName("field")]
         public string Field { get; }
-        [JsonPropertyName("message")]
-        public string Message { get; }
+        [JsonPropertyName("event")]
+        public string Event { get; }
         [JsonPropertyName("value")]
         public object Value { get; }
 
-        public Notification(string field, string message, object value = null)
+        public Notification(string field, string @event, object value = null)
         {
             Field = field;
-            Message = message;
+            Event = @event;
             Value = value;
         }
     }

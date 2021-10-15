@@ -14,8 +14,8 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
         IFinalityStage, 
         IListeningStage,
         IEndpointStage,
-        IMessageObjectInstance,
-        IEndpointAfterMessageReceivedStage,
+        IEventObjectInstance,
+        IEndpointAfterEventReceivedStage,
         IWriteStage,
         IMessageStage,
         ILogLevelAndDataStage,
@@ -29,11 +29,11 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
         private Enum _switch;
         private Finality _finality;
 
-        private Type _messageType;
-        private object _messageObject;
+        private Type _eventType;
+        private object _eventObject;
 
         private string _endpoint;
-        private string _message;
+        private string _event;
         private BusLogLevel _level;
 
         private string _currentDataKey;
@@ -67,16 +67,16 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
             return this;
         }
 
-        public IMessageObjectInstance AfterReceived()
+        public IEventObjectInstance AfterReceived()
             => this;
 
-        public IEndpointAfterMessageReceivedStage TheObject(object @object)
-            => TheObject(@object?.GetType(), @object);
+        public IEndpointAfterEventReceivedStage TheEvent(object @event)
+            => TheEvent(@event?.GetType(), @event);
 
-        public IEndpointAfterMessageReceivedStage TheObject(Type objectType, object @object)
+        public IEndpointAfterEventReceivedStage TheEvent(Type eventType, object @event)
         {
-            _messageObject = @object;
-            _messageType = objectType;
+            _eventObject = @event;
+            _eventType = eventType;
             return this;
         }
 
@@ -86,9 +86,9 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
         public IMessageStage Write()
             => this;
 
-        public ILogLevelAndDataStage Message(string message)
+        public ILogLevelAndDataStage Message(string @event)
         {
-            _message = message;
+            _event = @event;
             return this;
         }
 
@@ -115,41 +115,41 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
 
         public async Task AnLog(CancellationToken cancellationToken = default)
         {
-            var logMessage = new BusLogMessage(_switch)
+            var logEvent = new BusLogEvent(_switch)
             {
                 Bus = _bus,
                 Finality = _finality,
                 Endpoint = _endpoint,
-                Message = _message,
+                Message = _event,
                 Level = _level
             };
 
             foreach (var (key, value) in _data)
-                logMessage.Data.Add(key, value);
-            if (_messageType != default && Singletons.GetBusTypedLogMessageContainingAnHandlerCollection().Contains(_messageType))
-                await PublishTypedLogMessage(logMessage, cancellationToken);
+                logEvent.Data.Add(key, value);
+            if (_eventType != default && Singletons.GetBusTypedLogEventContainingAnHandlerCollection().Contains(_eventType))
+                await PublishTypedLogEvent(logEvent, cancellationToken);
             else
-                await _mediator.Publish(logMessage, cancellationToken);
+                await _mediator.Publish(logEvent, cancellationToken);
         }
 
         public async Task AnException(Exception exception, CancellationToken cancellationToken = default)
         {
             Validate(exception);
-            var exceptionMessage = new BusExceptionMessage(_switch, exception)
+            var exceptionEvent = new BusExceptionEvent(_switch, exception)
             {
                 Bus = _bus,
                 Finality = _finality,
                 Endpoint = _endpoint,
-                Message = _message,
+                Message = _event,
                 Level = _level
             };
 
             foreach (var (key, value) in _data)
-                exceptionMessage.Data.Add(key, value);
-            if (_messageType != default && Singletons.GetBusTypedExceptionMessageContainingAnHandlerCollection().Contains(_messageType))
-                await PublishTypeExceptionMessage(exceptionMessage, cancellationToken);
+                exceptionEvent.Data.Add(key, value);
+            if (_eventType != default && Singletons.GetBusTypedExceptionEventContainingAnHandlerCollection().Contains(_eventType))
+                await PublishTypeExceptionEvent(exceptionEvent, cancellationToken);
             else
-                await _mediator.Publish(exceptionMessage, cancellationToken);
+                await _mediator.Publish(exceptionEvent, cancellationToken);
         }
 
         private static void Validate(Exception exception)
@@ -158,18 +158,18 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
                 throw new ArgumentNullException(nameof(exception));
         }
 
-        private async Task PublishTypedLogMessage(BusLogMessage logMessage, CancellationToken cancellationToken)
+        private async Task PublishTypedLogEvent(BusLogEvent logEvent, CancellationToken cancellationToken)
         {
-            var typedLogMessageFactory = DelegateCache.GetOrAddBusLogMessageFactory(_messageType);
-            var typedLogMessage = typedLogMessageFactory(logMessage, _messageObject);
-            await _mediator.Publish(typedLogMessage, cancellationToken);
+            var typedLogEventFactory = DelegateCache.GetOrAddBusLogEventFactory(_eventType);
+            var typedLogEvent = typedLogEventFactory(logEvent, _eventObject);
+            await _mediator.Publish(typedLogEvent, cancellationToken);
         }
 
-        private async Task PublishTypeExceptionMessage(BusExceptionMessage exceptionMessage, CancellationToken cancellationToken)
+        private async Task PublishTypeExceptionEvent(BusExceptionEvent exceptionEvent, CancellationToken cancellationToken)
         {
-            var typedExceptionMessageFactory = DelegateCache.GetOrAddBusExceptionMessageFactory(_messageType);
-            var typedExceptionMessage = typedExceptionMessageFactory(exceptionMessage, _messageObject);
-            await _mediator.Publish(typedExceptionMessage, cancellationToken);
+            var typedExceptionEventFactory = DelegateCache.GetOrAddBusExceptionEventFactory(_eventType);
+            var typedExceptionEvent = typedExceptionEventFactory(exceptionEvent, _eventObject);
+            await _mediator.Publish(typedExceptionEvent, cancellationToken);
         }
     }
 }

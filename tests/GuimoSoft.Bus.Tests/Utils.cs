@@ -13,15 +13,15 @@ namespace GuimoSoft.Bus.Tests
     {
         internal static readonly object Lock = new();
 
-        internal static void ResetarMessageSerializerManager()
+        internal static void ResetarEventSerializerManager()
         {
-            typeof(MessageSerializerManager)
+            typeof(EventSerializerManager)
                 .GetField("_defaultSerializer", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(MessageSerializerManager.Instance, JsonMessageSerializer.Instance);
+                .SetValue(EventSerializerManager.Instance, JsonEventSerializer.Instance);
 
-            var dict = typeof(MessageSerializerManager)
+            var dict = typeof(EventSerializerManager)
                 .GetField("_typedSerializers", BindingFlags.Instance | BindingFlags.NonPublic)
-                .GetValue(MessageSerializerManager.Instance);
+                .GetValue(EventSerializerManager.Instance);
 
             var method = typeof(ConcurrentDictionary<Type, IDefaultSerializer>)
                 .GetMethod(nameof(IDictionary<Type, IDefaultSerializer>.Clear), BindingFlags.Instance | BindingFlags.Public);
@@ -34,27 +34,27 @@ namespace GuimoSoft.Bus.Tests
             lock (Singletons._lock)
             {
                 lazyBusSerializerManagerSetter.Value(null);
-                lazyMessageMiddlewareManagerSetter.Value(null);
-                lazyMessageTypeCacheSetter.Value(null);
+                lazyEventMiddlewareManagerSetter.Value(null);
+                lazyeventTypeCacheSetter.Value(null);
                 lazyProducerManagerSetter.Value(null);
                 lazyBusOptionsDictionariesCleaner.Value();
                 lazyAssembliesCleaner.Value();
                 lazyRegisteredAssembliesCleaner.Value();
-                lazyTypedExceptionMessagesCleaner.Value();
-                lazyTypedLogMessagesCleaner.Value();
+                lazyTypedExceptionEventsCleaner.Value();
+                lazyTypedLogEventsCleaner.Value();
             }
         }
 
         private static readonly Lazy<Action<BusSerializerManager>> lazyBusSerializerManagerSetter
             = new(CreateBusSerializerManagerSetter, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static readonly Lazy<Action<MessageMiddlewareManager>> lazyMessageMiddlewareManagerSetter
-            = new(CreateMessageMiddlewareManagerSetter, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<Action<EventMiddlewareManager>> lazyEventMiddlewareManagerSetter
+            = new(CreateEventMiddlewareManagerSetter, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static readonly Lazy<Action<MessageTypeCache>> lazyMessageTypeCacheSetter
-            = new(CreateMessageTypeCacheSetter, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<Action<EventTypeCache>> lazyeventTypeCacheSetter
+            = new(CreateEventTypeCacheSetter, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static readonly Lazy<Action<ProducerManager>> lazyProducerManagerSetter
+        private static readonly Lazy<Action<DispatcherManager>> lazyProducerManagerSetter
             = new(CreateProducerManagerSetter, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static readonly Lazy<Action> lazyBusOptionsDictionariesCleaner
@@ -66,11 +66,11 @@ namespace GuimoSoft.Bus.Tests
         private static readonly Lazy<Action> lazyRegisteredAssembliesCleaner
             = new(CreateRegisteredAssembliesCleaner, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static readonly Lazy<Action> lazyTypedExceptionMessagesCleaner
-            = new(CreateTypedExceptionMessagesCleaner, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<Action> lazyTypedExceptionEventsCleaner
+            = new(CreateTypedExceptionEventsCleaner, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static readonly Lazy<Action> lazyTypedLogMessagesCleaner
-            = new(CreateTypedLogMessagesCleaner, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<Action> lazyTypedLogEventsCleaner
+            = new(CreateTypedLogEventsCleaner, System.Threading.LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static Action<BusSerializerManager> CreateBusSerializerManagerSetter()
         {
@@ -85,39 +85,39 @@ namespace GuimoSoft.Bus.Tests
                 .CreateDelegate();
         }
 
-        private static Action<MessageMiddlewareManager> CreateMessageMiddlewareManagerSetter()
+        private static Action<EventMiddlewareManager> CreateEventMiddlewareManagerSetter()
         {
             var propertyInfo = typeof(Singletons)
-                .GetProperty("_lazyMessageMiddlewareManagerSingleton", BindingFlags.Static | BindingFlags.NonPublic);
+                .GetProperty("_lazyEventMiddlewareManagerSingleton", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return Emit<Action<MessageMiddlewareManager>>
-                .NewDynamicMethod("MessageMiddlewareManagerSingleton_Setter")
+            return Emit<Action<EventMiddlewareManager>>
+                .NewDynamicMethod("EventMiddlewareManagerSingleton_Setter")
                 .LoadArgument(0)
                 .Call(propertyInfo.GetSetMethod(true))
                 .Return()
                 .CreateDelegate();
         }
 
-        private static Action<MessageTypeCache> CreateMessageTypeCacheSetter()
+        private static Action<EventTypeCache> CreateEventTypeCacheSetter()
         {
             var propertyInfo = typeof(Singletons)
-                .GetProperty("_lazyMessageTypeCacheSingleton", BindingFlags.Static | BindingFlags.NonPublic);
+                .GetProperty("_lazyEventTypeCacheSingleton", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return Emit<Action<MessageTypeCache>>
-                .NewDynamicMethod("MessageTypeCacheSingleton_Setter")
+            return Emit<Action<EventTypeCache>>
+                .NewDynamicMethod("EventTypeCacheSingleton_Setter")
                 .LoadArgument(0)
                 .Call(propertyInfo.GetSetMethod(true))
                 .Return()
                 .CreateDelegate();
         }
 
-        private static Action<ProducerManager> CreateProducerManagerSetter()
+        private static Action<DispatcherManager> CreateProducerManagerSetter()
         {
             var propertyInfo = typeof(Singletons)
-                .GetProperty("_lazyProducerManagerSingleton", BindingFlags.Static | BindingFlags.NonPublic);
+                .GetProperty("_lazyDispatcherManagerSingleton", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return Emit<Action<ProducerManager>>
-                .NewDynamicMethod("ProducerManager_Setter")
+            return Emit<Action<DispatcherManager>>
+                .NewDynamicMethod("DispatcherManagerSingleton_Setter")
                 .LoadArgument(0)
                 .Call(propertyInfo.GetSetMethod(true))
                 .Return()
@@ -172,32 +172,32 @@ namespace GuimoSoft.Bus.Tests
                 .CreateDelegate();
         }
 
-        private static Action CreateTypedExceptionMessagesCleaner()
+        private static Action CreateTypedExceptionEventsCleaner()
         {
             var propertyInfo = typeof(Singletons)
-                .GetProperty("_busTypedExceptionMessageContainingAnHandler", BindingFlags.Static | BindingFlags.NonPublic);
+                .GetProperty("_busTypedExceptionEventContainingAnHandler", BindingFlags.Static | BindingFlags.NonPublic);
 
             var cleanerMethodInfo = typeof(List<Type>)
                 .GetMethod(nameof(List<Type>.Clear));
 
             return Emit<Action>
-                .NewDynamicMethod("TypedExceptionMessages_Cleaner")
+                .NewDynamicMethod("TypedExceptionEvents_Cleaner")
                 .Call(propertyInfo.GetGetMethod(true))
                 .Call(cleanerMethodInfo)
                 .Return()
                 .CreateDelegate();
         }
 
-        private static Action CreateTypedLogMessagesCleaner()
+        private static Action CreateTypedLogEventsCleaner()
         {
             var propertyInfo = typeof(Singletons)
-                .GetProperty("_busTypedLogMessageContainingAnHandler", BindingFlags.Static | BindingFlags.NonPublic);
+                .GetProperty("_busTypedLogEventContainingAnHandler", BindingFlags.Static | BindingFlags.NonPublic);
 
             var cleanerMethodInfo = typeof(List<Type>)
                 .GetMethod(nameof(List<Type>.Clear));
 
             return Emit<Action>
-                .NewDynamicMethod("TypedLogMessages_Cleaner")
+                .NewDynamicMethod("TypedLogEvents_Cleaner")
                 .Call(propertyInfo.GetGetMethod(true))
                 .Call(cleanerMethodInfo)
                 .Return()

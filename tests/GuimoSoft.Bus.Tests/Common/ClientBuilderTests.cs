@@ -12,20 +12,8 @@ namespace GuimoSoft.Bus.Tests.Common
 {
     public class ClientBuilderTests
     {
-        private static (Mock<IBusLogDispatcher>, Mock<IMediator>) CreateLoggerMock(BusName bus)
-        {
-            var moqMediator = new Mock<IMediator>();
-
-            var moqLogger = new Mock<IBusLogDispatcher>();
-
-            moqLogger
-                .Setup(x => x.FromBus(bus)).Returns(() => new BusLogDispatcherBuilder(moqMediator.Object, bus));
-
-            return (moqLogger, moqMediator);
-        }
-
         [Fact]
-        public void LogMessageFacts()
+        public void LogEventFacts()
         {
             var (moqLogger, moqMediator) = CreateLoggerMock(BusName.Kafka);
 
@@ -34,7 +22,7 @@ namespace GuimoSoft.Bus.Tests.Common
             sut.WriteLog();
 
             moqMediator
-                .Verify(x => x.Publish(It.IsAny<BusLogMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.Publish(It.IsAny<BusLogEvent>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -47,7 +35,19 @@ namespace GuimoSoft.Bus.Tests.Common
             sut.WriteException();
 
             moqMediator
-                .Verify(x => x.Publish(It.IsAny<BusExceptionMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        private static (Mock<IBusLogDispatcher>, Mock<IMediator>) CreateLoggerMock(BusName bus)
+        {
+            var moqMediator = new Mock<IMediator>();
+
+            var moqLogger = new Mock<IBusLogDispatcher>();
+
+            moqLogger
+                .Setup(x => x.FromBus(bus)).Returns(() => new BusLogDispatcherBuilder(moqMediator.Object, bus));
+
+            return (moqLogger, moqMediator);
         }
     }
 }

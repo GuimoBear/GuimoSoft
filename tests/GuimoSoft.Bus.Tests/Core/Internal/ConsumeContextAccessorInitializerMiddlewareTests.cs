@@ -17,15 +17,15 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void ConstructorShouldThrowIfAnyParameterIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsumeContextAccessorInitializerMiddleware<FakeMessage>(null));
+            Assert.Throws<ArgumentNullException>(() => new ConsumeContextAccessorInitializerMiddleware<FakeEvent>(null));
         }
 
         [Fact]
         public async Task InvokeAsyncFacts()
         {
-            var expectedContext = new ConsumeContext<FakeMessage>(new FakeMessage("", ""), default, default, CancellationToken.None);
+            var expectedContext = new ConsumeContext<FakeEvent>(new FakeEvent("", ""), default, default, CancellationToken.None);
 
-            var contextAccessor = new ConsumeContextAccessor<FakeMessage>();
+            var contextAccessor = new ConsumeContextAccessor<FakeEvent>();
 
             contextAccessor.Context
                 .Should().BeNull();
@@ -37,7 +37,7 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
                 return Task.CompletedTask;
             };
 
-            var sut = new ConsumeContextAccessorInitializerMiddleware<FakeMessage>(contextAccessor);
+            var sut = new ConsumeContextAccessorInitializerMiddleware<FakeEvent>(contextAccessor);
 
             await sut.InvokeAsync(expectedContext, checkContext);
 

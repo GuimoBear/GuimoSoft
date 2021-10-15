@@ -3,7 +3,7 @@
     public interface IListeningStage
     {
         IEndpointStage WhileListening();
-        IMessageObjectInstance AfterReceived();
+        IEventObjectInstance AfterReceived();
         IMessageStage Write();
     }
 }

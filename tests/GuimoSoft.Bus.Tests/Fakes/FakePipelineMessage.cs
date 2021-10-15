@@ -3,19 +3,19 @@ using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class FakePipelineMessage : IMessage
+    public class FakePipelineEvent : IEvent
     {
         public const string TOPIC_NAME = "fake-pipeline-topic";
 
         public string LastMiddlewareToRun { get; }
         public List<string> MiddlewareNames { get; } = new List<string>();
 
-        public FakePipelineMessage()
+        public FakePipelineEvent()
         {
 
         }
 
-        public FakePipelineMessage(string lastMiddlewareToRun)
+        public FakePipelineEvent(string lastMiddlewareToRun)
         {
             LastMiddlewareToRun = lastMiddlewareToRun;
         }

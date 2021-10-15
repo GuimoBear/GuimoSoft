@@ -8,9 +8,9 @@ namespace GuimoSoft.Bus.Core.Exceptions
     public sealed class BusOptionsMissingException : Exception
     {
         public BusOptionsMissingException(BusName bus, Enum @switch, Type configType)
-            : base(GetMessage(bus, @switch, configType)) { }
+            : base(GeTEvent(bus, @switch, configType)) { }
 
-        private static string GetMessage(BusName bus, Enum @switch, Type configType)
+        private static string GeTEvent(BusName bus, Enum @switch, Type configType)
         {
             if (ServerName.Default.Equals(@switch))
                 return $"Está faltando o {configType.Name} para o {bus}";

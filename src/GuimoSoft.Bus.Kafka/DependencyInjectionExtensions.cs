@@ -6,57 +6,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Consumer;
 using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Core.Internal.Interfaces;
 using GuimoSoft.Bus.Core.Logs;
-using GuimoSoft.Bus.Core.Producer;
 using GuimoSoft.Bus.Kafka.Consumer;
 using GuimoSoft.Bus.Kafka.Producer;
+using GuimoSoft.Bus.Core.Listener;
+using GuimoSoft.Bus.Core.Publisher;
 
 namespace GuimoSoft.Bus.Kafka
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddKafkaConsumer(this IServiceCollection services, Action<ConsumerBuilder<ConsumerConfig>> configurer)
+        public static IServiceCollection AddKafkaConsumer(this IServiceCollection services, Action<ListenerBuilder<ConsumerConfig>> configurer)
         {
             AddConsumerDependencies(services);
             using var register = new AssemblyRegister(services);
-            var configs = new ConsumerBuilder<ConsumerConfig>(BusName.Kafka, ServerName.Default, register.Assemblies, services);
+            var configs = new ListenerBuilder<ConsumerConfig>(BusName.Kafka, ServerName.Default, register.Assemblies, services);
             configurer(configs);
             configs.ValidateAfterConfigured();
             return services;
         }
 
         public static IServiceCollection AddKafkaConsumerSwitcher<TSwitch>(this IServiceCollection services,
-            Action<ConsumerSwitcherBuilder<TSwitch, ConsumerConfig>> configurer)
+            Action<ListenerSwitcherBuilder<TSwitch, ConsumerConfig>> configurer)
             where TSwitch : struct, Enum
         {
             AddConsumerDependencies(services);
             using var register = new AssemblyRegister(services);
-            var configs = new ConsumerSwitcherBuilder<TSwitch, ConsumerConfig>(BusName.Kafka, register.Assemblies, services);
+            var configs = new ListenerSwitcherBuilder<TSwitch, ConsumerConfig>(BusName.Kafka, register.Assemblies, services);
             configurer(configs);
             configs.ValidateAfterConfigured();
             return services;
         }
 
-        public static IServiceCollection AddKafkaProducer(this IServiceCollection services, Action<ProducerBuilder<ProducerConfig>> configurer)
+        public static IServiceCollection AddKafkaProducer(this IServiceCollection services, Action<PublisherBuilder<ProducerConfig>> configurer)
         {
             AddProducerDependencies(services);
             using var register = new AssemblyRegister(services);
-            var configs = new ProducerBuilder<ProducerConfig>(BusName.Kafka, ServerName.Default, register.Assemblies, services);
+            var configs = new PublisherBuilder<ProducerConfig>(BusName.Kafka, ServerName.Default, register.Assemblies, services);
             configurer(configs);
             configs.ValidateAfterConfigured();
             return services;
         }
 
         public static IServiceCollection AddKafkaProducerSwitcher<TSwitch>(this IServiceCollection services,
-            Action<ProducerSwitcherBuilder<TSwitch, ProducerConfig>> configurer)
+            Action<PublisherSwitcherBuilder<TSwitch, ProducerConfig>> configurer)
             where TSwitch : struct, Enum
         {
             AddProducerDependencies(services);
             using var register = new AssemblyRegister(services);
-            var configs = new ProducerSwitcherBuilder<TSwitch, ProducerConfig>(BusName.Kafka, register.Assemblies, services);
+            var configs = new PublisherSwitcherBuilder<TSwitch, ProducerConfig>(BusName.Kafka, register.Assemblies, services);
             configurer(configs);
             configs.ValidateAfterConfigured();
             return services;
@@ -64,7 +64,7 @@ namespace GuimoSoft.Bus.Kafka
 
         private static void AddConsumerDependencies(IServiceCollection services)
         {
-            services.TryAddTransient<IKafkaMessageConsumerManager, KafkaMessageConsumerManager>();
+            services.TryAddTransient<IKafkaEventConsumerManager, KafkaEventConsumerManager>();
 
             services.TryAddSingleton(typeof(IConsumeContextAccessor<>), typeof(ConsumeContextAccessor<>));
 
@@ -74,11 +74,13 @@ namespace GuimoSoft.Bus.Kafka
 
             services.TryAddSingleton(typeof(MediatorPublisherMiddleware<>));
 
+            services.TryAddSingleton(typeof(EventDispatcherMiddleware<>));
+
             services.TryAddTransient<IKafkaConsumerBuilder, KafkaConsumerBuilder>();
 
-            services.TryAddTransient<IKafkaTopicMessageConsumer, KafkaTopicMessageConsumer>();
+            services.TryAddTransient<IKafkaTopicEventConsumer, KafkaTopicEventConsumer>();
 
-            services.AddHostedService<KafkaConsumerMessageHandler>();
+            services.AddHostedService<KafkaConsumerEventHandler>();
         }
 
         private static void AddProducerDependencies(IServiceCollection services)
@@ -86,8 +88,8 @@ namespace GuimoSoft.Bus.Kafka
             services.TryAddTransient<IKafkaProducerBuilder, KafkaProducerBuilder>();
 
             Singletons
-                .TryRegisterAndGetProducerManager(services)
-                .Add<KafkaMessageProducer>(BusName.Kafka);
+                .TryRegisterAndGetDispatcherManager(services)
+                .Add<KafkaEventProducer>(BusName.Kafka);
         }
 
         private sealed class AssemblyRegister : IDisposable

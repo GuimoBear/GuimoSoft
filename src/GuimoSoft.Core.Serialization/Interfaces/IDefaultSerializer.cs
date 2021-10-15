@@ -4,8 +4,8 @@ namespace GuimoSoft.Core.Serialization.Interfaces
 {
     public interface IDefaultSerializer
     {
-        byte[] Serialize(object message);
+        byte[] Serialize(object @event);
 
-        object Deserialize(Type messageType, byte[] content);
+        object Deserialize(Type eventType, byte[] content);
     }
 }

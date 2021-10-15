@@ -1,16 +1,16 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Confluent.Kafka;
+using GuimoSoft.Benchmark.Bus.Fakes;
+using GuimoSoft.Benchmark.Bus.Handlers.Benchmark;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Kafka.Consumer;
+using GuimoSoft.Core.Serialization;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Benchmark.Bus.Fakes;
-using GuimoSoft.Benchmark.Bus.Handlers.Benchmark;
-using GuimoSoft.Bus.Core.Internal;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Core.Serialization;
 
 namespace GuimoSoft.Benchmark.Bus
 {
@@ -26,16 +26,16 @@ namespace GuimoSoft.Benchmark.Bus
             services
                 .InjectInMemoryKafka()
                 .AddMediatR(typeof(BenchmarkBase).Assembly)
-                .AddSingleton<MediatorPublisherMiddleware<BenchmarkMessage>>();
+                .AddSingleton<MediatorPublisherMiddleware<BenchmarkEvent>>();
 
             Services = services.BuildServiceProvider(true);
 
-            Producer = Services.GetRequiredService<IMessageProducer>();
+            Producer = Services.GetRequiredService<IEventBus>();
             var consumerBuilder = Services.GetRequiredService<IKafkaConsumerBuilder>();
 
             Consumer = consumerBuilder.Build(ServerName.Default);
 
-            Consumer.Subscribe(BenchmarkMessage.TOPIC_NAME);
+            Consumer.Subscribe(BenchmarkEvent.TOPIC_NAME);
 
             return Task.CompletedTask;
         }
@@ -49,15 +49,15 @@ namespace GuimoSoft.Benchmark.Bus
             return Task.CompletedTask;
         }
 
-        [Benchmark(Description = "produce and consume message")]
+        [Benchmark(Description = "produce and consume event")]
         public override async Task ProduceAndConsume()
         {
             await Produce();
             var result = Consumer.Consume(CancellationTokenSource.Token);
-            var message = JsonMessageSerializer.Instance.Deserialize(typeof(BenchmarkMessage), result.Message.Value) as BenchmarkMessage;
-            var messageContext = new ConsumeContext<BenchmarkMessage>(message, Services, new ConsumeInformations(BusName.Kafka, ServerName.Default, BenchmarkMessage.TOPIC_NAME), CancellationTokenSource.Token);
-            var mediator = Services.GetRequiredService<MediatorPublisherMiddleware<BenchmarkMessage>>();
-            await mediator.InvokeAsync(messageContext, () => Task.CompletedTask);
+            var @event = JsonEventSerializer.Instance.Deserialize(typeof(BenchmarkEvent), result.Message.Value) as BenchmarkEvent;
+            var eventContext = new ConsumeContext<BenchmarkEvent>(@event, Services, new ConsumeInformations(BusName.Kafka, ServerName.Default, BenchmarkEvent.TOPIC_NAME), CancellationTokenSource.Token);
+            var mediator = Services.GetRequiredService<MediatorPublisherMiddleware<BenchmarkEvent>>();
+            await mediator.InvokeAsync(eventContext, () => Task.CompletedTask);
             WaitId();
         }
     }

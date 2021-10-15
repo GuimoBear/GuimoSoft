@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace GuimoSoft.Bus.Kafka.Consumer
 {
-    public interface IKafkaTopicMessageConsumer
+    public interface IKafkaTopicEventConsumer
     {
         void ConsumeUntilCancellationIsRequested(Enum @switch, string topic, CancellationToken cancellationToken);
     }

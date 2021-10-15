@@ -10,11 +10,11 @@ namespace GuimoSoft.Bus.Tests
         [Fact]
         public void When_Serialize_Then_NotThrowAnyException()
         {
-            var fakeMessage = new OtherFakeMessage("test", "115");
+            var fakeEvent = new OtherFakeEvent("test", "115");
 
-            var expected = JsonSerializer.SerializeToUtf8Bytes(fakeMessage);
+            var expected = JsonSerializer.SerializeToUtf8Bytes(fakeEvent);
 
-            var actual = OtherFakeMessageSerializer.Instance.Serialize(fakeMessage);
+            var actual = OtherFakeEventSerializer.Instance.Serialize(fakeEvent);
 
             actual
                 .Should().BeEquivalentTo(expected);
@@ -23,11 +23,11 @@ namespace GuimoSoft.Bus.Tests
         [Fact]
         public void When_Deserialize_Then_NotThrowAnyException()
         {
-            var expected = new OtherFakeMessage("test", "115");
+            var expected = new OtherFakeEvent("test", "115");
 
             var serializedContent = JsonSerializer.SerializeToUtf8Bytes(expected);
 
-            var actual = OtherFakeMessageSerializer.Instance.Deserialize(typeof(OtherFakeMessage), serializedContent);
+            var actual = OtherFakeEventSerializer.Instance.Deserialize(typeof(OtherFakeEvent), serializedContent);
 
             actual
                 .Should().BeEquivalentTo(expected);

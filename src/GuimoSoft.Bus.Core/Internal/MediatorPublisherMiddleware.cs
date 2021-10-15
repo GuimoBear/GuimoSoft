@@ -7,13 +7,13 @@ using GuimoSoft.Bus.Abstractions.Consumer;
 
 namespace GuimoSoft.Bus.Core.Internal
 {
-    internal sealed class MediatorPublisherMiddleware<TMessage> : IMessageMiddleware<TMessage>
-        where TMessage : IMessage
+    internal sealed class MediatorPublisherMiddleware<TEvent> : IEventMiddleware<TEvent>
+        where TEvent : IEvent
     {
-        public async Task InvokeAsync(ConsumeContext<TMessage> context, Func<Task> next)
+        public async Task InvokeAsync(ConsumeContext<TEvent> context, Func<Task> next)
         {
             var mediator = context.Services.GetRequiredService<IMediator>();
-            await mediator.Publish(context.Message, context.CancellationToken).ConfigureAwait(false);
+            await mediator.Publish(context.Event, context.CancellationToken).ConfigureAwait(false);
             await next();
         }
     }
