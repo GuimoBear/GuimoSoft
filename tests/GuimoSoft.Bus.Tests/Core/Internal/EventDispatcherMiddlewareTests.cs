@@ -2,6 +2,7 @@
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Tests.Fakes;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Linq;
@@ -16,7 +17,12 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
         [Fact]
         public void InvokeAsyncShouldBeExecutedWithoudAnyProblem()
         {
-            var consumeContext = new ConsumeContext<FakeEvent>(new FakeEvent("", ""), Mock.Of<IServiceProvider>(), new ConsumeInformations(BusName.None, ServerName.Default, ""), CancellationToken.None);
+            var services = new ServiceCollection();
+            services.AddSingleton<FakeEventnHandler>();
+            using var serviceProvider = services.BuildServiceProvider(true);
+
+            var consumeContext = new ConsumeContext<FakeEvent>(new FakeEvent("", ""), serviceProvider, new ConsumeInformations(BusName.None, ServerName.Default, ""), CancellationToken.None);
+
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
