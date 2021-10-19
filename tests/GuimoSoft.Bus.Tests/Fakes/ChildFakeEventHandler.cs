@@ -1,4 +1,5 @@
-﻿using GuimoSoft.Bus.Abstractions.Consumer;
+﻿using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace GuimoSoft.Bus.Tests.Fakes
         }
     }
 
-    public class ChildFakeEventThrowExceptionHandler : IEventHandler<ChildFakeEvent>
+    public class ChildFakeEventThrowExceptionHandler : IEventHandler<ChildFakeEvent>, IEvent
     {
         public Task Handle(ChildFakeEvent notification, CancellationToken cancellationToken)
         {
