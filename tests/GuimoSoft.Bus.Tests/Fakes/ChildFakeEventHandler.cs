@@ -11,4 +11,12 @@ namespace GuimoSoft.Bus.Tests.Fakes
             return Task.CompletedTask;
         }
     }
+
+    public class ChildFakeEventThrowExceptionHandler : IEventHandler<ChildFakeEvent>
+    {
+        public Task Handle(ChildFakeEvent notification, CancellationToken cancellationToken)
+        {
+            throw new System.Exception();
+        }
+    }
 }

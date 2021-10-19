@@ -25,10 +25,13 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
                 var middleware = new EventDispatcherMiddleware<FakeEvent>();
 
                 middleware.HandlerTypes
-                    .Should().HaveCount(1);
+                    .Should().HaveCount(2);
 
-                middleware.HandlerTypes.First()
-                    .Should().Be(typeof(FakeEventHandler));
+                middleware.HandlerTypes
+                    .Should().Contain(typeof(FakeEventHandler));
+
+                middleware.HandlerTypes
+                    .Should().Contain(typeof(FakeEventThrowExceptionHandler));
             }
         }
 
@@ -43,13 +46,19 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
                 var middleware = new EventDispatcherMiddleware<ChildFakeEvent>();
 
                 middleware.HandlerTypes
-                    .Should().HaveCount(2);
+                    .Should().HaveCount(4);
 
                 middleware.HandlerTypes
                     .Should().Contain(typeof(ChildFakeEventHandler));
 
                 middleware.HandlerTypes
+                    .Should().Contain(typeof(ChildFakeEventThrowExceptionHandler));
+
+                middleware.HandlerTypes
                     .Should().Contain(typeof(FakeEventHandler));
+
+                middleware.HandlerTypes
+                    .Should().Contain(typeof(FakeEventThrowExceptionHandler));
             }
         }
 

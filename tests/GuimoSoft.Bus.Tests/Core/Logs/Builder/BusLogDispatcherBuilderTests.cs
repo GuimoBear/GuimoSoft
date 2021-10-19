@@ -25,6 +25,14 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
             var moqServiceProvider = new Mock<IServiceProvider>();
 
             moqServiceProvider
+                .Setup(x => x.GetService(typeof(FakeEventHandler)))
+                .Returns(new FakeEventHandler());
+
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(FakeEventThrowExceptionHandler)))
+                .Returns(new FakeEventThrowExceptionHandler());
+
+            moqServiceProvider
                 .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)))
                 .Returns(new EventDispatcherMiddleware<BusLogEvent>());
 

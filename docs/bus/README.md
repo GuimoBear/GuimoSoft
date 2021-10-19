@@ -36,6 +36,8 @@ public interface IEventHandler<in TEvent>
 
 Esta interface equivale a última etapa da pipeline, será chamada quando o Bus identificar um evendo e nenhum middleware pare o fluxo de execução da pipeline.
 
+> **As exceções não tratadas nos handlers são ignoradas, é importante trata-las dentro da implementação ou o erro será ignorado.**
+
 ```csharp
 public interface IConsumeContextAccessor<TEvent> 
     where TEvent : IEvent
