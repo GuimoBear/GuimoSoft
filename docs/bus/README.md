@@ -12,12 +12,12 @@ O projeto é dividido em dois pacotes:
 
 ## 1. GuimoSoft.Bus.Abstractions
 
-Neste pacote residem as abstrações necessárias para integração do domínio da aplicação com o Bus, ele depende diretamente do [MediatR](https://github.com/jbogard/MediatR).
+Neste pacote residem as abstrações necessárias para integração do domínio da aplicação com o Bus.
 
 ### Existem quatro interfaces principais que estão nesta LIB
 
 ```csharp
-public interface IEvent : INotification
+public interface IEvent
 ```
 
 Esta interface deve ser implementada em todas as mensagens que serão transitadas pelo Bus, seja para seu consumo ou para a sua produção, é apenas uma assinatura, não existe nada a ser implementado.
@@ -30,8 +30,8 @@ public interface IEventMiddleware<TType>
 Esta interface contém o contrato do que é um middleware na pipeline de consumo de uma mensagem no Bus, mais a frente mostraremos como registrá-la e como ordená-la dentro desta pipeline.
 
 ```csharp
-public interface INotificationHandler<in TNotification>
-    where TNotification : INotification
+public interface IEventHandler<in TEvent>
+    where TEvent : IEvent
 ```
 
 Esta interface equivale a última etapa da pipeline, será chamada quando o Bus identificar um evendo e nenhum middleware pare o fluxo de execução da pipeline.
@@ -41,9 +41,19 @@ public interface IConsumeContextAccessor<TEvent>
     where TEvent : IEvent
 ```
 
-Esta interface possibilita a passagem do ConsumeContext para o NotificationHandler, caso exista a necessidade de utilizar o contexto, injete esta dependência onde queira utilizar.
+Esta interface possibilita a passagem do ConsumeContext para o EventHandler, caso exista a necessidade de utilizar o contexto, injete esta dependência onde queira utilizar.
 
-> **É importante frizar que o `IConsumeContextAccessor` está associado diretamente ao tipo de mensagem no `INotificationHandler`, caso seja utilizado um tipo de mensagem diferente no `IConsumeContextAccessor` do tipo de mensagem no `INotificationHandler`, a propriedade `Context` será nula(Isso também vale para os `IConsumeContextAccessor` injetados nos objetos subjacentes ao `INotificationHandler`, como serviços, repositórios, etc).**
+O uso do `IConsumeContextAccessor` deve ser explicitado no momento de configurar o consumidor, atravez do método `WithContextAccessor`
+
+```csharp        
+configurer
+    .Listen()
+        .OfType<HelloEvent>()
+        .WithContextAccessor()
+        .FromEndpoint(HelloEvent.TOPIC_NAME)
+```
+
+> **É importante frizar que o `IConsumeContextAccessor` está associado diretamente ao tipo de mensagem no `IEventHandler`, caso seja utilizado um tipo de mensagem diferente no `IConsumeContextAccessor` do tipo de mensagem no `IEventHandler`, a propriedade `Context` será nula(Isso também vale para os `IConsumeContextAccessor` injetados nos objetos subjacentes ao `IEventHandler`, como serviços, repositórios, etc).**
 
 ### Existem também duas classes
 
@@ -112,8 +122,9 @@ services
     {
         configurer
             .WithDefaultSerializer(CustomDefaultSerializer.Instance) // (OPCIONAL) Serializador padrão
-            .Produce()
-                .FromType<HelloEvent>()
+            .Publish()
+                .OfType<HelloEvent>()
+                .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
                 .WithSerializer(HelloEventSerializer.Instance) // (OPCIONAL) Serializador por tipo
                 .ToEndpoint(HelloEvent.TOPIC_NAME)
             .ToServer(options =>
@@ -121,7 +132,7 @@ services
                 options.BootstrapServers = "localhost:9093";
                 options.Acks = Confluent.Kafka.Acks.All;
             })
-            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
+            .AddAnotherAssemblies(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para registro dos IEventHandlers
     });
 ```
 
@@ -157,8 +168,9 @@ services
     {
         configurer
             .WithDefaultSerializer(CustomDefaultSerializer.Instance) // (OPCIONAL) Serializador padrão
-            .Consume()
+            .Listen()
                 .OfType<HelloEvent>()
+                .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
                 .WithSerializer(HelloEventSerializer.Instance) // (OPCIONAL) Serializador por tipo
                 .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Transient) // (OPCIONAL) Middleware
                 .FromEndpoint(HelloEvent.TOPIC_NAME)
@@ -167,7 +179,7 @@ services
                 options.BootstrapServers = "google.com:9093";
                 options.GroupId = "test";
             })
-            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
+            .AddAnotherAssemblies(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para registro dos IEventHandlers
     })
 ```
 
@@ -180,4 +192,4 @@ services
 > 7. **Caso queira entender como funcinam e como implementar e integrar um middleware no fluxo, entenda a pipeline [_aqui_](pipeline.md) e [aprenda a implementar e a integrar um middleware](middlewares.md)**.
 > 8. **Caso queira entender como funcionam os serializadores e como implementá-los, veja [_Como criar serializadores_](serializadores.md)**.
 
-#### *É necessário que o Handler esteja no mesmo assembly da mensagem, visto que o registro no MediatR é feito usando os assemblies das mensagens
+#### *É necessário que o Handler esteja no mesmo assembly da mensagem, visto que o registro dos IEventHandler 

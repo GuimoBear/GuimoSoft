@@ -47,7 +47,7 @@ namespace GuimoSoft.Bus.Core.Publisher
             return this;
         }
 
-        public PublisherBuilder<TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        public PublisherBuilder<TOptions> AddAnotherAssemblies(params Assembly[] assemblies)
         {
             if (assemblies is not null)
                 foreach (var assembly in assemblies)

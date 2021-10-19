@@ -3,7 +3,8 @@ using Confluent.Kafka;
 using GuimoSoft.Benchmark.Bus.Fakes;
 using GuimoSoft.Benchmark.Bus.Handlers.Benchmark;
 using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
+using GuimoSoft.Bus.Kafka;
 using GuimoSoft.Bus.Kafka.Consumer;
 using GuimoSoft.Core.Serialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,12 @@ namespace GuimoSoft.Benchmark.Bus
         {
             var services = new ServiceCollection();
             services
+                .AddKafkaConsumer(configurer => 
+                    configurer
+                        .FromServer(_ => { })
+                        .AddAnotherAssemblies(typeof(BenchmarkBase).Assembly))
                 .InjectInMemoryKafka()
+                .AddSingleton<BenchmarkEventHandler>()
                 .AddSingleton(new EventDispatcherMiddleware<BenchmarkEvent>());
 
             Services = services.BuildServiceProvider(true);

@@ -38,12 +38,12 @@ Esta classe possui as seguintes propriedades:
 
 ## Capturando logs
 
-Capturar um log, assim como capturar uma mensagem consumida, só depende do `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR).
+Capturar um log, assim como capturar uma mensagem consumida, só depende do `IEventHandler`.
 
 **1.** Log padrão:
 
 ```csharp
-public class LogEventHandler : INotificationHandler<BusLogEvent>
+public class LogEventHandler : IEventHandler<BusLogEvent>
 {
     public async Task Handle(BusLogEvent logEvent, CancellationToken cancellationToken);
 }
@@ -52,7 +52,7 @@ public class LogEventHandler : INotificationHandler<BusLogEvent>
 **2.** Log tipado:
 
 ```csharp
-public class HelloLogEventHandler : INotificationHandler<BusTypedLogEvent<HelloEvent>>
+public class HelloLogEventHandler : IEventHandler<BusTypedLogEvent<HelloEvent>>
 {
     public async Task Handle(BusTypedLogEvent<HelloEvent> typedLogEvent, CancellationToken cancellationToken);
 }

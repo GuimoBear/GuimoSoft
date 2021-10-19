@@ -4,6 +4,7 @@ using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Core.Serialization;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
 
 namespace GuimoSoft.Bus.Core.Listener
 {
@@ -53,6 +54,12 @@ namespace GuimoSoft.Bus.Core.Listener
             where TMiddleware : class, IEventMiddleware<TEvent>
         {
             _middlewareManager.Register<TEvent, TMiddleware>(BusName.Kafka, _switch, factory, lifetime);
+            return this;
+        }
+
+        public TypedEndpointListenerBuilder<TOptions, TEvent> WithContextAccessor()
+        {
+            _middlewareManager.Register<TEvent, ConsumeContextAccessorInitializerMiddleware<TEvent>>(BusName.Kafka, _switch, ServiceLifetime.Singleton);
             return this;
         }
 

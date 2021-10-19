@@ -1,17 +1,18 @@
 ﻿using Confluent.Kafka;
 using FluentAssertions;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Exceptions;
 using GuimoSoft.Bus.Core.Interfaces;
 using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
+using GuimoSoft.Bus.Core.Logs;
 using GuimoSoft.Bus.Kafka;
 using GuimoSoft.Bus.Kafka.Consumer;
 using GuimoSoft.Bus.Kafka.Producer;
 using GuimoSoft.Bus.Tests.Fakes;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests
@@ -34,6 +35,7 @@ namespace GuimoSoft.Bus.Tests
                             .Listen()
                                 .OfType<FakeEvent>()
                                 .WithMiddleware<FakeEventMiddleware>(ServiceLifetime.Transient)
+                                .WithContextAccessor()
                                 .FromEndpoint(FakeEvent.TOPIC_NAME)
                             .Listen()
                                 .OfType<OtherFakeEvent>()
@@ -43,13 +45,14 @@ namespace GuimoSoft.Bus.Tests
                                 .OfType<FakePipelineEvent>()
                                 .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Scoped)
                                 .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo(), ServiceLifetime.Singleton)
+                                .WithContextAccessor()
                                 .FromEndpoint(FakePipelineEvent.TOPIC_NAME)
                             .FromServer(options =>
                             {
                                 options.GroupId = "test";
                                 options.BootstrapServers = "localhost";
                             })
-                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
+                            .AddAnotherAssemblies(typeof(ServiceCollectionExtensionsTests).Assembly);
                     })
                     .AddKafkaProducer(configurer =>
                     {
@@ -68,14 +71,13 @@ namespace GuimoSoft.Bus.Tests
                                 options.BootstrapServers = "localhost";
                                 options.Acks = Acks.All;
                             })
-                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
+                            .AddAnotherAssemblies(typeof(ServiceCollectionExtensionsTests).Assembly);
                     });
 
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaEventConsumerManager)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IConsumeContextAccessor<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogDispatcher)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumeContextAccessorInitializerMiddleware<>)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(MediatorPublisherMiddleware<>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumeContextAccessorInitializerMiddleware<>)).Should().BeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaConsumerBuilder)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaTopicEventConsumer)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ImplementationType == typeof(KafkaConsumerEventHandler)).Should().NotBeNull();
@@ -85,9 +87,25 @@ namespace GuimoSoft.Bus.Tests
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventTypeCache)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ConsumerConfig>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ProducerConfig>)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMediator)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaProducerBuilder)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventBus)).Should().NotBeNull();
+
+                // => Validate BusLog and BusException EventHandlers
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(ChildFakeEventExceptionHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(ChildFakeEventLogHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(FakeEventExceptionHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(FakeEventLogHandler)).Should().NotBeNull();
+
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(BusExceptionEventHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(BusLogEventHandler)).Should().NotBeNull();
+
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<ChildFakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedLogEvent<ChildFakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedLogEvent<FakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusExceptionEvent>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusLogEvent>)).Should().NotBeNull();
+                // <= Validate BusLog and BusException EventHandlers
 
                 var eventMiddlewareServiceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareManager));
 
@@ -110,6 +128,11 @@ namespace GuimoSoft.Bus.Tests
                 eventMiddleware
                     .eventMiddlewareTypes[(BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeEvent))]
                     .First()
+                    .Should().Be(typeof(ConsumeContextAccessorInitializerMiddleware<FakeEvent>));
+
+                eventMiddleware
+                    .eventMiddlewareTypes[(BusName.Kafka, Bus.Abstractions.ServerName.Default, typeof(FakeEvent))]
+                    .Skip(1).First()
                     .Should().Be(typeof(FakeEventMiddleware));
 
                 var sp = services.BuildServiceProvider(true);
@@ -131,7 +154,7 @@ namespace GuimoSoft.Bus.Tests
                     .AddKafkaConsumerSwitcher<ServerName>(switcher =>
                     {
                         switcher
-                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
+                            .AddAnotherAssemblies(typeof(ServiceCollectionExtensionsTests).Assembly);
 
                         switcher
                             .When(ServerName.Host1)
@@ -153,6 +176,7 @@ namespace GuimoSoft.Bus.Tests
                                     .OfType<FakePipelineEvent>()
                                     .WithMiddleware<FakePipelineEventMiddlewareOne>()
                                     .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .WithContextAccessor()
                                     .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
 
                         switcher
@@ -175,13 +199,14 @@ namespace GuimoSoft.Bus.Tests
                                     .OfType<FakePipelineEvent>()
                                     .WithMiddleware<FakePipelineEventMiddlewareOne>()
                                     .WithMiddleware(_ => new FakePipelineEventMiddlewareTwo())
+                                    .WithContextAccessor()
                                     .FromEndpoint(FakePipelineEvent.TOPIC_NAME);
 
                     })
                     .AddKafkaProducerSwitcher<ServerName>(switcher =>
                     {
                         switcher
-                            .AddAnotherAssembliesToMediatR(typeof(ServiceCollectionExtensionsTests).Assembly);
+                            .AddAnotherAssemblies(typeof(ServiceCollectionExtensionsTests).Assembly);
 
                         switcher
                             .When(ServerName.Host1)
@@ -219,8 +244,7 @@ namespace GuimoSoft.Bus.Tests
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaEventConsumerManager)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IConsumeContextAccessor<>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusLogDispatcher)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumeContextAccessorInitializerMiddleware<>)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(MediatorPublisherMiddleware<>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumeContextAccessorInitializerMiddleware<>)).Should().BeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaConsumerBuilder)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaTopicEventConsumer)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ImplementationType == typeof(KafkaConsumerEventHandler)).Should().NotBeNull();
@@ -230,9 +254,25 @@ namespace GuimoSoft.Bus.Tests
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventTypeCache)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ConsumerConfig>)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IBusOptionsDictionary<ProducerConfig>)).Should().NotBeNull();
-                services.FirstOrDefault(sd => sd.ServiceType == typeof(IMediator)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IKafkaProducerBuilder)).Should().NotBeNull();
                 services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventBus)).Should().NotBeNull();
+
+                // => Validate BusLog and BusException EventHandlers
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(ChildFakeEventExceptionHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(ChildFakeEventLogHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(FakeEventExceptionHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(FakeEventLogHandler)).Should().NotBeNull();
+
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(BusExceptionEventHandler)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(BusLogEventHandler)).Should().NotBeNull();
+
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<ChildFakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedLogEvent<ChildFakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusTypedLogEvent<FakeEvent>>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusExceptionEvent>)).Should().NotBeNull();
+                services.FirstOrDefault(sd => sd.ServiceType == typeof(EventDispatcherMiddleware<BusLogEvent>)).Should().NotBeNull();
+                // <= Validate BusLog and BusException EventHandlers
 
                 var eventMiddlewareServiceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(IEventMiddlewareManager));
 

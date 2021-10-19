@@ -19,7 +19,7 @@ As exceções se enquadram em 6 categorias diferentes e estão descritos no enum
 
 > O **`BusLogLevel`** possui os mesmos valores do [**`LogLevel`**](https://github.com/aspnet/Logging/blob/master/src/Microsoft.Extensions.Logging.Abstractions/LogLevel.cs) da [**`Microsoft.Extensions.Logging.Abstractions`**](https://github.com/aspnet/Logging/tree/master/src/Microsoft.Extensions.Logging.Abstractions)
 
-A captura de logs será feita, assim como os handlers das mensagens, dependem do `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR).
+A captura de logs será feita, assim como os handlers das mensagens, dependem do `IEventHandler`.
 
 ## Entendendo os logs
 

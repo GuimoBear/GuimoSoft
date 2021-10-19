@@ -2,6 +2,6 @@
 {
     public interface IKeyValueStage
     {
-        ILogLevelAndDataStage FromValue(object value);
+        ILogLevelAndDataStage WithValue(object value);
     }
 }

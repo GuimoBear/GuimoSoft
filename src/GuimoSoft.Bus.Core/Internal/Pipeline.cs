@@ -53,10 +53,10 @@ namespace GuimoSoft.Bus.Core.Internal
             return context => current(context, () => source(context));
         }
 
-    private static readonly ConcurrentDictionary<Type, Func<object, IServiceProvider, ConsumeInformations, CancellationToken, ConsumeContextBase>> _constructorDelegates
+        private static readonly ConcurrentDictionary<Type, Func<object, IServiceProvider, ConsumeInformations, CancellationToken, ConsumeContextBase>> _constructorDelegates
             = new ();
 
-        private static ConsumeContextBase CreateContext(Type eventType, object @event, IServiceProvider services, ConsumeInformations informations, CancellationToken cancellationToken)
+        internal static ConsumeContextBase CreateContext(Type eventType, object @event, IServiceProvider services, ConsumeInformations informations, CancellationToken cancellationToken)
         {
             if (!_constructorDelegates.TryGetValue(eventType, out var ctor))
             {

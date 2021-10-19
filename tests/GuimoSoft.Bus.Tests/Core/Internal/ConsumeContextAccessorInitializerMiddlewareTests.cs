@@ -1,13 +1,10 @@
 ﻿using FluentAssertions;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
+using GuimoSoft.Bus.Tests.Fakes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Internal;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core.Internal

@@ -38,12 +38,12 @@ Esta classe possui as seguintes propriedades:
 
 ## Capturando exceções
 
-Capturar uma exceção, assim como capturar uma mensagem consumida, só depende do `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR).
+Capturar uma exceção, assim como capturar uma mensagem consumida, só depende do `IEventHandler`.
 
 **1.** Exceção padrão:
 
 ```csharp
-public class ExceptionEventHandler : INotificationHandler<BusExceptionEvent>
+public class ExceptionEventHandler : IEventHandler<BusExceptionEvent>
 {
     public async Task Handle(BusExceptionEvent exceptionEvent, CancellationToken cancellationToken);
 }
@@ -52,7 +52,7 @@ public class ExceptionEventHandler : INotificationHandler<BusExceptionEvent>
 **2.** Exceção tipada:
 
 ```csharp
-public class HelloExceptionEventHandler : INotificationHandler<BusTypedExceptionEvent<HelloEvent>>
+public class HelloExceptionEventHandler : IEventHandler<BusTypedExceptionEvent<HelloEvent>>
 {
     public async Task Handle(BusTypedExceptionEvent<HelloEvent> typedExceptionEvent, CancellationToken cancellationToken);
 }

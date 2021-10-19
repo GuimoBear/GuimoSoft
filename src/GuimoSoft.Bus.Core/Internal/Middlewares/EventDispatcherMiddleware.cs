@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GuimoSoft.Bus.Core.Internal
+namespace GuimoSoft.Bus.Core.Internal.Middlewares
 {
     internal abstract class EventDispatcherMiddlewareBase
     {
@@ -28,7 +28,7 @@ namespace GuimoSoft.Bus.Core.Internal
         public EventDispatcherMiddleware()
         {
             _handlerCalls = CreateHandleCalls();
-            HandlerTypes =_handlerCalls.Keys;
+            HandlerTypes = _handlerCalls.Keys;
         }
 
         public async Task InvokeAsync(ConsumeContext<TEvent> context, Func<Task> next)
@@ -58,16 +58,23 @@ namespace GuimoSoft.Bus.Core.Internal
 
         private static IEnumerable<Type> GetHandlerTypes(Type eventType)
         {
-            return Singletons
+            var types = Singletons
                    .GetAssemblies()
                    .SelectMany(a => a.GetTypes())
                    .Where(type =>
                           type
                               .GetInterfaces()
                               .Any(@int =>
-                                   @int.IsGenericType &&
-                                   @int.GetGenericTypeDefinition().Equals(_eventHandlerGenericTypeDefinition) &&
-                                   @int.GetGenericArguments()[0].Equals(eventType)));
+                              {
+                                  if (@int.IsGenericType && @int.GetGenericTypeDefinition().Equals(_eventHandlerGenericTypeDefinition))
+                                  {
+                                      var generic = @int.GetGenericArguments()[0];
+                                      return generic.Equals(eventType) || generic.IsAssignableFrom(eventType);
+                                  }
+                                  return false;
+                              }))
+                   .ToList();
+            return types;
         }
 
         private static MethodInfo GetHandleMethod(Type handlerType)
@@ -82,14 +89,31 @@ namespace GuimoSoft.Bus.Core.Internal
 
         private static Emit<ILHandlerCall> CreateEmitter(Type handlerType, MethodInfo handleMethod)
         {
-            return Emit<ILHandlerCall>
-                    .NewDynamicMethod()
-                    .LoadArgument(0)
-                    .CastClass(handlerType)
-                    .LoadArgument(1)
-                    .LoadArgument(2)
-                    .Call(handleMethod)
-                    .Return();
+            var eventHandlerGenericType = handlerType.GetInterface("IEventHandler`1").GetGenericArguments()[0];
+            if (eventHandlerGenericType == typeof(TEvent))
+            {
+                return Emit<ILHandlerCall>
+                        .NewDynamicMethod()
+                        .LoadArgument(0)
+                        .CastClass(handlerType)
+                        .LoadArgument(1)
+                        .LoadArgument(2)
+                        .Call(handleMethod)
+                        .Return();
+            }
+            else
+            {
+                var parentType = eventHandlerGenericType;
+                return Emit<ILHandlerCall>
+                        .NewDynamicMethod()
+                        .LoadArgument(0)
+                        .CastClass(handlerType)
+                        .LoadArgument(1)
+                        .CastClass(parentType)
+                        .LoadArgument(2)
+                        .Call(handleMethod)
+                        .Return();
+            }
         }
         #endregion
     }

@@ -1,10 +1,9 @@
 ﻿using DeepEqual.Syntax;
 using FluentAssertions;
-using MediatR;
-using Moq;
-using System;
 using GuimoSoft.Bus.Core.Logs;
 using GuimoSoft.Bus.Core.Logs.Builder;
+using Moq;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core.Logs
@@ -14,7 +13,7 @@ namespace GuimoSoft.Bus.Tests.Core.Logs
         [Fact]
         public void ConstructorShouldCreateBusLogDispatcher()
         {
-            var sut = new BusLogDispatcher(Mock.Of<IMediator>());
+            var sut = new BusLogDispatcher(Mock.Of<IServiceProvider>());
             Assert.IsType<BusLogDispatcher>(sut);
         }
 
@@ -28,11 +27,11 @@ namespace GuimoSoft.Bus.Tests.Core.Logs
         [Fact]
         public void FromBusFacts()
         {
-            var mediator = Mock.Of<IMediator>();
+            var serviceProvider = Mock.Of<IServiceProvider>();
 
-            var expectedLogBuilder = new BusLogDispatcherBuilder(mediator, Bus.Abstractions.BusName.Kafka);
+            var expectedLogBuilder = new BusLogDispatcherBuilder(serviceProvider, Bus.Abstractions.BusName.Kafka);
 
-            var sut = new BusLogDispatcher(mediator);
+            var sut = new BusLogDispatcher(serviceProvider);
 
             var builder = sut.FromBus(Bus.Abstractions.BusName.Kafka);
 

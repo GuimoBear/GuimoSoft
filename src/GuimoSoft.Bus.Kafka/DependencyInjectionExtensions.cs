@@ -13,6 +13,7 @@ using GuimoSoft.Bus.Kafka.Consumer;
 using GuimoSoft.Bus.Kafka.Producer;
 using GuimoSoft.Bus.Core.Listener;
 using GuimoSoft.Bus.Core.Publisher;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
 
 namespace GuimoSoft.Bus.Kafka
 {
@@ -69,10 +70,6 @@ namespace GuimoSoft.Bus.Kafka
             services.TryAddSingleton(typeof(IConsumeContextAccessor<>), typeof(ConsumeContextAccessor<>));
 
             services.TryAddSingleton(typeof(IBusLogDispatcher), typeof(BusLogDispatcher));
-
-            services.TryAddSingleton(typeof(ConsumeContextAccessorInitializerMiddleware<>));
-
-            services.TryAddSingleton(typeof(MediatorPublisherMiddleware<>));
 
             services.TryAddSingleton(typeof(EventDispatcherMiddleware<>));
 

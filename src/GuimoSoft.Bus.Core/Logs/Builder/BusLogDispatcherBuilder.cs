@@ -1,11 +1,11 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
+using GuimoSoft.Bus.Core.Logs.Builder.Stages;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Internal;
-using GuimoSoft.Bus.Core.Logs.Builder.Stages;
 
 namespace GuimoSoft.Bus.Core.Logs.Builder
 {
@@ -23,7 +23,7 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
         IBeforePublishStage,
         IPublishStage
     {
-        private readonly IMediator _mediator;
+        private readonly IServiceProvider _services;
 
         private readonly BusName _bus;
         private Enum _switch;
@@ -39,9 +39,9 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
         private string _currentDataKey;
         private readonly Dictionary<string, object> _data;
 
-        internal BusLogDispatcherBuilder(IMediator mediator, BusName bus)
+        internal BusLogDispatcherBuilder(IServiceProvider services, BusName bus)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _services = services ?? throw new ArgumentNullException(nameof(services));
             _bus = bus;
             _data = new();
         }
@@ -98,7 +98,7 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
             return this;
         }
 
-        public ILogLevelAndDataStage FromValue(object value)
+        public ILogLevelAndDataStage WithValue(object value)
         {
             _data[_currentDataKey] = value;
             return this;
@@ -129,7 +129,7 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
             if (_eventType != default && Singletons.GetBusTypedLogEventContainingAnHandlerCollection().Contains(_eventType))
                 await PublishTypedLogEvent(logEvent, cancellationToken);
             else
-                await _mediator.Publish(logEvent, cancellationToken);
+                await EventDispatcherInvokeAsync(logEvent, cancellationToken);
         }
 
         public async Task AnException(Exception exception, CancellationToken cancellationToken = default)
@@ -149,7 +149,7 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
             if (_eventType != default && Singletons.GetBusTypedExceptionEventContainingAnHandlerCollection().Contains(_eventType))
                 await PublishTypeExceptionEvent(exceptionEvent, cancellationToken);
             else
-                await _mediator.Publish(exceptionEvent, cancellationToken);
+                await EventDispatcherInvokeAsync(exceptionEvent, cancellationToken);
         }
 
         private static void Validate(Exception exception)
@@ -162,14 +162,26 @@ namespace GuimoSoft.Bus.Core.Logs.Builder
         {
             var typedLogEventFactory = DelegateCache.GetOrAddBusLogEventFactory(_eventType);
             var typedLogEvent = typedLogEventFactory(logEvent, _eventObject);
-            await _mediator.Publish(typedLogEvent, cancellationToken);
+
+            await EventDispatcherInvokeAsync(typedLogEvent, cancellationToken);
         }
 
         private async Task PublishTypeExceptionEvent(BusExceptionEvent exceptionEvent, CancellationToken cancellationToken)
         {
             var typedExceptionEventFactory = DelegateCache.GetOrAddBusExceptionEventFactory(_eventType);
             var typedExceptionEvent = typedExceptionEventFactory(exceptionEvent, _eventObject);
-            await _mediator.Publish(typedExceptionEvent, cancellationToken);
+
+            await EventDispatcherInvokeAsync(typedExceptionEvent, cancellationToken);
         }
+
+        private async Task EventDispatcherInvokeAsync(object @event, CancellationToken cancellationToken)
+        {
+            var consumeContext = Pipeline.CreateContext(@event.GetType(), @event, _services, new ConsumeInformations(_bus, _switch, _endpoint), cancellationToken);
+            var eventDispatcherMiddleware = _services.GetService(typeof(EventDispatcherMiddleware<>).MakeGenericType(@event.GetType()));
+            var invokeAsyncFunc = DelegateCache.GetOrAddEventDispatcherInvokeAsync(@event.GetType());
+            await invokeAsyncFunc(eventDispatcherMiddleware, consumeContext, empty);
+        }
+
+        private static Task empty() => Task.CompletedTask;
     }
 }

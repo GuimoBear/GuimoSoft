@@ -67,8 +67,9 @@ O registro dos serializadores é feito junto ao registro das mensagens.
 // Registro dos serializadores nos consumidores
 configurer
     .WithDefaultSerializer(CustomDefaultSerializer.Instance) // O registro de um serializador padrão
-    .Consume()
+    .Listen()
         .OfType<HelloEvent>()
+        .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
         .WithSerializer(HelloEventSerializer.Instance) // O registro de um serializador para um tipo específico
         .FromEndpoint(HelloEvent.TOPIC_NAME)
     .FromServer(options =>
@@ -82,7 +83,7 @@ configurer
 // Registro dos serializadores nos produtores
 configurer
     .WithDefaultSerializer(CustomDefaultSerializer.Instance) // O registro de um serializador padrão
-    .Produce()
+    .Publish()
         .OfType<HelloEvent>()
         .WithSerializer(HelloEventSerializer.Instance) // O registro de um serializador para um tipo específico
         .ToEndpoint(HelloEvent.TOPIC_NAME)

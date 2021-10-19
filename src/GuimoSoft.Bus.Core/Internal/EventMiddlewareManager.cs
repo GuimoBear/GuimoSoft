@@ -1,6 +1,7 @@
 ﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
@@ -30,7 +31,6 @@ namespace GuimoSoft.Bus.Core.Internal
             if (!pipelines.TryGetValue((brokerName, @switch, eventType), out var pipeline))
             {
                 var middlewares = new List<Type>();
-                middlewares.Add(typeof(ConsumeContextAccessorInitializerMiddleware<>).MakeGenericType(eventType));
                 if (eventMiddlewareTypes.TryGetValue((brokerName, @switch, eventType), out var middlewaresBag))
                     middlewares.AddRange(middlewaresBag);
                 middlewares.Add(typeof(EventDispatcherMiddleware<>).MakeGenericType(eventType));
@@ -69,7 +69,16 @@ namespace GuimoSoft.Bus.Core.Internal
             if (eventMiddlewareTypes.TryGetValue((brokerName, @switch, eventType), out var middlewares) &&
                 !middlewares.ToList().Contains(middlewareType))
             {
-                middlewares.Add(middlewareType);
+                if (middlewareType.IsGenericType && middlewareType.GetGenericTypeDefinition() == typeof(ConsumeContextAccessorInitializerMiddleware<>))
+                {
+                    var newBag = new ConcurrentBag<Type>();
+                    newBag.Add(middlewareType);
+                    middlewares.ToList().ForEach(newBag.Add);
+                    middlewares.Clear();
+                    newBag.ToList().ForEach(middlewares.Add);
+                }
+                else
+                    middlewares.Add(middlewareType);
             }
             else
             {

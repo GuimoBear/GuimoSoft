@@ -1,53 +1,63 @@
-﻿using MediatR;
-using Moq;
-using System.Threading;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
 using GuimoSoft.Bus.Core.Logs;
 using GuimoSoft.Bus.Core.Logs.Builder;
 using GuimoSoft.Bus.Tests.Fakes;
+using Moq;
+using System;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Common
 {
     public class ClientBuilderTests
     {
+        public Type[] BusLogMessage { get; private set; }
+
         [Fact]
         public void LogEventFacts()
         {
-            var (moqLogger, moqMediator) = CreateLoggerMock(BusName.Kafka);
+            var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
             var sut = new FakeClientBuilder(moqLogger.Object);
 
             sut.WriteLog();
 
-            moqMediator
-                .Verify(x => x.Publish(It.IsAny<BusLogEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            moqServiceProvider
+                .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)), Times.Once);
         }
 
         [Fact]
         public void LogExceptionFacts()
         {
-            var (moqLogger, moqMediator) = CreateLoggerMock(BusName.Kafka);
+            var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
             var sut = new FakeClientBuilder(moqLogger.Object);
 
             sut.WriteException();
 
-            moqMediator
-                .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            moqServiceProvider
+                .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
         }
 
-        private static (Mock<IBusLogDispatcher>, Mock<IMediator>) CreateLoggerMock(BusName bus)
+        private static (Mock<IBusLogDispatcher>, Mock<IServiceProvider>) CreateLoggerMock(BusName bus)
         {
-            var moqMediator = new Mock<IMediator>();
+            var moqServiceProvider = new Mock<IServiceProvider>();
+
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)))
+                .Returns(new EventDispatcherMiddleware<BusLogEvent>());
+
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)))
+                .Returns(new EventDispatcherMiddleware<BusExceptionEvent>());
 
             var moqLogger = new Mock<IBusLogDispatcher>();
 
             moqLogger
-                .Setup(x => x.FromBus(bus)).Returns(() => new BusLogDispatcherBuilder(moqMediator.Object, bus));
+                .Setup(x => x.FromBus(bus)).Returns(() => new BusLogDispatcherBuilder(moqServiceProvider.Object, bus));
 
-            return (moqLogger, moqMediator);
+            return (moqLogger, moqServiceProvider);
         }
     }
 }

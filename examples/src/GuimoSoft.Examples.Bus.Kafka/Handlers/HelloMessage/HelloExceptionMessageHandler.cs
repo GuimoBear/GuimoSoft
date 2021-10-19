@@ -1,12 +1,12 @@
-﻿using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Bus.Core.Logs;
 using GuimoSoft.Logger;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloEvent
 {
-    public class HelloExceptionEventHandler : INotificationHandler<BusTypedExceptionEvent<Events.HelloEvent>>
+    public class HelloExceptionEventHandler : IEventHandler<BusTypedExceptionEvent<Events.HelloEvent>>
     {
         private readonly IApiLogger<HelloExceptionEventHandler> _logger;
 

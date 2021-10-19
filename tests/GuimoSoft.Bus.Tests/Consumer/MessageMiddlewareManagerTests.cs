@@ -8,6 +8,7 @@ using GuimoSoft.Bus.Core.Interfaces;
 using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {

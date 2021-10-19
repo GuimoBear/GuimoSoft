@@ -6,7 +6,7 @@ Existem alguns termos que podem parecer estranhos, visto que existem alguns term
 
 2. **Middleware**: Um componente a ser adicionado dentro da pipeline, sua finalidade depende do que se espera dele, é possível criar um middleware como um filtro(pode parar o fluxo de execução), um capturador de exceções, uma ferramenta de captura de tempo de execução para monitorias ou como uma ferramenta para rotear a continuação do fluxo entre diferentes inquilinos, para saber mais, [_**clique aqui**_](middlewares.md).
 
-3. **Handler**: Á última etapa da execução da pipeline, é uma implementação da interface `INotificationHandler` do [MediatR](https://github.com/jbogard/MediatR).
+3. **Handler**: Á última etapa da execução da pipeline, é uma implementação da interface `IEventHandler`.
 
 4. **Serializador**: Implementações responsáveis por converter objetos em array de bytes, são usadas para, no consumo, converter a mensagem do broker no objeto associado aquele endpoint e para, na produção, converter o objeto na mensagem a ser enviada pelo broker, para saber mais, [_**clique aqui**_](serializadores.md).
 

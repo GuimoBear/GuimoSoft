@@ -1,22 +1,21 @@
-﻿using MediatR;
-using System;
-using GuimoSoft.Bus.Abstractions;
+﻿using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Internal.Interfaces;
 using GuimoSoft.Bus.Core.Logs.Builder;
 using GuimoSoft.Bus.Core.Logs.Builder.Stages;
+using System;
 
 namespace GuimoSoft.Bus.Core.Logs
 {
     internal sealed class BusLogDispatcher : IBusLogDispatcher
     {
-        private readonly IMediator _mediator;
+        private readonly IServiceProvider _services;
 
-        public BusLogDispatcher(IMediator mediator)
+        public BusLogDispatcher(IServiceProvider services)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
         public ISwitchStage FromBus(BusName bus)
-            => new BusLogDispatcherBuilder(_mediator, bus);
+            => new BusLogDispatcherBuilder(_services, bus);
     }
 }

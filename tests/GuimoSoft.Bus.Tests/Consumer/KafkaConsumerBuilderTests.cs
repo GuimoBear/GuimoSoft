@@ -1,14 +1,13 @@
 using Confluent.Kafka;
-using MediatR;
-using Moq;
-using System;
-using System.Collections.Generic;
+using FluentAssertions;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Core.Interfaces;
 using GuimoSoft.Bus.Core.Internal.Interfaces;
 using GuimoSoft.Bus.Kafka.Consumer;
+using Moq;
+using System;
+using System.Collections.Generic;
 using Xunit;
-using FluentAssertions;
 
 namespace GuimoSoft.Bus.Tests.Consumer
 {

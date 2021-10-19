@@ -49,7 +49,7 @@ namespace GuimoSoft.Bus.Core.Listener
             return this;
         }
 
-        public ListenerBuilder<TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        public ListenerBuilder<TOptions> AddAnotherAssemblies(params Assembly[] assemblies)
         {
             if (assemblies is not null)
                 foreach (var assembly in assemblies)

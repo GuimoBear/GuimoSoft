@@ -1,11 +1,10 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions;
 using System;
 using System.Collections.Generic;
-using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Core.Logs
 {
-    public class BusTypedExceptionEvent<TEvent> : INotification
+    public class BusTypedExceptionEvent<TEvent> : IEvent
         where TEvent : IEvent
     {
         public BusName Bus { get; }

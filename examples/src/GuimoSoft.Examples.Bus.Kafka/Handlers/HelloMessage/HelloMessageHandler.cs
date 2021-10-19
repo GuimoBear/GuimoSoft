@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Logger;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Logger;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.HelloEvent
 {
-    public class HelloEventHandler : INotificationHandler<Events.HelloEvent>
+    public class HelloEventHandler : IEventHandler<Events.HelloEvent>
     {
         private readonly IApiLogger<HelloEventHandler> _logger;
         private readonly IConsumeContextAccessor<Events.HelloEvent> _contextAccessor;

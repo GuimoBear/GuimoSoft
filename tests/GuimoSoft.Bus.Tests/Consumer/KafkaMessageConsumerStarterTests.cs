@@ -1,13 +1,13 @@
-using MediatR;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Kafka.Consumer;
+using GuimoSoft.Bus.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -29,9 +29,9 @@ namespace GuimoSoft.Bus.Tests.Consumer
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(mockKafkaEventConsumer.Object);
             serviceCollection.AddSingleton(s => mockeventTypeCache.Object);
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<FakeEvent>>());
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<OtherFakeEvent>>());
-            serviceCollection.AddTransient(s => Mock.Of<INotificationHandler<AnotherFakeEvent>>());
+            serviceCollection.AddTransient(s => Mock.Of<IEventHandler<FakeEvent>>());
+            serviceCollection.AddTransient(s => Mock.Of<IEventHandler<OtherFakeEvent>>());
+            serviceCollection.AddTransient(s => Mock.Of<IEventHandler<AnotherFakeEvent>>());
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var sut = new KafkaEventConsumerManager(serviceProvider);

@@ -47,7 +47,7 @@ O registro dos middlewares é feito junto ao registro das mensagens.
 ### Forma padrão
 
 ```csharp
-.Consume()
+.Listen()
     .OfType<HelloEvent>()
     // Middleware criado sempre que é requisitado
     .WithMiddleware<FirstHelloEventMiddleware>(ServiceLifetime.Transient)
@@ -77,8 +77,9 @@ public enum ServerName
 [...]
 switcher
     .When(ServerName.Host1)
-        .Consume()
+        .Listen()
             .OfType<HelloEvent>()
+            .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
             .WithMiddleware<FirstHelloEventMiddleware>(ServiceLifetime.Transient)
             .WithMiddleware(prov => new SecondHelloEventMiddleware(), ServiceLifetime.Scoped) 
             .FromEndpoint(HelloEvent.TOPIC_NAME)
@@ -90,8 +91,9 @@ switcher
 
 switcher
     .When(ServerName.Host2)
-        .Consume()
+        .Listen()
             .OfType<HelloEvent>()
+            .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
             .WithMiddleware<ThirdHelloEventMiddleware>(ServiceLifetime.Singleton)
             .WithMiddleware<FourthHelloEventMiddleware>() 
             .FromEndpoint(HelloEvent.TOPIC_NAME)

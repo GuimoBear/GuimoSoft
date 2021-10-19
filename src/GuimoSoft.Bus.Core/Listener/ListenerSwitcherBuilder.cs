@@ -32,7 +32,7 @@ namespace GuimoSoft.Bus.Core.Listener
             return builder;
         }
 
-        public ListenerSwitcherBuilder<TSwitch, TOptions> AddAnotherAssembliesToMediatR(params Assembly[] assemblies)
+        public ListenerSwitcherBuilder<TSwitch, TOptions> AddAnotherAssemblies(params Assembly[] assemblies)
         {
             if (assemblies is not null)
                 foreach (var assembly in assemblies)

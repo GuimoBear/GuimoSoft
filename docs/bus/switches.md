@@ -37,12 +37,13 @@ services
     .AddKafkaConsumerSwitcher<ServerName>(switcher =>
     {
         switcher
-            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
+            .AddAnotherAssemblies(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para registro dos IEventHandlers
 
         switcher
             .When(ServerName.Host1)
-                .Consume()
+                .Listen()
                     .OfType<HelloEvent>()
+                    .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
                     .FromEndpoint(HelloEvent.TOPIC_NAME)
                 .FromServer(options =>
                 {
@@ -52,10 +53,11 @@ services
 
         switcher
             .When(ServerName.Host2)
-                .Consume()
+                .Listen()
                     .OfType<HelloEvent>()
-                    .WithSerializer(HelloEventSerializer.Instance) // Serializador opcional
-                    .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Transient) // Middleware optional
+                    .WithContextAccessor() // (OPCIONAL) Indicação de que o ConsumeContextAccessor será utilizado na Pipeline
+                    .WithSerializer(HelloEventSerializer.Instance) // (OPCIONAL) Serializador
+                    .WithMiddleware<FakePipelineEventMiddlewareOne>(ServiceLifetime.Transient) // (OPCIONAL) Middleware
                     .FromEndpoint(HelloEvent.TOPIC_NAME)
                 .FromServer(options =>
                 {
@@ -67,7 +69,7 @@ services
     .AddKafkaProducerSwitcher<ServerName>(switcher =>
     {
         switcher
-            .AddAnotherAssembliesToMediatR(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para o MediatR
+            .AddAnotherAssemblies(typeof(Startup).Assembly); // (OPCIONAL) Adição de outros assemblies para registro dos IEventHandlers
             
         switcher
             .When(ServerName.Host1)

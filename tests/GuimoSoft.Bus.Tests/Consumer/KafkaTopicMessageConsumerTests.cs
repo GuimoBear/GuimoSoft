@@ -1,6 +1,16 @@
 using Confluent.Kafka;
 using FluentAssertions;
-using MediatR;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Interfaces;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Core.Internal.Interfaces;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
+using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Core.Logs.Builder;
+using GuimoSoft.Bus.Kafka.Consumer;
+using GuimoSoft.Bus.Tests.Fakes;
+using GuimoSoft.Core.Serialization;
+using GuimoSoft.Core.Serialization.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
@@ -9,16 +19,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Interfaces;
-using GuimoSoft.Bus.Core.Internal;
-using GuimoSoft.Bus.Core.Internal.Interfaces;
-using GuimoSoft.Bus.Core.Logs;
-using GuimoSoft.Bus.Core.Logs.Builder;
-using GuimoSoft.Bus.Kafka.Consumer;
-using GuimoSoft.Bus.Tests.Fakes;
-using GuimoSoft.Core.Serialization;
-using GuimoSoft.Core.Serialization.Interfaces;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Consumer
@@ -36,19 +36,26 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 new object[] { Mock.Of<IKafkaConsumerBuilder>(), Mock.Of<IServiceProvider>(), Mock.Of<IEventTypeCache>(), Mock.Of<IEventMiddlewareExecutorProvider>(), Mock.Of<IBusSerializerManager>(), null }
             };
 
-        private static (Mock<IBusLogDispatcher>, Mock<IMediator>) CreateLoggerMock<TEvent>(BusName bus)
-            where TEvent : IEvent
+        private static (Mock<IBusLogDispatcher>, Mock<IServiceProvider>) CreateLoggerMock(BusName bus)
         {
-            var moqMediator = new Mock<IMediator>();
+            var moqServiceProvider = new Mock<IServiceProvider>();
 
-            var logBuilder = new BusLogDispatcherBuilder(moqMediator.Object, bus);
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)))
+                .Returns(new EventDispatcherMiddleware<BusLogEvent>());
+
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)))
+                .Returns(new EventDispatcherMiddleware<BusExceptionEvent>());
+
+            var logBuilder = new BusLogDispatcherBuilder(moqServiceProvider.Object, bus);
 
             var moqLogger = new Mock<IBusLogDispatcher>();
 
             moqLogger
                 .Setup(x => x.FromBus(bus)).Returns(logBuilder);
 
-            return (moqLogger, moqMediator);
+            return (moqLogger, moqServiceProvider);
         }
 
         private static Mock<IEventTypeCache> CreateeventTypeTopicCache(string topicName)
@@ -78,8 +85,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 const string expectedTopic = "fake-events";
 
                 var stubCache = CreateeventTypeTopicCache(expectedTopic);
-                var stubMediator = Mock.Of<IMediator>();
-                var serviceProvider = BuildServiceProvider(stubMediator);
+                var serviceProvider = BuildServiceProvider();
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 var mockConsumer = new Mock<IConsumer<string, byte[]>>();
                 // throw exception to avoid infinite loop
@@ -95,7 +101,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -107,11 +113,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 mockConsumer.Verify(x => x.Subscribe(expectedTopic));
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionEvent<FakeEvent>>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Never);
             }
         }
 
@@ -122,8 +128,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
             {
                 Utils.ResetarSingletons();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME);
-                var stubMediator = Mock.Of<IMediator>();
-                var serviceProvider = BuildServiceProvider(stubMediator);
+                var serviceProvider = BuildServiceProvider();
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 var mockConsumer = new Mock<IConsumer<string, byte[]>>();
                 stubEventConsumerBuilder
@@ -139,7 +144,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -151,11 +156,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 mockConsumer.Verify(x => x.Consume(It.IsAny<CancellationToken>()));
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionEvent<FakeEvent>>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Never);
             }
         }
 
@@ -166,8 +171,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
             {
                 Utils.ResetarSingletons();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME);
-                var stubMediator = Mock.Of<IMediator>();
-                var serviceProvider = BuildServiceProvider(stubMediator);
+                var serviceProvider = BuildServiceProvider();
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 var mockConsumer = new Mock<IConsumer<string, byte[]>>();
                 mockConsumer
@@ -182,7 +186,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -194,11 +198,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 mockConsumer.Verify(x => x.Close());
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionEvent<FakeEvent>>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Never);
             }
         }
 
@@ -210,17 +214,16 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 Utils.ResetarSingletons();
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
-                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var serviceProvider = BuildServiceProvider();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME);
                 var stubConsumer = new Mock<IConsumer<string, byte[]>>();
-                stubConsumer
+                _ = stubConsumer
                     .Setup(x => x.Consume(It.IsAny<CancellationToken>()))
                     .Returns(() =>
                     {
                         cancellationTokenSource.Cancel();
                         return BuildFakeConsumeResult(fakeEvent);
-                    }); ;
+                    });
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 stubEventConsumerBuilder
                     .Setup(x => x.Build(It.IsAny<ServerName>()))
@@ -236,7 +239,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(moqDefaultSerializer.Object);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -246,11 +249,11 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 moqSerializerManager
                     .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusTypedExceptionEvent<FakeEvent>>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Never);
             }
         }
 
@@ -262,8 +265,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 Utils.ResetarSingletons();
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
-                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var serviceProvider = BuildServiceProvider();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME);
                 var stubConsumer = new Mock<IConsumer<string, byte[]>>();
                 stubConsumer
@@ -272,7 +274,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     {
                         cancellationTokenSource.Cancel();
                         return BuildFakeConsumeResult(fakeEvent);
-                    }); ;
+                    });
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 stubEventConsumerBuilder
                     .Setup(x => x.Build(It.IsAny<ServerName>()))
@@ -283,7 +285,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(Mock.Of<IDefaultSerializer>());
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -293,8 +295,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 moqSerializerManager
                     .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusLogEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)), Times.Once);
             }
         }
 
@@ -306,8 +308,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 Utils.ResetarSingletons();
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
-                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var serviceProvider = BuildServiceProvider();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME);
                 var stubConsumer = new Mock<IConsumer<string, byte[]>>();
                 stubConsumer
@@ -316,7 +317,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     {
                         cancellationTokenSource.Cancel();
                         return BuildFakeConsumeResult(fakeEvent);
-                    }); ;
+                    });
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 stubEventConsumerBuilder
                     .Setup(x => x.Build(It.IsAny<ServerName>()))
@@ -327,7 +328,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqMediator) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -349,9 +350,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
 
-                var serviceProvider = BuildServiceProviderWithMiddleware<FakeEvent>(mockMediator.Object, @event =>
+                var serviceProvider = BuildServiceProviderWithMiddleware<FakeEvent>(@event =>
                 {
                     middlewareExecuted = true;
                 });
@@ -375,7 +375,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqMediator) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -400,9 +400,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
 
-                var serviceProvider = BuildServiceProviderWithMiddleware<FakeEvent>(mockMediator.Object, @event =>
+                var serviceProvider = BuildServiceProviderWithMiddleware<FakeEvent>(@event =>
                 {
                     middlewareExecuted = true;
                     throw new Exception();
@@ -416,7 +415,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     {
                         cancellationTokenSource.Cancel();
                         return BuildFakeConsumeResult(fakeEvent, true);
-                    }); ;
+                    });
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 stubEventConsumerBuilder
                     .Setup(x => x.Build(It.IsAny<ServerName>()))
@@ -427,25 +426,20 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
                 var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeEvent.TOPIC_NAME, cancellationTokenSource.Token));
 
                 task.Wait();
 
-                mockMediator.Verify(x =>
-                    x.Publish(
-                        It.Is<object>(i => i.GetType() == typeof(FakeEvent)),
-                        It.IsAny<CancellationToken>()), Times.Never);
-
                 middlewareExecuted.Should().BeTrue();
 
                 moqSerializerManager
                     .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
             }
         }
 
@@ -459,9 +453,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
 
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
 
-                var serviceProvider = BuildServiceProviderWithMiddleware<FakeEvent>(mockMediator.Object, @event =>
+                var serviceProvider = BuildServiceProviderWithMiddleware<FakeEvent>(@event =>
                 {
                     middlewareExecuted = true;
                     throw new OperationCanceledException();
@@ -475,7 +468,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     {
                         cancellationTokenSource.Cancel();
                         return BuildFakeConsumeResult(fakeEvent);
-                    }); ;
+                    });
                 var stubEventConsumerBuilder = new Mock<IKafkaConsumerBuilder>();
                 stubEventConsumerBuilder
                     .Setup(x => x.Build(It.IsAny<ServerName>()))
@@ -486,17 +479,12 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqMediator) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
                 var task = Task.Run(() => sut.ConsumeUntilCancellationIsRequested(ServerName.Default, FakeEvent.TOPIC_NAME, cancellationTokenSource.Token));
 
                 task.Wait();
-
-                mockMediator.Verify(x =>
-                    x.Publish(
-                        It.Is<object>(i => i.GetType() == typeof(FakeEvent)),
-                        It.IsAny<CancellationToken>()), Times.Never);
 
                 middlewareExecuted.Should().BeTrue();
 
@@ -513,8 +501,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 Utils.ResetarSingletons();
                 var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
-                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var serviceProvider = BuildServiceProvider();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME + "s");
                 stubCache
                     .Setup(cache => cache.Get(BusName.Kafka, Finality.Consume, ServerName.Default, FakeEvent.TOPIC_NAME))
@@ -538,7 +525,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -550,8 +537,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 moqSerializerManager
                     .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)), Times.Never);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Never);
             }
         }
 
@@ -561,10 +548,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                var fakeEvent = new FakeEvent("some-key-id", "some-property-value");
                 var cancellationTokenSource = new CancellationTokenSource();
-                var mockMediator = new Mock<IMediator>();
-                var serviceProvider = BuildServiceProvider(mockMediator.Object);
+                var serviceProvider = BuildServiceProvider();
                 var stubCache = CreateeventTypeTopicCache(FakeEvent.TOPIC_NAME);
                 var stubConsumer = new Mock<IConsumer<string, byte[]>>();
                 stubConsumer
@@ -584,7 +569,7 @@ namespace GuimoSoft.Bus.Tests.Consumer
                     .Setup(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)))
                     .Returns(JsonEventSerializer.Instance);
 
-                var (moqLogger, moqMediator) = CreateLoggerMock<FakeEvent>(BusName.Kafka);
+                var (moqLogger, moqServiceProvider) = CreateLoggerMock(BusName.Kafka);
 
                 var sut = new KafkaTopicEventConsumer(stubEventConsumerBuilder.Object, serviceProvider, stubCache.Object, serviceProvider.GetRequiredService<IEventMiddlewareExecutorProvider>(), moqSerializerManager.Object, moqLogger.Object);
 
@@ -593,31 +578,30 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 moqSerializerManager
                     .Verify(x => x.GetSerializer(BusName.Kafka, Finality.Consume, ServerName.Default, typeof(FakeEvent)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<BusExceptionEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => obj.GetType().Equals(typeof(BusTypedExceptionEvent<FakeEvent>))), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Never);
             }
         }
 
-        private static ServiceProvider BuildServiceProvider(IMediator mediator)
+        private static ServiceProvider BuildServiceProvider()
         {
             var serviceCollection = new ServiceCollection();
             var stubMiddlewareManager = new Mock<IEventMiddlewareExecutorProvider>();
-            serviceCollection.AddSingleton<MediatorPublisherMiddleware<FakeEvent>>();
-            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<BusName>(), It.IsAny<Enum>(), It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(MediatorPublisherMiddleware<FakeEvent>) }, typeof(FakeEvent)));
-            serviceCollection.AddScoped(s => mediator);
+            serviceCollection.AddSingleton<EventDispatcherMiddleware<FakeEvent>>();
+            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<BusName>(), It.IsAny<Enum>(), It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(EventDispatcherMiddleware<FakeEvent>) }, typeof(FakeEvent)));
             serviceCollection.AddSingleton(s => stubMiddlewareManager.Object);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             return serviceProvider;
         }
 
-        private static ServiceProvider BuildServiceProviderWithMiddleware<TeventType>(IMediator mediator, Action<TeventType> onMiddlewareExecuted)
+        private static ServiceProvider BuildServiceProviderWithMiddleware<TeventType>(Action<TeventType> onMiddlewareExecuted)
             where TeventType : IEvent
         {
             var stubMiddlewareManager = new Mock<IEventMiddlewareExecutorProvider>();
-            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<BusName>(), It.IsAny<Enum>(), It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(FakeEventMiddlewareWithFuncOnConstructor), typeof(MediatorPublisherMiddleware<FakeEvent>) }, typeof(FakeEvent)));
+            stubMiddlewareManager.Setup(x => x.GetPipeline(It.IsAny<BusName>(), It.IsAny<Enum>(), It.IsAny<Type>())).Returns(new Pipeline(new List<Type> { typeof(FakeEventMiddlewareWithFuncOnConstructor), typeof(EventDispatcherMiddleware<FakeEvent>) }, typeof(FakeEvent)));
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(_ => new FakeEventMiddlewareWithFuncOnConstructor(context =>
@@ -625,9 +609,8 @@ namespace GuimoSoft.Bus.Tests.Consumer
                 onMiddlewareExecuted((context as ConsumeContext<TeventType>).Event);
                 return Task.CompletedTask;
             }));
-            serviceCollection.AddSingleton<MediatorPublisherMiddleware<FakeEvent>>();
+            serviceCollection.AddSingleton<EventDispatcherMiddleware<FakeEvent>>();
             serviceCollection.AddSingleton(s => stubMiddlewareManager.Object);
-            serviceCollection.AddScoped(s => mediator);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             return serviceProvider;
         }

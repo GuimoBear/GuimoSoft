@@ -1,11 +1,10 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions;
 using System;
 using System.Collections.Generic;
-using GuimoSoft.Bus.Abstractions;
 
 namespace GuimoSoft.Bus.Core.Logs
 {
-    public class BusExceptionEvent : INotification
+    public class BusExceptionEvent : IEvent
     {
         public BusName Bus { get; internal init; }
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.

@@ -1,27 +1,41 @@
 ﻿using DeepEqual.Syntax;
-using MediatR;
+using GuimoSoft.Bus.Abstractions;
+using GuimoSoft.Bus.Core.Internal;
+using GuimoSoft.Bus.Core.Internal.Middlewares;
+using GuimoSoft.Bus.Core.Logs;
+using GuimoSoft.Bus.Core.Logs.Builder;
+using GuimoSoft.Bus.Core.Logs.Builder.Stages;
+using GuimoSoft.Bus.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
-using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Core.Internal;
-using GuimoSoft.Bus.Core.Logs;
-using GuimoSoft.Bus.Core.Logs.Builder;
-using GuimoSoft.Bus.Core.Logs.Builder.Stages;
-using GuimoSoft.Bus.Tests.Fakes;
 using Xunit;
 
 namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 {
     public class BusLogDispatcherBuilderTests
     {
+        private static Mock<IServiceProvider> CreateLoggerServiceProvider()
+        {
+            var moqServiceProvider = new Mock<IServiceProvider>();
+
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)))
+                .Returns(new EventDispatcherMiddleware<BusLogEvent>());
+
+            moqServiceProvider
+                .Setup(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)))
+                .Returns(new EventDispatcherMiddleware<BusExceptionEvent>());
+
+            return moqServiceProvider;
+        }
+
         [Fact]
         public void ConstructorShouldCreateBusLogDispatcherBuilder()
         {
-            var sut = new BusLogDispatcherBuilder(Mock.Of<IMediator>(), BusName.Kafka);
+            var sut = new BusLogDispatcherBuilder(Mock.Of<IServiceProvider>(), BusName.Kafka);
             Assert.IsType<BusLogDispatcherBuilder>(sut);
         }
 
@@ -47,23 +61,24 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
                 };
                 expectedLogEvent.Data.Add("key-1", "value-1");
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Consume)
                     .WhileListening().TheEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)), Times.Once);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(It.Is<Type>(type => !type.Equals(typeof(EventDispatcherMiddleware<BusLogEvent>)))), Times.Never);
             }
         }
 
@@ -87,23 +102,24 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 var expectedTypedLogEvent = new BusTypedLogEvent<FakeEvent>(expectedLogEvent, fakeEvent);
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Produce)
                     .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)), Times.Once);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(It.Is<Type>(type => !type.Equals(typeof(EventDispatcherMiddleware<BusLogEvent>)))), Times.Never);
             }
         }
 
@@ -129,23 +145,24 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 var expectedTypedLogEvent = new BusTypedLogEvent<FakeEvent>(expectedLogEvent, fakeEvent);
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Produce)
                     .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Never);
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogEvent, obj)), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)), Times.Never);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedLogEvent<FakeEvent>>)), Times.Once);
 
                 Utils.ResetarSingletons();
             }
@@ -169,23 +186,24 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 var expectedTypedLogEvent = new BusTypedLogEvent<FakeEvent>(expectedLogEvent, null);
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Consume)
                     .AfterReceived().TheEvent(null).FromEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Information)
                     .Publish().AnLog();
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusLogEvent>(actual => IsEqual(expectedLogEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedLogEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusLogEvent>)), Times.Once);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedLogEvent<FakeEvent>>)), Times.Never);
             }
         }
 
@@ -205,14 +223,14 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
                 };
                 expectedExceptionEvent.Data.Add("key-1", "value-1");
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                var sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka)
+                var sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka)
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Produce)
                     .WhileListening().TheEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish();
 
@@ -220,10 +238,11 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 sut.AnException(new Exception(""));
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
-                moqMediator
-                    .Verify(x => x.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(It.Is<Type>(type => !type.Equals(typeof(EventDispatcherMiddleware<BusExceptionEvent>)))), Times.Never);
             }
         }
 
@@ -247,23 +266,24 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 var expectedTypedExceptionEvent = new BusTypedExceptionEvent<FakeEvent>(expectedExceptionEvent, fakeEvent);
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Consume)
                     .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish().AnException(new Exception(""));
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(It.Is<Type>(type => !type.Equals(typeof(EventDispatcherMiddleware<BusExceptionEvent>)))), Times.Never);
             }
         }
 
@@ -289,23 +309,25 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 var expectedTypedExceptionEvent = new BusTypedExceptionEvent<FakeEvent>(expectedExceptionEvent, fakeEvent);
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(FakeServerName.FakeHost1).AndFinality(Finality.Consume)
                     .AfterReceived().TheEvent(fakeEvent).FromEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish().AnException(new Exception(""));
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Never);
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionEvent, obj)), It.IsAny<CancellationToken>()), Times.Once);
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Never);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Once);
+
                 Utils.ResetarSingletons();
             }
         }
@@ -328,23 +350,25 @@ namespace GuimoSoft.Bus.Tests.Core.Logs.Builder
 
                 var expectedTypedExceptionEvent = new BusTypedExceptionEvent<FakeEvent>(expectedExceptionEvent, null);
 
-                var moqMediator = new Mock<IMediator>();
+                var moqServiceProvider = CreateLoggerServiceProvider();
 
-                ISwitchStage sut = new BusLogDispatcherBuilder(moqMediator.Object, BusName.Kafka);
+                ISwitchStage sut = new BusLogDispatcherBuilder(moqServiceProvider.Object, BusName.Kafka);
 
                 sut
                     .AndSwitch(ServerName.Default).AndFinality(Finality.Produce)
                     .AfterReceived().TheEvent(null).FromEndpoint("test")
                     .Write()
                         .Message("test event")
-                        .AndKey("key-1").FromValue("value-1")
+                        .AndKey("key-1").WithValue("value-1")
                         .With(BusLogLevel.Error)
                     .Publish().AnException(new Exception(""));
 
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<BusExceptionEvent>(actual => IsEqual(expectedExceptionEvent, actual)), It.IsAny<CancellationToken>()), Times.Once);
-                moqMediator
-                    .Verify(x => x.Publish(It.Is<object>((obj, _) => IsEqual(expectedTypedExceptionEvent, obj)), It.IsAny<CancellationToken>()), Times.Never);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusExceptionEvent>)), Times.Once);
+
+                moqServiceProvider
+                    .Verify(x => x.GetService(typeof(EventDispatcherMiddleware<BusTypedExceptionEvent<FakeEvent>>)), Times.Never);
             }
         }
 

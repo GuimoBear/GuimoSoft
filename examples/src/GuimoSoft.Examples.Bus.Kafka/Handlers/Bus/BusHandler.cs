@@ -1,12 +1,12 @@
-﻿using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Bus.Core.Logs;
 using GuimoSoft.Logger;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GuimoSoft.Examples.Bus.Kafka.Handlers.Bus
 {
-    public class BusHandler : INotificationHandler<BusLogEvent>, INotificationHandler<BusExceptionEvent>
+    public class BusHandler : IEventHandler<BusLogEvent>, IEventHandler<BusExceptionEvent>
     {
         private readonly IApiLogger<BusHandler> _logger;
 

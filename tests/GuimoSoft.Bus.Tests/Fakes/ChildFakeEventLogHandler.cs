@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class BusLogEventHandler : IEventHandler<BusLogEvent>
+    public class ChildFakeEventLogHandler : IEventHandler<BusTypedLogEvent<ChildFakeEvent>>
     {
-        public Task Handle(BusLogEvent notification, CancellationToken cancellationToken)
+        public Task Handle(BusTypedLogEvent<ChildFakeEvent> notification, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

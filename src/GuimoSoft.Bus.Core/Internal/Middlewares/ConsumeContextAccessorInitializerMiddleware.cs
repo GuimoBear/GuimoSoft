@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GuimoSoft.Bus.Abstractions;
 using GuimoSoft.Bus.Abstractions.Consumer;
 
-namespace GuimoSoft.Bus.Core.Internal
+namespace GuimoSoft.Bus.Core.Internal.Middlewares
 {
     internal sealed class ConsumeContextAccessorInitializerMiddleware<TEvent> : IEventMiddleware<TEvent>
         where TEvent : IEvent

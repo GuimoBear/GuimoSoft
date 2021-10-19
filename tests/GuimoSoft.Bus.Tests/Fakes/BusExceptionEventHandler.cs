@@ -1,11 +1,11 @@
-﻿using MediatR;
+﻿using GuimoSoft.Bus.Abstractions.Consumer;
+using GuimoSoft.Bus.Core.Logs;
 using System.Threading;
 using System.Threading.Tasks;
-using GuimoSoft.Bus.Core.Logs;
 
 namespace GuimoSoft.Bus.Tests.Fakes
 {
-    public class BusExceptionEventHandler : INotificationHandler<BusExceptionEvent>
+    public class BusExceptionEventHandler : IEventHandler<BusExceptionEvent>
     {
         public Task Handle(BusExceptionEvent notification, CancellationToken cancellationToken)
         {
