@@ -16,7 +16,7 @@ namespace GuimoSoft.Bus.Core.Internal.Middlewares
         public IEnumerable<Type> HandlerTypes { get; protected set; }
     }
 
-    internal sealed class EventDispatcherMiddleware<TEvent> : EventDispatcherMiddlewareBase, IEventMiddleware<TEvent>
+    internal class EventDispatcherMiddleware<TEvent> : EventDispatcherMiddlewareBase, IEventMiddleware<TEvent>
         where TEvent : IEvent
     {
         private delegate Task ILHandlerCall(object handler, TEvent @event, CancellationToken cancellationToken);
@@ -34,7 +34,16 @@ namespace GuimoSoft.Bus.Core.Internal.Middlewares
         public async Task InvokeAsync(ConsumeContext<TEvent> context, Func<Task> next)
         {
             foreach (var (handlerType, handlerCall) in _handlerCalls)
-                await handlerCall(context.Services.GetService(handlerType), context.Event, context.CancellationToken).ConfigureAwait(false);
+            {
+                try
+                {
+                    await handlerCall(context.Services.GetService(handlerType), context.Event, context.CancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Bloco ignorado para evitar falhas na pipeline
+                }
+            }
             await next();
         }
 
@@ -59,7 +68,7 @@ namespace GuimoSoft.Bus.Core.Internal.Middlewares
         private static IEnumerable<Type> GetHandlerTypes(Type eventType)
         {
             var types = Singletons
-                   .GetAssemblies()
+                   .GetRegisteredAssemblies()
                    .SelectMany(a => a.GetTypes())
                    .Where(type =>
                           type

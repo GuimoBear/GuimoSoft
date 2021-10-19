@@ -4,7 +4,9 @@ using GuimoSoft.Bus.Core.Internal;
 using GuimoSoft.Bus.Core.Internal.Middlewares;
 using GuimoSoft.Bus.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,7 +21,7 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                Singletons.GetAssemblies().Add(typeof(FakeEvent).Assembly);
+                new ServiceCollection().RegisterMediatorFromNewAssemblies(new List<Assembly> { typeof(ChildFakeEvent).Assembly });
                 var middleware = new EventDispatcherMiddleware<FakeEvent>();
 
                 middleware.HandlerTypes
@@ -36,7 +38,8 @@ namespace GuimoSoft.Bus.Tests.Core.Internal
             lock (Utils.Lock)
             {
                 Utils.ResetarSingletons();
-                Singletons.GetAssemblies().Add(typeof(ChildFakeEvent).Assembly);
+                new ServiceCollection().RegisterMediatorFromNewAssemblies(new List<Assembly> { typeof(ChildFakeEvent).Assembly });
+
                 var middleware = new EventDispatcherMiddleware<ChildFakeEvent>();
 
                 middleware.HandlerTypes
