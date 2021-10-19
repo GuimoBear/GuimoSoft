@@ -1,5 +1,4 @@
-﻿using GuimoSoft.Bus.Abstractions;
-using GuimoSoft.Bus.Abstractions.Consumer;
+﻿using GuimoSoft.Bus.Abstractions.Consumer;
 using GuimoSoft.Bus.Core.Internal.Middlewares;
 using GuimoSoft.Bus.Core.Logs;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +20,6 @@ namespace GuimoSoft.Bus.Core.Internal
                 var unregisteredAssemblies = assemblies.Where(a => !registeredAssemblies.Contains(a)).ToList();
                 if (unregisteredAssemblies.Count > 0)
                 {
-                    services.RegisterEventHandlers(unregisteredAssemblies);
                     services.DiscoveryAndRegisterTypedExceptionEventHandlers(unregisteredAssemblies);
                     services.DiscoveryAndRegisterTypedLogEventHandlers(unregisteredAssemblies);
                     unregisteredAssemblies.ForEach(registeredAssemblies.Add);
@@ -66,12 +64,6 @@ namespace GuimoSoft.Bus.Core.Internal
             services.RegisterEventHandlers(assemblies, typeof(BusLogEvent), typeof(BusTypedLogEvent<>));
         }
 
-        private static void RegisterEventHandlers(this IServiceCollection services, IEnumerable<Assembly> assemblies)
-        {
-            foreach (var assembly in assemblies)
-                RegisterHandlersIntoAssembly(services, assembly);
-        }
-
         private static void RegisterEventHandlers(this IServiceCollection services, IEnumerable<Assembly> assemblies, Type eventType, Type generigEventType)
         {
             var handlerTypes = assemblies
@@ -111,22 +103,6 @@ namespace GuimoSoft.Bus.Core.Internal
                 });
         }
 
-        private static void RegisterHandlersIntoAssembly(IServiceCollection services, Assembly assembly)
-        {
-            var events = GeteventTypesIntoAssembly(assembly);
-            foreach (var @event in events)
-            {
-                var eventDispatcherMiddlewareType = typeof(EventDispatcherMiddleware<>).MakeGenericType(@event);
-                if (!services.Any(sd => sd.ImplementationType == eventDispatcherMiddlewareType))
-                {
-                    var dispatcherInstance = Activator.CreateInstance(eventDispatcherMiddlewareType);
-                    foreach (var handlerType in (dispatcherInstance as EventDispatcherMiddlewareBase).HandlerTypes)
-                        services.TryAddTransient(handlerType);
-                    services.AddSingleton(eventDispatcherMiddlewareType, dispatcherInstance);
-                }
-            }
-        }
-
         private static List<Type> GetTypesFromGenericNotificationOrEventHandlers(IEnumerable<Assembly> assemblies, Type genericNotificationTypeDefinition)
         {
             return assemblies
@@ -140,13 +116,6 @@ namespace GuimoSoft.Bus.Core.Internal
                 .Select(eventType => eventType.GetGenericArguments()[0])
                 .Distinct()
                 .ToList();
-        }
-
-        private static IEnumerable<Type> GeteventTypesIntoAssembly(Assembly assembly)
-        {
-            return assembly
-                .GetTypes()
-                .Where(type => type.GetInterfaces().Any(@int => @int.Equals(typeof(IEvent))));
         }
     }
 }
