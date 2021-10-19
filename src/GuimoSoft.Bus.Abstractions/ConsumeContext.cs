@@ -17,8 +17,6 @@ namespace GuimoSoft.Bus.Abstractions
             Informations = informations;
             CancellationToken = cancellationToken;
         }
-
-        public abstract object GeTEvent();
     }
 
     public sealed class ConsumeContext<TEvent> : ConsumeContextBase
@@ -31,8 +29,5 @@ namespace GuimoSoft.Bus.Abstractions
         {
             Event = @event;
         }
-
-        public override object GeTEvent()
-            => Event;
     }
 }

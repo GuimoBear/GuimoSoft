@@ -34,16 +34,7 @@ namespace GuimoSoft.Bus.Core.Internal.Middlewares
         public async Task InvokeAsync(ConsumeContext<TEvent> context, Func<Task> next)
         {
             foreach (var (handlerType, handlerCall) in _handlerCalls)
-            {
-                try
-                {
-                    await handlerCall(context.Services.GetService(handlerType), context.Event, context.CancellationToken).ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Bloco ignorado para evitar falhas na pipeline
-                }
-            }
+                await handlerCall(context.Services.GetService(handlerType), context.Event, context.CancellationToken).ConfigureAwait(false);
             await next();
         }
 
